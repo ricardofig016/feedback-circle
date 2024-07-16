@@ -1,11 +1,20 @@
-const express = require("express");
+import express from "express";
+import { routes as userTestRoutes } from "./routes/userTest.js";
+import cors from "cors";
 
 const app = express();
+const PORT = 5000;
 
-app.get("/api", (req, res) => {
-  res.json({ users: ["user1", "user2", "user3", "user4"] });
+app.use(cors());
+app.use(express.static("../client/public/"));
+app.use(express.urlencoded({ extended: false }));
+
+app.use("/users", userTestRoutes);
+
+app.get("/", (req, res) => {
+  res.send("Home Page");
 });
 
-app.listen(5000, () => {
-  console.log("Server listening at http://localhost:5000");
+app.listen(PORT, () => {
+  console.log("Server listening at http://localhost:" + PORT);
 });
