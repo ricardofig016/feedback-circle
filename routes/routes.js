@@ -1,65 +1,61 @@
-'use strict';
+"use strict";
 
+import LocalizedMessages from "../localized-messages/localized-messages.js";
+import { throwError } from "../modules/errors/errors.js";
+import Tabs from "../modules/tabs/tabs.js";
 
-import LocalizedMessages from '../localized-messages/localized-messages.js';
-import { throwError } from '../modules/errors/errors.js';
-import Tabs from '../modules/tabs/tabs.js';
-
-import HomeComponent from '../components/home/home.component.js';
-import NotFoundComponent from '../components/not-found/not-found.component.js';
-import CompareDEEActionsListComponent from '../components/compare-dee-actions-list/compare-dee-actions-list.component.js';
-import CompareConfigurationsListComponent from '../components/compare-configurations-list/compare-configurations-list.component.js';
-import ShellLandingPageAdministrationComponent from '../components/shell-landingpage-administration/shell-landingpage-administration.component.js';
-import PageExampleComponent from '../components/shell-landingpage-example/shell-landingpage-example.component.js';
-
+import HomeComponent from "../components/home/home.component.js";
+import NotFoundComponent from "../components/not-found/not-found.component.js";
+import CompareDEEActionsListComponent from "../components/compare-dee-actions-list/compare-dee-actions-list.component.js";
+import CompareConfigurationsListComponent from "../components/compare-configurations-list/compare-configurations-list.component.js";
+import ShellLandingPageAdministrationComponent from "../components/shell-landingpage-administration/shell-landingpage-administration.component.js";
+import PageExampleComponent from "../components/shell-landingpage-example/shell-landingpage-example.component.js";
+import TestComponentComponent from "../components/test-component/test-component.component.js";
 
 /**
  * Routing table mapping routes to components for dynamic loading.
  */
 const Routes = {
-    'Home': HomeComponent,
-    'Administration': ShellLandingPageAdministrationComponent,
-    'CompareDEEActionsList': CompareDEEActionsListComponent,
-    'CompareConfigurationsList': CompareConfigurationsListComponent,
-    'PageExample': PageExampleComponent
-}
-
+  Home: HomeComponent,
+  Administration: ShellLandingPageAdministrationComponent,
+  CompareDEEActionsList: CompareDEEActionsListComponent,
+  CompareConfigurationsList: CompareConfigurationsListComponent,
+  PageExample: PageExampleComponent,
+  TestComponent: TestComponentComponent,
+};
 
 /**
  * Renders a HTML page from the route present in the current URL hash.
  */
 function renderRoute() {
-    if (window.location.hash != null && window.location.hash.startsWith('#/')) {
-        let routePath = window.location.hash.substring(2); // Remove the '#/' prefix
+  if (window.location.hash != null && window.location.hash.startsWith("#/")) {
+    let routePath = window.location.hash.substring(2); // Remove the '#/' prefix
 
-        // Query Parameters
-        let hash = routePath;
-        let queryParams = '';
-        let indexQuestionMark = hash.indexOf('?');
-        if (indexQuestionMark > -1) {
-            queryParams = hash.substring(indexQuestionMark + 1);
-            hash = hash.substring(0, indexQuestionMark); // Support query string
-        }
+    // Query Parameters
+    let hash = routePath;
+    let queryParams = "";
+    let indexQuestionMark = hash.indexOf("?");
+    if (indexQuestionMark > -1) {
+      queryParams = hash.substring(indexQuestionMark + 1);
+      hash = hash.substring(0, indexQuestionMark); // Support query string
+    }
 
-        // Tabs logic
-        const tabsManager = new Tabs();
-        const tabToOpen = tabsManager.getTab(routePath);
-        // If tab already exists for the current route (including query parameters)
-        if (tabToOpen) {
-            // Switch to the already existing tab (without calling component's onInit())
-            // Hide currently open tab (if any)
-            if (tabsManager.currentlyOpenTab) tabsManager.currentlyOpenTab.hide();
-            tabsManager.currentlyOpenTab = tabToOpen;
-            // Open the new tab
-            tabToOpen.open();
-        }
+    // Tabs logic
+    const tabsManager = new Tabs();
+    const tabToOpen = tabsManager.getTab(routePath);
+    // If tab already exists for the current route (including query parameters)
+    if (tabToOpen) {
+      // Switch to the already existing tab (without calling component's onInit())
+      // Hide currently open tab (if any)
+      if (tabsManager.currentlyOpenTab) tabsManager.currentlyOpenTab.hide();
+      tabsManager.currentlyOpenTab = tabToOpen;
+      // Open the new tab
+      tabToOpen.open();
     }
-    else {
-        throwError(LocalizedMessages.invalid_url_path);
-    }
+  } else {
+    throwError(LocalizedMessages.invalid_url_path);
+  }
 }
-
-
 
 // /**
 //  * Injects a component in the DOM and calls onInit().
@@ -83,41 +79,40 @@ function renderRoute() {
 //         .catch(error => throwError(error));
 // }
 
-
-
 /**
  * Redirect to a new page based on a provided route path.
  * @param {*} routePath route path (URL) to redirect to.
  * @param {*} isToOpenInNewTab whether to open the page in a new tab or in the current one.
  */
 function redirect(routePath, isToOpenInNewTab, _onSuccess) {
-    const tabsManager = new Tabs();
-    const tabToOpen = tabsManager.getTab(routePath);
-    // If it is to open the page in a new tab and the tab doesn't yet exist for the provided routePath
-    if (isToOpenInNewTab) {
-        if (tabToOpen) {
-            // Switch to that already open tab
-            _onSuccess();
-        }
-        else {
-            // Create new tab for the provided routePath, calling component's onInit()
-            const RoutedComponentType = Routes[stripURLQueryParameters(routePath)] || NotFoundComponent; // Default to NotFoundComponent if route not found
-            tabsManager.createTab(routePath, RoutedComponentType, (tab) => {
-                if (tab?.tabElement) tab.tabElement.onclick = (e) => { window.location.href = '#/' + routePath; };
-                _onSuccess();
-            });
-        }
+  const tabsManager = new Tabs();
+  const tabToOpen = tabsManager.getTab(routePath);
+  // If it is to open the page in a new tab and the tab doesn't yet exist for the provided routePath
+  if (isToOpenInNewTab) {
+    if (tabToOpen) {
+      // Switch to that already open tab
+      _onSuccess();
+    } else {
+      // Create new tab for the provided routePath, calling component's onInit()
+      const RoutedComponentType =
+        Routes[stripURLQueryParameters(routePath)] || NotFoundComponent; // Default to NotFoundComponent if route not found
+      tabsManager.createTab(routePath, RoutedComponentType, (tab) => {
+        if (tab?.tabElement)
+          tab.tabElement.onclick = (e) => {
+            window.location.href = "#/" + routePath;
+          };
+        _onSuccess();
+      });
     }
+  }
 }
-
 
 function stripURLQueryParameters(url) {
-    if (url && url.indexOf('?') >= 0) {
-        url = url.substring(0, url.indexOf('?'));
-    }
-    return url;
+  if (url && url.indexOf("?") >= 0) {
+    url = url.substring(0, url.indexOf("?"));
+  }
+  return url;
 }
-
 
 /**
  * Builds a URL-encoded string corresponding to a dictionary of query parameters.
@@ -130,40 +125,37 @@ function stripURLQueryParameters(url) {
  * @returns URL-encoded string corresponding to a dictionary of query parameters
  */
 function buildURL(baseRoutePath, queryParamsMap) {
-    let url = '#/' + encodeURIComponent(baseRoutePath);
-    if (Object.keys(queryParamsMap).length > 0) {
-        let first = true;
-        for (const [key, value] of Object.entries(queryParamsMap)) {
-            url += first ? '?' : '&';
-            first = false;
-            url += encodeURIComponent(key) + '=' + encodeURIComponent(value);
-        }
+  let url = "#/" + encodeURIComponent(baseRoutePath);
+  if (Object.keys(queryParamsMap).length > 0) {
+    let first = true;
+    for (const [key, value] of Object.entries(queryParamsMap)) {
+      url += first ? "?" : "&";
+      first = false;
+      url += encodeURIComponent(key) + "=" + encodeURIComponent(value);
     }
-    return url;
+  }
+  return url;
 }
-
 
 /**
  * Parses a given URL and builds a dictionary of query parameters from it.
- * @param {*} url 
+ * @param {*} url
  * @returns dictionary of query parameters from the parsed URL
  */
 function buildURLMap(url) {
-    let queryParamsMap = {};
-    if (url != null && url.indexOf('?') >= 0) {
-        url = url.substring(url.indexOf('?')+1);
-        const urlSearchParams = new URLSearchParams(url);
-        queryParamsMap = Object.fromEntries(urlSearchParams.entries());
-    }
-    return queryParamsMap;
+  let queryParamsMap = {};
+  if (url != null && url.indexOf("?") >= 0) {
+    url = url.substring(url.indexOf("?") + 1);
+    const urlSearchParams = new URLSearchParams(url);
+    queryParamsMap = Object.fromEntries(urlSearchParams.entries());
+  }
+  return queryParamsMap;
 }
-
-
 
 export {
-    renderRoute,
-    redirect,
-    stripURLQueryParameters,
-    buildURL,
-    buildURLMap
-}
+  renderRoute,
+  redirect,
+  stripURLQueryParameters,
+  buildURL,
+  buildURLMap,
+};
