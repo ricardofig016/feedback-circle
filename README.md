@@ -1,14 +1,15 @@
 # Feedback Circle App
 
-## Install lightweight server
+## Run the App
 
-    npm install live-server -g
+1. Install [node package manager (npm)](https://nodejs.org/en/download/package-manager)
+2. Start the server
 
-## Run lightweight server
+   ```shell
+   npm run start
+   ```
 
-    live-server.cmd .
-
-## How to create a new component (e.g., MyComponent)
+## Create a new component (e.g., MyComponent)
 
 1. Create a new folder 'my-component' under 'components', with two files inside: 'my-component.component.html' and 'my-component.component.js'.
 2. The 'my-component.component.js' file should follow this template:
