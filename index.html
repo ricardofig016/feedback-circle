@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Performance Feedback Circle</title>
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+    <link rel="stylesheet" href="assets/styles/mes_style.css">
+    <link rel="stylesheet" href="modules/toasts/toasts.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+
+    <script src="modules/monaco-editor-0.48.0/min/vs/loader.js" async></script>
+    <script type="module" src="index.js"></script>
+    <script type="module" src="routes/routes.js"></script>
+    <!-- <script type="module" src="modules/localized-messages/localized-messages.js"></script> -->
+    <script type="module" src="modules/toasts/toasts.js"></script>
+    <script type="module" src="modules/progress-indicator/progress-indicator.js"></script>
+    <script type="module" src="modules/tabs/tabs.js"></script>
+</head>
+
+<body>
+    <div class="screen">
+        <div class="sidebar">
+            <div class="sidebar-logo-cmf-wrapper">
+                <div class="sidebar-logo-cmf"></div>
+            </div>
+            <div class="sidebar-submenu">
+                <div class="sidebar-items">
+                    <a href="#/Administration" class="sidebar-item">Administration</a>
+                    <a href="#/PageExample" class="sidebar-item">Example Page</a>
+                    <a href="#/PageInvalid" class="sidebar-item">Invalid Page Example</a>
+                </div>
+            </div>
+            <div class="sidebar-footer">
+                <p><span class="sidebar-footer-environmentName">Performance Feedback Circle</span></p>
+            </div>
+        </div>
+        <div class="page-filler">
+            <div id="tabs-bar"></div>
+            <div class="base-page-header">
+                <div class="title-bar">
+                    <div class="page-icon" id="page-icon"></div>
+                    <div class="page-label" id="page-label"></div>
+                </div>
+            </div>
+            <div class="page-content">
+                <div class="page-content-slim">
+                    <div class="toast-overlay" id="toast-overlay"></div>
+                    <div id="progress-indicator-loading">
+                        <span class="fa-icon"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i></span>
+                    </div>
+                    <div id="progress-indicator"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
