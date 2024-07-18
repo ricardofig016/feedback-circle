@@ -265,7 +265,7 @@ export default class Tabs {
 
     draggableTabs.forEach((child) => {
       const childRect = child.getBoundingClientRect();
-      const childRight = childRect.right;
+      const childRight = childRect.right + childRect.width / 4; // with offset to increase smoothness
       const distance = Math.abs(this.mousePos.x - childRight);
 
       if (distance < closestDistance) {
