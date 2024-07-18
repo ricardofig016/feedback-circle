@@ -60,6 +60,7 @@ class Tab {
       const tabsBar = document.getElementById("tabs-bar");
       this.tabElement = document.createElement("div");
       this.tabElement.classList.add("tab");
+      this.tabElement.draggable = true;
       tabsBar.appendChild(this.tabElement);
       // Tab left filler
       const tabFillerLeft = document.createElement("div");
@@ -140,6 +141,7 @@ export default class Tabs {
   static #tabAutoIncrementId;
   static #tabs; // List of tabs
   static currentlyOpenTab;
+  static mousePos = { x: 0, y: 0 };
 
   constructor() {
     // Singleton logic
@@ -208,5 +210,70 @@ export default class Tabs {
         _onSuccess(tab);
       });
     }
+  }
+
+  /**
+   * Handles the dragstart event: when starting to drag a tab.
+   * @param {*} event
+   */
+  static dragStart(event) {
+    const img = new Image();
+    img.src = "";
+    event.dataTransfer.setDragImage(img, 0, 0);
+    event.dataTransfer.setData("text/plain", this.routePath);
+    const draggingTab = event.target;
+    draggingTab.classList.add("dragging");
+  }
+
+  /**
+   * Handles the drag event: when the cursor moves while dragging a tab.
+   * @param {*} event
+   */
+  static drag(event) {
+    this.mousePos.x = event.clientX;
+    this.mousePos.y = event.clientY;
+  }
+
+  /**
+   * Handles the dragover event: when dragging a tab over another.
+   * @param {*} event
+   */
+  static dragOver(event) {
+    event.preventDefault();
+    const draggingTab = document.querySelector(".tab.dragging");
+    const tabsBar = document.getElementById("tabs-bar");
+    const beforeTab = Tabs.getDragBeforeElement(tabsBar, draggingTab);
+
+    if (beforeTab == null) {
+      tabsBar.appendChild(draggingTab);
+    } else {
+      tabsBar.insertBefore(draggingTab, beforeTab);
+    }
+  }
+
+  /**
+   * Finds the element which the dragged tab should be placed after.
+   * @param {*} container - The container holding the tabs.
+   * @param {*} draggedElement - The currently dragged element.
+   * @returns The tab element after which the dragged element should be placed.
+   */
+  static getDragBeforeElement(container) {
+    const draggableTabs = [...container.querySelectorAll(".tab:not(.dragging)")];
+
+    let closestElement = null;
+    let closestDistance = Infinity;
+
+    draggableTabs.forEach((child) => {
+      const childRect = child.getBoundingClientRect();
+      const childRight = childRect.right;
+      const distance = Math.abs(this.mousePos.x - childRight);
+
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestElement = child;
+      }
+    });
+
+    return closestElement.nextSibling;
   }
 }

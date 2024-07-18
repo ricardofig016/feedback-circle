@@ -239,6 +239,10 @@ input {
   background-color: white;
 }
 
+.tab.dragging:not(.selected) {
+  background-color: #006bb2;
+}
+
 .tab-filler-left {
   width: 32px;
   margin-right: auto;
