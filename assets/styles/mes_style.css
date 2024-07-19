@@ -249,7 +249,7 @@ input {
 }
 
 .home-tab-filler-left {
-  width: 4px;
+  width: 0;
   margin-right: auto;
 }
 

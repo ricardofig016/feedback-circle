@@ -4,7 +4,13 @@ import { redirect, renderRoute } from "./routes/routes.js";
 import Tabs from "../modules/tabs/tabs.js";
 
 function redirectToHome() {
+  const prevHash = window.location.hash;
   window.location.href = "#/Home";
+  // Manually trigger the hashchange event when the Hash does not change on refresh
+  if (prevHash === "#/Home") {
+    const manualHashchangeEvent = new Event("hashchange");
+    window.dispatchEvent(manualHashchangeEvent);
+  }
 }
 
 // Add drag and drop event listeners to the tabs bar
@@ -23,9 +29,10 @@ function setupDragAndDrop() {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+  setupDragAndDrop();
+
   // Event listener for hashchange events to dynamically render components.
   // Renders a HTML page from the route present int the current URL hash.
-  setupDragAndDrop();
   window.addEventListener("hashchange", () => {
     if (window.location.hash.length <= 2) {
       redirectToHome();
@@ -34,5 +41,6 @@ window.addEventListener("DOMContentLoaded", () => {
       redirect(routePath, true, () => renderRoute());
     }
   });
-  window.onload = redirectToHome;
+
+  redirectToHome();
 });
