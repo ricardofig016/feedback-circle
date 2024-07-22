@@ -11,6 +11,7 @@ import CompareConfigurationsListComponent from "../components/compare-configurat
 import ShellLandingPageAdministrationComponent from "../components/shell-landingpage-administration/shell-landingpage-administration.component.js";
 import PageExampleComponent from "../components/shell-landingpage-example/shell-landingpage-example.component.js";
 import TestComponentComponent from "../components/test-component/test-component.component.js";
+import SubmitFeedbackComponent from "../components/submit-feedback/submit-feedback.component.js";
 import Ex1Component from "../components/ex1/ex1.component.js";
 import Ex2Component from "../components/ex2/ex2.component.js";
 import Ex3Component from "../components/ex3/ex3.component.js";
@@ -27,6 +28,7 @@ const Routes = {
   CompareConfigurationsList: CompareConfigurationsListComponent,
   PageExample: PageExampleComponent,
   TestComponent: TestComponentComponent,
+  SubmitFeedback: SubmitFeedbackComponent,
   Ex1: Ex1Component,
   Ex2: Ex2Component,
   Ex3: Ex3Component,

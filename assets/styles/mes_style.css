@@ -72,9 +72,9 @@ a {
 
 .split-hor {
   display: flex;
-  /* justify-content: space-around; */
-  column-gap: 30px;
-  align-items: center;
+  justify-content: center;
+  column-gap: 0px;
+  align-items: start;
 }
 
 .split-hor-short {
@@ -85,10 +85,87 @@ a {
 .split-vert {
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
 }
 
 .form {
+  max-width: 960px;
   display: table;
+}
+
+.form-field {
+  color: rgb(0, 0, 0);
+  font-family: "Open Sans";
+  font-size: 13px;
+  min-width: 100px;
+  padding: 8px;
+  margin: 8px 0;
+}
+
+.form-label {
+  height: 22px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.form-select,
+.form-input,
+.form-textarea {
+  background-color: #f5f5f5;
+  border-radius: 0;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.5);
+  min-width: 300px;
+}
+
+.form-select {
+  cursor: pointer;
+}
+
+.form-icon {
+  height: 22px;
+  min-width: 0;
+}
+
+.form-icon i {
+  color: #3498db;
+  font-size: large;
+  position: relative;
+  display: block;
+  cursor: pointer;
+}
+
+.tooltip {
+  display: none;
+  background-color: #fafafa;
+  text-align: center;
+  padding: 16px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+  border-radius: 4px;
+  z-index: 1;
+  width: 400px;
+  margin-left: -436px;
+  margin-top: -20px;
+}
+
+.tooltip::after {
+  position: absolute;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent;
+}
+
+i:hover + .tooltip {
+  display: block; /* Show the tooltip on hover */
+}
+
+#submit-button-container {
+  display: flex;
+  flex-grow: 0;
+  justify-content: flex-end;
+  margin: 8px 31px;
 }
 
 .property-label {
@@ -524,7 +601,7 @@ input:checked + .slider:before {
   min-width: 96px;
   height: 36px;
   border-radius: 4px;
-  padding: 0 8px;
+  padding: 8px;
   font-family: "Open Sans";
   font-size: 14px;
   cursor: pointer;

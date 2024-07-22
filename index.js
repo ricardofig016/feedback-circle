@@ -43,4 +43,10 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   redirectToHome();
+
+  // REMOVE: For development purposes only
+  {
+    redirect("PageExample", true, () => renderRoute());
+    redirect("SubmitFeedback", true, () => renderRoute());
+  }
 });

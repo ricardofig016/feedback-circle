@@ -40,12 +40,18 @@ export default class PageExampleComponent extends BaseComponent {
       const row = new Map();
       row.set("Column 1", Icons.green_checkmark_full);
       row.set("Column 2", Icons.red_exclamation_mark);
-      row.set("Column 3", "Text");
+      row.set("Column 3", Icons.checkmark);
+      row.set("Column 4", Icons.green_plug);
+      row.set("Column 5", Icons.toast_error);
+      row.set("Column 6", Icons.toast_info);
+      row.set("Column 7", Icons.toast_success);
+      row.set("Column 8", Icons.toast_warning);
+      row.set("Column 9", "Text");
       const queryParamsMap = {
         installationPath1: "123",
         installationPath2: "456",
       };
-      row.set("Column 4", `<a href=${buildURL("CompareInstallationsScaffolding", queryParamsMap)}>Link example</a>`);
+      row.set("Column 10", `<a href=${buildURL("CompareInstallationsScaffolding", queryParamsMap)}>Link example</a>`);
 
       dataGridExample.addRow(row);
 

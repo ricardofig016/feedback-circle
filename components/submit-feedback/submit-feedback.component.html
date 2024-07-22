@@ -1,0 +1,62 @@
+<form class="form" onsubmit="return false;" style="width: 90%">
+  <div class="split-vert">
+    <div class="split-hor">
+      <div class="split-vert">
+        <div class="form-field form-label">
+          <span><b>Name:</b></span>
+        </div>
+        <div class="form-field form-label">
+          <span><b>Type:</b></span>
+        </div>
+        <div class="form-field form-label">
+          <span><b>Evaluation:</b></span>
+        </div>
+        <div class="form-field form-label">
+          <span><b>Body:</b></span>
+        </div>
+      </div>
+
+      <div class="split-vert" style="flex-grow: 1">
+        <input type="text" class="form-field form-input" id="name-input" placeholder="Search name..." />
+        <select class="form-field form-select" id="type-select">
+          <option value="" disabled selected>Select a Type</option>
+          <option value="execution-and-delivery">Execution and Delivery</option>
+          <option value="innovation">Innovation</option>
+          <option value="agility">Agility</option>
+          <option value="commitment">Commitment</option>
+          <option value="communication">Communication</option>
+          <option value="customer-orientation">Customer Orientation</option>
+        </select>
+        <select class="form-field form-select" id="evaluation-select">
+          <option value="" disabled selected>Select an Evaluation</option>
+          <option value="positive">Positive</option>
+          <option value="negative">Negative</option>
+        </select>
+        <textarea class="form-field form-textarea" id="body-textarea" placeholder="Enter feedback here..." style="min-height: 100px; flex-grow: 1"></textarea>
+      </div>
+
+      <div class="split-vert">
+        <div class="form-field form-icon">
+          <i class="fa fa-info-circle" aria-hidden="true"></i>
+          <div class="tooltip">this is a tooltip</div>
+        </div>
+        <div class="form-field form-icon">
+          <i class="fa fa-info-circle" aria-hidden="true"></i>
+          <div class="tooltip">this is a tooltip</div>
+        </div>
+        <div class="form-field form-icon">
+          <i class="fa fa-info-circle" aria-hidden="true"></i>
+          <div class="tooltip">this is a tooltip</div>
+        </div>
+        <div class="form-field form-icon">
+          <i class="fa fa-info-circle" aria-hidden="true"></i>
+          <div class="tooltip">this is a tooltip this is a tooltip this is a tooltip this is a tooltip this is a tooltip this is a tooltip this is a tooltip</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="submit-button-container">
+      <button type="submit" class="cmf-button cmf-button-primary" id="submit-button">Submit</button>
+    </div>
+  </div>
+</form>
