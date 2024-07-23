@@ -18,7 +18,7 @@
 
       <div class="split-vert" style="flex-grow: 1">
         <input type="text" class="form-field form-input" id="name-input" placeholder="Search name..." />
-        <select class="form-field form-select" id="type-select">
+        <select class="form-field form-select" id="type-input">
           <option value="" disabled selected>Select a Type</option>
           <option value="execution-and-delivery">Execution and Delivery</option>
           <option value="innovation">Innovation</option>
@@ -27,30 +27,30 @@
           <option value="communication">Communication</option>
           <option value="customer-orientation">Customer Orientation</option>
         </select>
-        <select class="form-field form-select" id="evaluation-select">
+        <select class="form-field form-select" id="evaluation-input">
           <option value="" disabled selected>Select an Evaluation</option>
           <option value="positive">Positive</option>
           <option value="negative">Negative</option>
         </select>
-        <textarea class="form-field form-textarea" id="body-textarea" placeholder="Enter feedback here..." style="min-height: 100px; flex-grow: 1"></textarea>
+        <textarea class="form-field form-textarea" id="body-input" placeholder="Enter feedback here..." style="min-height: 100px; flex-grow: 1"></textarea>
       </div>
 
       <div class="split-vert">
         <div class="form-field form-icon">
-          <i class="fa fa-info-circle" aria-hidden="true"></i>
-          <div class="tooltip">this is a tooltip</div>
+          <i class="fa fa-info-circle" id="name-icon" aria-hidden="true"></i>
+          <div class="tooltip" id="name-tooltip">this is a tooltip</div>
         </div>
         <div class="form-field form-icon">
-          <i class="fa fa-info-circle" aria-hidden="true"></i>
-          <div class="tooltip">this is a tooltip</div>
+          <i class="fa fa-info-circle" id="type-icon" aria-hidden="true"></i>
+          <div class="tooltip" id="type-tooltip">this is a tooltip</div>
         </div>
         <div class="form-field form-icon">
-          <i class="fa fa-info-circle" aria-hidden="true"></i>
-          <div class="tooltip">this is a tooltip</div>
+          <i class="fa fa-info-circle" id="evaluation-icon" aria-hidden="true"></i>
+          <div class="tooltip" id="evaluation-tooltip">this is a tooltip</div>
         </div>
         <div class="form-field form-icon">
-          <i class="fa fa-info-circle" aria-hidden="true"></i>
-          <div class="tooltip">this is a tooltip this is a tooltip this is a tooltip this is a tooltip this is a tooltip this is a tooltip this is a tooltip</div>
+          <i class="fa fa-info-circle" id="body-icon" aria-hidden="true"></i>
+          <div class="tooltip" id="body-tooltip">this is a tooltip this is a tooltip this is a tooltip this is a tooltip this is a tooltip this is a tooltip this is a tooltip</div>
         </div>
       </div>
     </div>

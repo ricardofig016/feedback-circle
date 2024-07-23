@@ -125,15 +125,34 @@ a {
 
 .form-icon {
   height: 22px;
-  min-width: 0;
+  min-width: 30px;
+  align-items: center;
 }
 
 .form-icon i {
-  color: #3498db;
-  font-size: large;
+  font-size: 20px;
   position: relative;
   display: block;
   cursor: pointer;
+  max-width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.form-icon .fa-check-circle {
+  color: #50b450;
+}
+
+.form-icon .fa-exclamation-circle {
+  color: #ea4232;
+}
+
+.form-icon .fa-exclamation-triangle {
+  color: #f69414;
+}
+
+.form-icon .fa-info-circle {
+  color: #3498db;
 }
 
 .tooltip {
@@ -165,7 +184,7 @@ i:hover + .tooltip {
   display: flex;
   flex-grow: 0;
   justify-content: flex-end;
-  margin: 8px 31px;
+  margin: 8px 45px;
 }
 
 .property-label {
