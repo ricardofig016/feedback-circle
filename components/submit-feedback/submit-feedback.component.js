@@ -3,6 +3,7 @@
 import BaseComponent from "../base/base.component.js";
 import { RequestManager } from "../../modules/requests/requests.js";
 import { ToastManager } from "../../modules/toasts/toasts.js";
+import messages from "../../utilities/submit-feedback-messages.js";
 
 export default class SubmitFeedbackComponent extends BaseComponent {
   selector = "submit-feedback";
@@ -11,48 +12,71 @@ export default class SubmitFeedbackComponent extends BaseComponent {
 
   onInit() {
     super.onInit();
-
-    const submitButton = this.getElementById("submit-button");
-    submitButton.onclick = (e) => {
-      this.serverRequest();
-    };
+    this.addEventListeners();
   }
 
-  serverRequest() {
-    // Retrieve form data
-    const formData = {
-      name: this.getElementById("name-input").value,
-      type: this.getElementById("type-input").value,
-      evaluation: this.getElementById("evaluation-input").value,
-      body: this.getElementById("body-input").value,
-    };
+  addEventListeners() {
+    // Submit button
+    const submitButton = this.getElementById("submit-button");
+    submitButton.addEventListener("click", () => {
+      const formData = this.getFormData();
+      if (!this.validateFormData(formData)) return false;
+      this.serverRequest(formData);
+    });
 
-    // Validation
-    if (!this.validateFormData(formData)) return false;
+    const fields = Object.keys(messages);
+    fields.forEach((field) => {
+      // Add default tooltip messages on input fields
+      const tooltip = this.getElementById(field + "-tooltip");
+      tooltip.textContent = messages[field]["defaultInfo"]["text"];
+      // Set warning/error messages on input fields to default info messages
+      const fieldInput = this.getElementById(field + "-input");
+      fieldInput.addEventListener("click", () => {
+        const icon = messages[field]["defaultInfo"]["icon"];
+        const message = messages[field]["defaultInfo"]["text"];
+        this.sendTooltipMessage(field, icon, message, "default");
+      });
+    });
+  }
 
-    // Request
-    RequestManager.request("GetActionsFromMultipleEnvironments", formData, (responseData) => {});
+  serverRequest(data) {
+    RequestManager.request("GetActionsFromMultipleEnvironments", data, (responseData) => {});
+  }
+
+  getFormData() {
+    const data = {};
+    const fields = Object.keys(messages);
+    fields.forEach((field) => {
+      const inputElem = this.getElementById(field + "-input");
+      let value = null;
+      // Getting the value in radios
+      if (inputElem.classList.contains("form-radio")) {
+        // Find the selected radio
+        const selectedRadio = inputElem.querySelector('input[name="' + field + '"]:checked');
+        if (selectedRadio && selectedRadio.value) value = selectedRadio.value;
+      } else if (inputElem && inputElem.value) value = inputElem.value;
+      data[field] = value;
+    });
+    return data;
   }
 
   validateFormData(data) {
     let validation = true;
 
-    if (!data["name"]) {
-      this.sendValidationMessage("name", "warning", "You must input the name of the appraisee", "icon");
-      validation = false;
-    }
-    if (!data["type"]) {
-      this.sendValidationMessage("type", "warning", "You must select a type", "icon");
-      validation = false;
-    }
-    if (!data["evaluation"]) {
-      this.sendValidationMessage("evaluation", "warning", "You must select an evaluation", "icon");
-      validation = false;
-    }
-    if (!data["body"]) {
-      this.sendValidationMessage("body", "warning", "You must input the body", "icon");
-      validation = false;
-    }
+    const fields = Object.keys(messages);
+    fields.forEach((field) => {
+      // Missing value
+      if (!data[field]) {
+        // Tooltip
+        const icon = messages[field]["missingValue"]["icon"];
+        const message = messages[field]["missingValue"]["text"];
+        this.sendTooltipMessage(field, icon, message, "icon");
+        // Toast
+        new ToastManager().showToast("Warning", message, "warning", 5000);
+        // Unvalidate form data
+        validation = false;
+      }
+    });
 
     return validation;
   }
@@ -60,13 +84,13 @@ export default class SubmitFeedbackComponent extends BaseComponent {
   /**
    * Sends a validation message for a specific field.
    *
-   * @param {string} field - The field to which the validation message applies. Can be "name", "type", "evaluation" or "body".
+   * @param {string} field - The field to which the validation message applies. Can be "name", "category", "evaluation", "visibility" or "body".
    * @param {string} icon - The type of validation message. Can be "check", "error", "warning", or "info".
-   * @param {string} message - The validation message to display or none to keep the previous message.
-   * @param {string} border - The color of the border of the correspondend input element. Can be  "icon" for the same color as the icon or "default" for default
+   * @param {string} message - The validation message to display or "none" to keep the previous message.
+   * @param {string} border - The color of the border of the correspondend input element. Can be  "icon" for the same color as the icon or "default" for default.
    */
-  sendValidationMessage(field, icon, message = "none", border = "deafult") {
-    const iconClass = {
+  sendTooltipMessage(field, icon, message = "none", border = "default") {
+    const iconClassName = {
       check: "check-circle",
       error: "exclamation-circle",
       warning: "exclamation-triangle",
@@ -80,15 +104,15 @@ export default class SubmitFeedbackComponent extends BaseComponent {
     };
     // Icon
     const iconElem = this.getElementById(field + "-icon");
-    iconElem.className = "fa fa-" + iconClass[icon];
+    iconElem.className = "fa fa-" + iconClassName[icon];
     // Border
+    const inputElem = this.getElementById(field + "-input");
     if (border === "icon") {
-      const inputElem = this.getElementById(field + "-input");
-      inputElem.style.borderColor = "#" + colors[icon];
-      inputElem.style.borderWidth = "2px";
+      inputElem.style.outlineColor = "#" + colors[icon];
+      inputElem.style.outlineWidth = "2px";
     } else if (border === "default") {
-      inputElem.style.borderColor = "rgba(0, 0, 0, 0.5)";
-      inputElem.style.borderWidth = "1px";
+      inputElem.style.outlineColor = "rgba(0, 0, 0, 0.5)";
+      inputElem.style.outlineWidth = "1px";
     }
     // Message
     if (message != "none") {
