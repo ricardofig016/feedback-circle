@@ -24,6 +24,10 @@ body {
   overflow: hidden;
 }
 
+section {
+  height: 100%;
+}
+
 hr {
   border: 0;
   height: 0;
@@ -101,6 +105,10 @@ a {
   height: 22px;
   padding: 8px;
   margin: 8px 0;
+}
+
+.form-field::placeholder {
+  font-style: italic;
 }
 
 .form-label {
@@ -832,4 +840,52 @@ input:checked + .slider:before {
 
 .tree-view-li.active {
   display: block;
+}
+
+.auth-container {
+  background-color: rgba(0, 0, 0, 0.03);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.auth-box {
+  background-color: white;
+  color: rgba(0, 0, 0, 0.95);
+  font-size: 15px;
+  max-width: 564px;
+  height: 370px;
+  margin: 0;
+  padding: 32px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 4px 0px;
+  box-sizing: border-box;
+}
+
+.auth-logo-cmf {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-logo-cmf img {
+  height: 80px;
+}
+
+#auth-form p {
+  font-size: 16px;
+}
+
+#auth-form .form-field {
+  background-color: rgb(245, 245, 245);
+  width: 300px;
+  height: 18px;
+  border-width: 1px;
+  display: block;
+}
+
+#auth-form .buttons-container {
+  display: flex;
+  justify-content: end;
+  margin-top: 40px;
 }

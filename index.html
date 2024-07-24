@@ -23,50 +23,70 @@
   </head>
 
   <body>
-    <div class="screen">
-      <div class="sidebar">
-        <div class="sidebar-logo-cmf-wrapper">
-          <div class="sidebar-logo-cmf"></div>
-        </div>
-        <div class="sidebar-submenu">
-          <div class="sidebar-items">
-            <a href="#/Home" class="sidebar-item">Home</a>
-            <a href="#/Administration" class="sidebar-item">Administration</a>
-            <a href="#/PageExample" class="sidebar-item">Example Page</a>
-            <a href="#/PageInvalid" class="sidebar-item"> Invalid Page Example </a>
-            <a href="#/TestComponent" class="sidebar-item">Test Component</a>
-            <a href="#/SubmitFeedback" class="sidebar-item">Submit Feedback</a>
-            <a href="#/Ex1" class="sidebar-item">1</a>
-            <a href="#/Ex2" class="sidebar-item">2</a>
-            <a href="#/Ex3" class="sidebar-item">3</a>
-            <a href="#/Ex4" class="sidebar-item">4</a>
-            <a href="#/Ex5" class="sidebar-item">5</a>
+    <section id="main-section">
+      <div class="screen">
+        <div class="sidebar">
+          <div class="sidebar-logo-cmf-wrapper">
+            <div class="sidebar-logo-cmf"></div>
           </div>
-        </div>
-        <div class="sidebar-footer">
-          <p>
-            <span class="sidebar-footer-environmentName">Performance Feedback Circle </span>
-          </p>
-        </div>
-      </div>
-      <div class="page-filler">
-        <div id="tabs-bar"></div>
-        <div class="base-page-header">
-          <div class="title-bar">
-            <div class="page-icon" id="page-icon"></div>
-            <div class="page-label" id="page-label"></div>
-          </div>
-        </div>
-        <div class="page-content">
-          <div class="page-content-slim">
-            <div class="toast-overlay" id="toast-overlay"></div>
-            <div id="progress-indicator-loading">
-              <span class="fa-icon"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i></span>
+          <div class="sidebar-submenu">
+            <div class="sidebar-items">
+              <a href="#/Home" class="sidebar-item">Home</a>
+              <a href="#/Administration" class="sidebar-item">Administration</a>
+              <a href="#/PageExample" class="sidebar-item">Example Page</a>
+              <a href="#/PageInvalid" class="sidebar-item"> Invalid Page Example </a>
+              <a href="#/TestComponent" class="sidebar-item">Test Component</a>
+              <a href="#/SubmitFeedback" class="sidebar-item">Submit Feedback</a>
+              <a href="#/Ex1" class="sidebar-item">1</a>
+              <a href="#/Ex2" class="sidebar-item">2</a>
+              <a href="#/Ex3" class="sidebar-item">3</a>
+              <a href="#/Ex4" class="sidebar-item">4</a>
+              <a href="#/Ex5" class="sidebar-item">5</a>
             </div>
-            <div id="progress-indicator"></div>
+          </div>
+          <div class="sidebar-footer">
+            <p>
+              <span class="sidebar-footer-environmentName">Performance Feedback Circle </span>
+            </p>
+          </div>
+        </div>
+        <div class="page-filler">
+          <div id="tabs-bar"></div>
+          <div class="base-page-header">
+            <div class="title-bar">
+              <div class="page-icon" id="page-icon"></div>
+              <div class="page-label" id="page-label"></div>
+            </div>
+          </div>
+          <div class="page-content">
+            <div class="page-content-slim">
+              <div class="toast-overlay" id="toast-overlay"></div>
+              <div id="progress-indicator-loading">
+                <span class="fa-icon"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i></span>
+              </div>
+              <div id="progress-indicator"></div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
+
+    <section id="auth-section" hidden>
+      <div class="auth-container">
+        <div class="auth-box">
+          <div class="auth-logo-cmf">
+            <img src="https://security.criticalmanufacturing.com/img/app-logo-horizontal-blue.svg" alt="cm-logo" />
+          </div>
+          <form class="content" id="auth-form">
+            <p>Sign in to continue</p>
+            <input class="form-field" type="email" placeholder="User Account" autofocus="autofocus" />
+            <input class="form-field" type="password" placeholder="Password" />
+            <div class="buttons-container">
+              <button type="submit" class="cmf-button cmf-button-primary">Next</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
   </body>
 </html>

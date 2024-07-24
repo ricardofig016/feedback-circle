@@ -2,6 +2,7 @@
 
 import { redirect, renderRoute } from "./routes/routes.js";
 import Tabs from "../modules/tabs/tabs.js";
+import Session from "./modules/session/session.js";
 
 function redirectToHome() {
   const prevHash = window.location.hash;
@@ -29,6 +30,10 @@ function setupDragAndDrop() {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+  const session = new Session();
+  const authForm = document.getElementById("auth-form");
+  authForm.addEventListener("submit", (e) => session.handleSubmit(e));
+
   setupDragAndDrop();
 
   // Event listener for hashchange events to dynamically render components.
