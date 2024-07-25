@@ -14,30 +14,54 @@ const pool = mysql
   })
   .promise();
 
-export function getUserId(email) {
-  const [rows] = pool.query(
+export async function getUsers() {
+  const [rows] = await pool.query("SELECT * FROM users");
+  return rows ? rows : null;
+}
+
+export async function getUser(id) {
+  const [rows] = await pool.query(
     `
-      SELECT user_id 
-      FROM users
-      WHERE email = ?
-      `,
+    SELECT *
+    FROM users
+    WHERE user_id = ?
+    `,
+    [id]
+  );
+  return rows ? rows[0] : null;
+}
+
+export async function getUserId(email) {
+  const [rows] = await pool.query(
+    `
+    SELECT user_id 
+    FROM users
+    WHERE email = ?
+    `,
+    [email]
+  );
+  return rows ? rows[0]["user_id"] : null;
+}
+
+export async function getUserByEmail(email) {
+  const [rows] = await pool.query(
+    `
+    SELECT *
+    FROM users
+    WHERE email = ?
+    `,
     [email]
   );
   return rows ? rows[0] : null;
 }
 
-console.log(getUserId("RicardoCastro@criticalmanufacturing.com"));
-
-module.exports = { getUserId };
-
-/** 
-export function getFeedbacks() {
-  const [rows] = pool.query("SELECT * FROM feedbacks");
-  return rows;
+export async function getFeedbacks() {
+  const [rows] = await pool.query("SELECT * FROM feedbacks");
+  return rows ? rows : null;
 }
 
-export function getFeedback(id) {
-  const [rows] = pool.query(
+export async function getFeedback(id) {
+  const [rows] = await pool.query(
     `
     SELECT * 
     FROM feedbacks
@@ -45,11 +69,11 @@ export function getFeedback(id) {
     `,
     [id]
   );
-  return rows[0];
+  return rows ? rows[0] : null;
 }
 
-export function createFeedback(senderId, receiverId, category, evaluation, visibility, body) {
-  const [resultInfo] = pool.query(
+export async function createFeedback(senderId, receiverId, category, evaluation, visibility, body) {
+  const [rows] = await pool.query(
     `
     INSERT INTO feedbacks (sender_id, receiver_id, category, evaluation, visibility, body)
     VALUES (?, ?, ?, ?, ?, ?);
@@ -57,6 +81,5 @@ export function createFeedback(senderId, receiverId, category, evaluation, visib
     [senderId, receiverId, category, evaluation, visibility, body]
   );
   // return the created object
-  return getFeedback(resultInfo.insertId);
+  return rows ? await getFeedback(rows.insertId) : null;
 }
-*/
