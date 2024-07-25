@@ -5,25 +5,25 @@ import LocalizedMessages from "../../localized-messages/localized-messages.js";
 import ProgressIndicator from "../progress-indicator/progress-indicator.js";
 
 const Config = {
-  protocol: "https",
+  protocol: "http",
   host: "localhost",
   port: "5000",
-  api: "api/ComparerTool/",
+  api: "api/",
 };
 
 export class RequestManager {
-  static request(apiMethodName, inputData, onSuccess, onError) {
+  static request(method, requestPath, data, onSuccess, onError) {
     const progressIndicator = new ProgressIndicator(); // Show blurred loading screen
     progressIndicator.show();
     const baseURL = `${Config.protocol}://${Config.host}:${Config.port}/${Config.api}`;
-    const url = baseURL + apiMethodName;
+    const url = baseURL + requestPath;
     fetch(url, {
-      method: "POST",
+      method: method,
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(inputData),
+      body: JSON.stringify(data),
     })
       .then((res) => {
         // Check for client/server request errors

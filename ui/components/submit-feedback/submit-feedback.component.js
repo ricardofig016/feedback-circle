@@ -39,12 +39,23 @@ export default class SubmitFeedbackComponent extends BaseComponent {
     });
   }
 
-  serverRequest(data) {
-    RequestManager.request("GetActionsFromMultipleEnvironments", data, (responseData) => {});
+  serverRequest(formData) {
+    const data = {
+      senderId: 1, //TODO
+      receiverId: 1, //TODO
+      category: formData["category"],
+      evaluation: formData["evaluation"],
+      visibility: formData["visibility"],
+      body: formData["body"],
+    };
+    RequestManager.request("POST", "feedbacks", data, (res) => {
+      console.table(res);
+      new ToastManager().showToast("Success", "Feedback submited", "success", 5000);
+    });
   }
 
   getFormData() {
-    const data = {};
+    const formData = {};
     const fields = Object.keys(messages);
     fields.forEach((field) => {
       const inputElem = this.getElementById(field + "-input");
@@ -55,18 +66,18 @@ export default class SubmitFeedbackComponent extends BaseComponent {
         const selectedRadio = inputElem.querySelector('input[name="' + field + '"]:checked');
         if (selectedRadio && selectedRadio.value) value = selectedRadio.value;
       } else if (inputElem && inputElem.value) value = inputElem.value;
-      data[field] = value;
+      formData[field] = value;
     });
-    return data;
+    return formData;
   }
 
-  validateFormData(data) {
+  validateFormData(formData) {
     let validation = true;
 
     const fields = Object.keys(messages);
     fields.forEach((field) => {
       // Missing value
-      if (!data[field]) {
+      if (!formData[field]) {
         // Tooltip
         const icon = messages[field]["missingValue"]["icon"];
         const message = messages[field]["missingValue"]["text"];
