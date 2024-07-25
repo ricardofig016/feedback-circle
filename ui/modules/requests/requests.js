@@ -1,6 +1,6 @@
 "use strict";
 
-import { throwError } from "../../modules/errors/errors.js";
+import { throwError } from "../errors/errors.js";
 import LocalizedMessages from "../../localized-messages/localized-messages.js";
 import ProgressIndicator from "../progress-indicator/progress-indicator.js";
 
