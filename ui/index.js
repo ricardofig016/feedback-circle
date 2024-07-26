@@ -30,9 +30,10 @@ function setupDragAndDrop() {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-  const session = new Session();
-  const authForm = document.getElementById("auth-form");
-  authForm.addEventListener("submit", (e) => session.handleSubmit(e));
+  // REMOVE COMMENTS: For development purposes only
+  //const session = new Session();
+  //const authForm = document.getElementById("auth-form");
+  //authForm.addEventListener("submit", (e) => session.handleSubmit(e));
 
   setupDragAndDrop();
 
@@ -50,8 +51,7 @@ window.addEventListener("DOMContentLoaded", () => {
   redirectToHome();
 
   // REMOVE: For development purposes only
-  {
-    redirect("PageExample", true, () => renderRoute());
-    redirect("SubmitFeedback", true, () => renderRoute());
-  }
+  setTimeout(() => {
+    window.location.href = "#/SubmitFeedback";
+  });
 });
