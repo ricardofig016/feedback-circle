@@ -1,6 +1,7 @@
 "use strict";
 
 //import { getUserId } from "../../database/database.js";
+import { RequestManager } from "../requests/requests.js";
 import { throwError } from "../errors/errors.js";
 
 export default class Session {
@@ -15,6 +16,8 @@ export default class Session {
 
     if (!this.user) {
       this.showAuthSection();
+      const authForm = document.getElementById("auth-form");
+      authForm.addEventListener("submit", (e) => this.handleSubmit(e));
     }
 
     // Singleton logic

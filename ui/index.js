@@ -1,7 +1,7 @@
 "use strict";
 
 import { redirect, renderRoute } from "./routes/routes.js";
-import Tabs from "../modules/tabs/tabs.js";
+import Tabs from "./modules/tabs/tabs.js";
 import Session from "./modules/session/session.js";
 
 function redirectToHome() {
@@ -30,10 +30,7 @@ function setupDragAndDrop() {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-  // REMOVE COMMENTS: For development purposes only
-  //const session = new Session();
-  //const authForm = document.getElementById("auth-form");
-  //authForm.addEventListener("submit", (e) => session.handleSubmit(e));
+  const session = new Session();
 
   setupDragAndDrop();
 
