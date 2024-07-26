@@ -102,7 +102,7 @@ a {
   font-family: "Open Sans";
   font-size: 13px;
   min-width: 100px;
-  height: 22px;
+  min-height: 22px;
   padding: 8px;
   margin: 8px 0;
 }
@@ -167,27 +167,19 @@ a {
 }
 
 .tooltip {
+  position: absolute;
   display: none;
   background-color: #fafafa;
-  text-align: center;
   padding: 16px;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
   border-radius: 4px;
-  z-index: 1;
-  width: 400px;
-  margin-left: -436px;
+  z-index: 0;
+  width: 500px;
+  margin-left: -536px;
   margin-top: -20px;
 }
 
-.tooltip::after {
-  position: absolute;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: #333 transparent transparent transparent;
-}
-
-i:hover + .tooltip {
+.form-icon i:hover + .tooltip {
   display: block; /* Show the tooltip on hover */
 }
 
