@@ -15,16 +15,16 @@ export class RequestManager {
   /**
    *
    * @param {string} method - can be GET, POST, PUT or DELETE
-   * @param {string} requestPath - the url of the api request after "http://.../api/"
+   * @param {string} requestUrl - the url of the api request after "http://.../api/"
    * @param {string} data - js object to be sent as the body of the request
    * @param {*} onSuccess - fucntion to run on success
    * @param {*} onError - fucntion to run on error
    */
-  static request(method, requestPath, data, onSuccess, onError) {
+  static request(method, requestUrl, data, onSuccess, onError) {
     const progressIndicator = new ProgressIndicator(); // Show blurred loading screen
     progressIndicator.show();
     const baseURL = `${Config.protocol}://${Config.host}:${Config.port}/${Config.api}`;
-    const url = baseURL + requestPath;
+    const url = baseURL + requestUrl;
     fetch(url, {
       method: method,
       headers: {
