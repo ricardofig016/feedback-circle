@@ -27,13 +27,12 @@ export default class SubmitFeedbackComponent extends BaseComponent {
     const fields = Object.keys(messages);
     fields.forEach((field) => {
       // Add default tooltip messages on input fields
-      const tooltip = this.getElementById(field + "-tooltip");
-      tooltip.textContent = messages[field]["defaultInfo"]["text"];
-      // Set warning/error messages on input fields to default info messages
+      const icon = messages[field]["defaultInfo"]["icon"];
+      const message = messages[field]["defaultInfo"]["text"];
+      this.sendTooltipMessage(field, icon, message, "default");
       const fieldInput = this.getElementById(field + "-input");
       fieldInput.addEventListener("click", () => {
-        const icon = messages[field]["defaultInfo"]["icon"];
-        const message = messages[field]["defaultInfo"]["text"];
+        // Set warning/error messages on input fields to default info messages
         this.sendTooltipMessage(field, icon, message, "default");
       });
     });
@@ -44,8 +43,8 @@ export default class SubmitFeedbackComponent extends BaseComponent {
       senderId: 1, //TODO
       receiverId: 1, //TODO
       category: formData["category"],
-      evaluation: formData["evaluation"],
-      visibility: formData["visibility"],
+      type: formData["type"],
+      privacy: formData["privacy"],
       body: formData["body"],
     };
     RequestManager.request("POST", "feedbacks", data, (res) => {
@@ -58,17 +57,23 @@ export default class SubmitFeedbackComponent extends BaseComponent {
     const formData = {};
     const fields = Object.keys(messages);
     fields.forEach((field) => {
-      const inputElem = this.getElementById(field + "-input");
-      let value = null;
-      // Getting the value in radios
-      if (inputElem.classList.contains("form-radio")) {
-        // Find the selected radio
-        const selectedRadio = inputElem.querySelector('input[name="' + field + '"]:checked');
-        if (selectedRadio && selectedRadio.value) value = selectedRadio.value;
-      } else if (inputElem && inputElem.value) value = inputElem.value;
-      formData[field] = value;
+      formData[field] = this.getInputFieldValue(field);
     });
     return formData;
+  }
+
+  getInputFieldValue(field) {
+    const inputElem = this.getElementById(field + "-input");
+    // Radio inputs
+    if (inputElem.classList.contains("form-radio")) {
+      // Find the selected radio
+      const selectedRadio = inputElem.querySelector('input[name="' + field + '"]:checked');
+      if (selectedRadio && selectedRadio.value) return selectedRadio.value;
+    }
+    // The rest of the input types
+    if (inputElem && inputElem.value) return inputElem.value;
+    // No value found
+    return null;
   }
 
   validateFormData(formData) {
@@ -95,7 +100,7 @@ export default class SubmitFeedbackComponent extends BaseComponent {
   /**
    * Sends a validation message for a specific field.
    *
-   * @param {string} field - The field to which the validation message applies. Can be "name", "category", "evaluation", "visibility" or "body".
+   * @param {string} field - The field to which the validation message applies. Can be "name", "category", "type", "privacy" or "body".
    * @param {string} icon - The type of validation message. Can be "check", "error", "warning", or "info".
    * @param {string} message - The validation message to display or "none" to keep the previous message.
    * @param {string} border - The color of the border of the correspondend input element. Can be  "icon" for the same color as the icon or "default" for default.
@@ -128,7 +133,7 @@ export default class SubmitFeedbackComponent extends BaseComponent {
     // Message
     if (message != "none") {
       const tooltipElem = this.getElementById(field + "-tooltip");
-      tooltipElem.textContent = message;
+      tooltipElem.innerHTML = message;
     }
   }
 }

@@ -29,8 +29,8 @@ router.get("/feedbacks", async (req, res) => {
 });
 
 router.post("/feedbacks", async (req, res) => {
-  const { senderId, receiverId, category, evaluation, visibility, body } = req.body;
-  const feedback = await createFeedback(senderId, receiverId, category, evaluation, visibility, body);
+  const { senderId, receiverId, category, type, privacy, body } = req.body;
+  const feedback = await createFeedback(senderId, receiverId, category, type, privacy, body);
   res.status(201).send(feedback);
 });
 

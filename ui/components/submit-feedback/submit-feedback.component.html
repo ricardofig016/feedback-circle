@@ -10,22 +10,23 @@
           <span><b>Category:</b></span>
         </div>
         <div class="form-field form-label">
-          <span><b>Evaluation:</b></span>
+          <span><b>Type:</b></span>
         </div>
         <div class="form-field form-label">
-          <span><b>Visibility:</b></span>
+          <span><b>Privacy:</b></span>
         </div>
         <div class="form-field form-label">
           <span><b>Body:</b></span>
         </div>
       </div>
 
+      <!--Inputs-->
       <div class="split-vert" style="flex-grow: 1">
-        <!--Name Input-->
+        <!--Name-->
         <input type="text" class="form-field form-input" id="name-input" placeholder="Search name..." />
-        <!--Category Input-->
+        <!--Category-->
         <select class="form-field form-select" id="category-input">
-          <option value="" disabled selected>Select a Category</option>
+          <option value="" disabled selected>Select a category</option>
           <option value="general">General</option>
           <option value="execution-and-delivery">Execution and Delivery</option>
           <option value="innovation">Innovation</option>
@@ -34,21 +35,20 @@
           <option value="communication">Communication</option>
           <option value="customer-orientation">Customer Orientation</option>
         </select>
-        <!--Evaluation Input-->
-        <div class="form-field form-radio" id="evaluation-input">
-          <input type="radio" id="positive-radio" name="evaluation" value="positive" />
-          <label for="positive-radio">Positive</label>
-          <input type="radio" id="negative-radio" name="evaluation" value="negative" />
-          <label for="negative-radio">Negative</label>
-        </div>
-        <!--Visibility Input-->
-        <div class="form-field form-radio" id="visibility-input">
-          <input type="radio" id="public-radio" name="visibility" value="public" />
-          <label for="public-radio">Public</label>
-          <input type="radio" id="private-radio" name="visibility" value="private" />
-          <label for="private-radio">Private</label>
-        </div>
-        <!--Body Input-->
+        <!--Type-->
+        <select class="form-field form-select" id="type-input">
+          <option value="" disabled selected>Select an type</option>
+          <option value="positive">Positive</option>
+          <option value="negative">Needs Improvement</option>
+        </select>
+        <!--Privacy-->
+        <select class="form-field form-select" id="privacy-input">
+          <option value="" disabled selected>Select Privacy</option>
+          <option value="anonymous">Anonymous</option>
+          <option value="private">Private</option>
+          <option value="public">Public</option>
+        </select>
+        <!--Body-->
         <textarea class="form-field form-textarea" id="body-input" placeholder="Enter feedback here..." style="min-height: 100px; flex-grow: 1"></textarea>
       </div>
 
@@ -63,12 +63,12 @@
           <div class="tooltip" id="category-tooltip"></div>
         </div>
         <div class="form-field form-icon">
-          <i class="fa fa-info-circle" id="evaluation-icon" aria-hidden="true"></i>
-          <div class="tooltip" id="evaluation-tooltip"></div>
+          <i class="fa fa-info-circle" id="type-icon" aria-hidden="true"></i>
+          <div class="tooltip" id="type-tooltip"></div>
         </div>
         <div class="form-field form-icon">
-          <i class="fa fa-info-circle" id="visibility-icon" aria-hidden="true"></i>
-          <div class="tooltip" id="visibility-tooltip"></div>
+          <i class="fa fa-info-circle" id="privacy-icon" aria-hidden="true"></i>
+          <div class="tooltip" id="privacy-tooltip"></div>
         </div>
         <div class="form-field form-icon">
           <i class="fa fa-info-circle" id="body-icon" aria-hidden="true"></i>

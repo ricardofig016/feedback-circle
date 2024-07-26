@@ -72,13 +72,13 @@ export async function getFeedback(id) {
   return rows ? rows[0] : null;
 }
 
-export async function createFeedback(senderId, receiverId, category, evaluation, visibility, body) {
+export async function createFeedback(senderId, receiverId, category, type, privacy, body) {
   const [rows] = await pool.query(
     `
-    INSERT INTO feedbacks (sender_id, receiver_id, category, evaluation, visibility, body)
+    INSERT INTO feedbacks (sender_id, receiver_id, category, type, privacy, body)
     VALUES (?, ?, ?, ?, ?, ?);
     `,
-    [senderId, receiverId, category, evaluation, visibility, body]
+    [senderId, receiverId, category, type, privacy, body]
   );
   // return the created object
   return rows ? await getFeedback(rows.insertId) : null;
