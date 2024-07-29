@@ -16,7 +16,7 @@ const pool = mysql
 
 export async function getUsers() {
   const [rows] = await pool.query("SELECT * FROM users");
-  return rows ? rows : null;
+  return rows;
 }
 
 export async function getUser(id) {
@@ -28,7 +28,7 @@ export async function getUser(id) {
     `,
     [id]
   );
-  return rows ? rows[0] : null;
+  return rows[0];
 }
 
 export async function getUserId(email) {
@@ -40,7 +40,7 @@ export async function getUserId(email) {
     `,
     [email]
   );
-  return rows ? rows[0]["user_id"] : null;
+  return rows[0]["user_id"];
 }
 
 export async function getUserByEmail(email) {
@@ -52,12 +52,12 @@ export async function getUserByEmail(email) {
     `,
     [email]
   );
-  return rows ? rows[0] : null;
+  return rows[0] ? rows[0] : null;
 }
 
 export async function getFeedbacks() {
   const [rows] = await pool.query("SELECT * FROM feedbacks");
-  return rows ? rows : null;
+  return rows;
 }
 
 export async function getFeedback(id) {
@@ -69,9 +69,12 @@ export async function getFeedback(id) {
     `,
     [id]
   );
-  return rows ? rows[0] : null;
+  return rows[0];
 }
 
+/**
+ * @returns the feedback_id of the created feedback
+ */
 export async function createFeedback(senderId, receiverId, category, type, privacy, body) {
   const [rows] = await pool.query(
     `
@@ -81,5 +84,5 @@ export async function createFeedback(senderId, receiverId, category, type, priva
     [senderId, receiverId, category, type, privacy, body]
   );
   // return the created object
-  return rows ? await getFeedback(rows.insertId) : null;
+  return rows.insertId;
 }

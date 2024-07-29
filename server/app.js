@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 
-import { getUserId, getFeedbacks, getUsers, getUser, createFeedback } from "./database/database.js";
+import { getUserId, getFeedbacks, getUsers, getUser, createFeedback, getUserByEmail, getFeedback } from "./database/database.js";
 
 const app = express();
 
@@ -14,23 +14,39 @@ app.use("/api", router);
 // Routes
 router.get("/users", async (req, res) => {
   const users = await getUsers();
+  if (!users) return res.status(404).send({ error: "No users found" });
   res.send(users);
 });
 
-router.get("/users/:id", async (req, res) => {
+router.get("/users/id/:id", async (req, res) => {
   const id = req.params.id;
   const user = await getUser(id);
+  if (!user) return res.status(404).send({ error: "No user found with id " + id });
+  res.send(user);
+});
+
+router.get("/users/email/:email", async (req, res) => {
+  const email = req.params.email;
+  const user = await getUserByEmail(email);
+  if (!user) return res.status(404).send({ error: "No user found with email " + email });
   res.send(user);
 });
 
 router.get("/feedbacks", async (req, res) => {
   const feedbacks = await getFeedbacks();
+  if (!feedbacks) return res.status(404).send({ error: "No feedbacks found" });
   res.send(feedbacks);
 });
 
 router.post("/feedbacks", async (req, res) => {
   const { senderId, receiverId, category, type, privacy, body } = req.body;
-  const feedback = await createFeedback(senderId, receiverId, category, type, privacy, body);
+  const feedbackId = await createFeedback(senderId, receiverId, category, type, privacy, body);
+
+  if (!feedbackId) return res.status(400).send({ error: "Feedback creation failed" });
+
+  const feedback = await getFeedback(feedbackId);
+  if (!feedback) return res.status(404).send({ error: "Feedback not found after creation" });
+
   res.status(201).send(feedback);
 });
 
