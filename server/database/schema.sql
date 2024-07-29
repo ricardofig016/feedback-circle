@@ -11,6 +11,7 @@ USE performance_feedback_circle;
 CREATE TABLE IF NOT EXISTS users(
     user_id INT UNSIGNED AUTO_INCREMENT NOT NULL,
     email VARCHAR(255) NOT NULL,
+    encrypted_password TEXT NOT NULL,
     role ENUM('user', 'appraiser', 'admin') NOT NULL,
     appraiser_id INT UNSIGNED DEFAULT NULL,
     UNIQUE(email),
@@ -50,25 +51,29 @@ CREATE TABLE IF NOT EXISTS feedbacks(
 --
 --
 -- insert dummy data
-INSERT INTO users (email, role, appraiser_id)
+INSERT INTO users (email, role, encrypted_password, appraiser_id)
 VALUES (
         "ricardocastro@criticalmanufacturing.com",
         "admin",
+        "-",
         null
     ),
     (
         "soniaaraujo@criticalmanufacturing.com",
         "appraiser",
+        "-",
         null
     ),
     (
         "duartepereira@criticalmanufacturing.com",
         "user",
+        "-",
         2
     ),
     (
         "vascocruz@criticalmanufacturing.com",
         "user",
+        "-",
         2
     );
 --
