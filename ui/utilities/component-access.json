@@ -1,0 +1,17 @@
+[
+  {
+    "title": "Home",
+    "href": "Home",
+    "access": ["user", "appraiser", "admin"]
+  },
+  {
+    "title": "Submit Feedback",
+    "href": "SubmitFeedback",
+    "access": ["user", "appraiser", "admin"]
+  },
+  {
+    "title": "My Appraisees",
+    "href": "MyAppraisees",
+    "access": ["appraiser", "admin"]
+  }
+]

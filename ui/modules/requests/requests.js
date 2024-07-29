@@ -31,7 +31,7 @@ export class RequestManager {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
+      body: data ? JSON.stringify(data) : null,
     })
       .then((res) => {
         // Check for client/server request errors
@@ -61,8 +61,8 @@ export class RequestManager {
       // Process error callback on fail
       .catch((error) => {
         progressIndicator.hide();
-        throwError(error);
         if (onError) onError(error);
+        else throwError(error);
       });
   }
 }

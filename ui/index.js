@@ -3,6 +3,7 @@
 import { redirect, renderRoute } from "./routes/routes.js";
 import Tabs from "./modules/tabs/tabs.js";
 import Session from "./modules/session/session.js";
+import { throwError } from "./modules/errors/errors.js";
 
 function redirectToHome() {
   const prevHash = window.location.hash;
@@ -29,9 +30,32 @@ function setupDragAndDrop() {
   });
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-  const session = new Session();
+// Create sidebar items based on the acess of the user
+function createSidebarItems(userAccess) {
+  const sidebarItems = document.getElementById("sidebar-items");
+  // admin has access to all components
+  fetch("./utilities/component-access.json")
+    .then((res) => {
+      return res.json();
+    })
+    .then((data) => {
+      data.forEach((component) => {
+        if (component.access.includes(userAccess)) {
+          const anchorElem = document.createElement("a");
+          anchorElem.href = "#/" + component.href;
+          anchorElem.className = "sidebar-item";
+          anchorElem.textContent = component.title;
+          sidebarItems.appendChild(anchorElem);
+        }
+      });
+    })
+    .catch((error) => {
+      throwError(error);
+    });
+}
 
+// Event Listeners
+window.addEventListener("DOMContentLoaded", () => {
   setupDragAndDrop();
 
   // Event listener for hashchange events to dynamically render components.
@@ -46,6 +70,11 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   redirectToHome();
+});
+
+const session = new Session();
+session.start().then((user) => {
+  createSidebarItems(user.access);
 
   // REMOVE: For development purposes only
   setTimeout(() => {

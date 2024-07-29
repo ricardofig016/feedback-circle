@@ -1,7 +1,7 @@
 "use strict";
 
-//import { getUserId } from "../../database/database.js";
 import { RequestManager } from "../requests/requests.js";
+import { ToastManager } from "../toasts/toasts.js";
 import { throwError } from "../errors/errors.js";
 
 export default class Session {
@@ -14,20 +14,40 @@ export default class Session {
       return Session.#instance;
     }
 
-    if (!this.user) {
-      this.showAuthSection();
-      const authForm = document.getElementById("auth-form");
-      authForm.addEventListener("submit", (e) => this.handleSubmit(e));
-    }
-
     // Singleton logic
     Session.#instance = this;
     return Session.#instance;
   }
 
+  start() {
+    return new Promise((resolve, reject) => {
+      if (!this.user) {
+        // REMOVE COMMENTS: for development purposes only
+        this.showAuthSection();
+        const authForm = document.getElementById("auth-form");
+        authForm.addEventListener("submit", (e) => {
+          this.handleSubmit(e)
+            .then((user) => {
+              resolve(user);
+            })
+            .catch((error) => {
+              throwError("authentication failed " + error.message);
+            });
+        });
+      } else {
+        resolve(this.user);
+      }
+    });
+  }
+
   showAuthSection() {
     document.getElementById("auth-section").hidden = false;
     document.getElementById("main-section").hidden = true;
+  }
+
+  showMainSection() {
+    document.getElementById("auth-section").hidden = true;
+    document.getElementById("main-section").hidden = false;
   }
 
   handleSubmit(e) {
@@ -36,25 +56,30 @@ export default class Session {
     const email = e.target.querySelector('input[type="email"]').value;
     const password = e.target.querySelector('input[type="password"]').value;
 
-    if (this.authenticate(email, password)) this.showMainSection();
-    else {
-      alert("Wrong email or password");
-    }
-  }
-
-  showMainSection() {
-    document.getElementById("auth-section").hidden = true;
-    document.getElementById("main-section").hidden = false;
+    return this.authenticate(email, password);
   }
 
   authenticate(email, password) {
-    // Temporary authentication
-    if (email === "RicardoCastro@criticalmanufacturing.com" && password === "admin") return true;
-    else return false;
-    /** 
-    const userId = getUserId(email);
-    if (!userId) throwError(email + " is not a valid email");
-    else this.user = getUser(userId);
-    */
+    return new Promise((resolve, reject) => {
+      const url = "users/email/" + email;
+      RequestManager.request(
+        "GET",
+        url,
+        null,
+        (res) => {
+          // on success
+          // TODO: password logic
+          this.user = res;
+          this.showMainSection();
+          new ToastManager().showToast("Welcome", "Authentication Succeded", "success", 5000);
+          resolve(this.user);
+        },
+        (error) => {
+          // on error
+          alert("Wrong email or password");
+          reject(error);
+        }
+      );
+    });
   }
 }
