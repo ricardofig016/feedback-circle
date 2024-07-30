@@ -6,6 +6,7 @@ export default class Ex5 extends BaseComponent {
   selector = "ex5";
   pageTitle = "5";
   pageIcon = "fa-home";
+  access = ["admin"];
 
   onInit() {
     super.onInit();

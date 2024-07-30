@@ -6,6 +6,7 @@ export default class Ex3 extends BaseComponent {
   selector = "ex3";
   pageTitle = "3";
   pageIcon = "fa-home";
+  access = ["admin"];
 
   onInit() {
     super.onInit();

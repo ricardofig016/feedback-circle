@@ -12,6 +12,7 @@ export default class PageExampleComponent extends BaseComponent {
   selector = "shell-landingpage-example"; // HTML selector
   pageTitle = "Page Example";
   pageIcon = "fa-building";
+  access = ["admin"];
 
   onInit() {
     super.onInit();

@@ -6,6 +6,7 @@ export default class Ex4 extends BaseComponent {
   selector = "ex4";
   pageTitle = "4";
   pageIcon = "fa-home";
+  access = ["admin"];
 
   onInit() {
     super.onInit();

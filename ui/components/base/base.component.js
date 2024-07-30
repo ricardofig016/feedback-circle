@@ -6,6 +6,7 @@ export default class BaseComponent {
   selector = "base";
   pageTitle = "Base";
   pageIcon = "";
+  access = ["admin"];
   queryParams = "";
   domContent = undefined; // DOM content container
 

@@ -6,6 +6,7 @@ export default class ShellLandingPageAdministrationComponent extends BaseCompone
   selector = "shell-landingpage-administration";
   pageTitle = "Administration";
   pageIcon = "fa-th";
+  access = ["admin"];
 
   onInit() {
     super.onInit();

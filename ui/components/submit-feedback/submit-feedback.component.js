@@ -9,6 +9,7 @@ export default class SubmitFeedbackComponent extends BaseComponent {
   selector = "submit-feedback";
   pageTitle = "Submit Feedback";
   pageIcon = "fa-pencil";
+  access = ["user", "appraiser", "admin"];
 
   onInit() {
     super.onInit();
