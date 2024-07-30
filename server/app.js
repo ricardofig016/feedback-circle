@@ -35,7 +35,7 @@ router.get("/users/email/:email", async (req, res) => {
 router.get("/users/appraiserid/:appraiserid", async (req, res) => {
   const appraiserId = req.params.appraiserid;
   const users = await getUsersByAppraiserId(appraiserId);
-  if (!users) return res.status(404).send({ error: "No users found with appraiser_id " + id });
+  if (!users) return res.status(404).send({ error: "No users found with appraiser_id " + appraiserId });
   res.send(users);
 });
 
@@ -46,8 +46,8 @@ router.get("/feedbacks", async (req, res) => {
 });
 
 router.post("/feedbacks", async (req, res) => {
-  const { senderId, receiverId, category, type, privacy, body } = req.body;
-  const feedbackId = await createFeedback(senderId, receiverId, category, type, privacy, body);
+  const { senderId, receiverId, title, body, category, type, privacy } = req.body;
+  const feedbackId = await createFeedback(senderId, receiverId, title, body, category, type, privacy);
 
   if (!feedbackId) return res.status(400).send({ error: "Feedback creation failed" });
 

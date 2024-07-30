@@ -50,9 +50,9 @@ export async function getUsersByAppraiserId(appraiserId) {
     FROM users
     WHERE appraiser_id = ?
     `,
-    [id]
+    [appraiserId]
   );
-  return rows[0];
+  return rows;
 }
 
 export async function getFeedbacks() {
@@ -75,14 +75,14 @@ export async function getFeedbackById(id) {
 /**
  * @returns the feedback_id of the created feedback
  */
-export async function createFeedback(senderId, receiverId, category, type, privacy, body) {
-  const [rows] = await pool.query(
+export async function createFeedback(senderId, receiverId, title, body, category, type, privacy) {
+  const [data] = await pool.query(
     `
-    INSERT INTO feedbacks (sender_id, receiver_id, category, type, privacy, body)
-    VALUES (?, ?, ?, ?, ?, ?);
+    INSERT INTO feedbacks (sender_id, receiver_id, title, body, category, type, privacy)
+    VALUES (?, ?, ?, ?, ?, ?, ?);
     `,
-    [senderId, receiverId, category, type, privacy, body]
+    [senderId, receiverId, title, body, category, type, privacy]
   );
   // return the created object
-  return rows.insertId;
+  return data.insertId;
 }

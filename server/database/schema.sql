@@ -33,6 +33,8 @@ CREATE TABLE IF NOT EXISTS feedbacks(
     feedback_id BIGINT UNSIGNED AUTO_INCREMENT NOT NULL,
     sender_id INT UNSIGNED NOT NULL,
     receiver_id INT UNSIGNED NOT NULL,
+    title TEXT NOT NULL,
+    body TEXT NOT NULL,
     category ENUM(
         'general',
         'execution-and-delivery',
@@ -45,7 +47,6 @@ CREATE TABLE IF NOT EXISTS feedbacks(
     type ENUM('positive', 'negative') NOT NULL,
     privacy ENUM('anonymous', 'private', 'public') NOT NULL,
     visibility ENUM('appraiser', 'both') NOT NULL DEFAULT "appraiser",
-    body TEXT NOT NULL,
     PRIMARY KEY (feedback_id),
     FOREIGN KEY (sender_id) REFERENCES users(user_id),
     FOREIGN KEY (receiver_id) REFERENCES users(user_id)
@@ -92,50 +93,56 @@ VALUES (
 INSERT INTO feedbacks (
         sender_id,
         receiver_id,
+        title,
+        body,
         category,
         type,
-        privacy,
-        body
+        privacy
     )
 VALUES (
         3,
         2,
+        "duarte to sonia",
+        "feedback from duarte to sonia",
         "general",
         "negative",
-        "anonymous",
-        "feedback from duarte to sonia"
+        "anonymous"
     ),
     (
         1,
         1,
+        "ricardo to ricardo",
+        "feedback from ricardo to ricardo",
         "execution-and-delivery",
         "positive",
-        "private",
-        "feedback from ricardo to ricardo"
+        "private"
     ),
     (
         1,
         2,
+        "ricardo to sonia",
+        "feedback from ricardo to sonia",
         "innovation",
         "negative",
-        "public",
-        "feedback from ricardo to sonia"
+        "public"
     ),
     (
         2,
         3,
+        "sonia to duarte",
+        "feedback from sonia to duarte",
         "communication",
         "positive",
-        "anonymous",
-        "feedback from sonia to duarte"
+        "anonymous"
     ),
     (
         4,
         3,
+        "vasco to duarte",
+        "feedback from vasco to duarte",
         "customer-orientation",
         "negative",
-        "private",
-        "feedback from vasco to duarte"
+        "private"
     );
 --
 --
