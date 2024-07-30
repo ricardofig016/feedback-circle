@@ -43,10 +43,11 @@ export default class SubmitFeedbackComponent extends BaseComponent {
     const data = {
       senderId: 1, //TODO
       receiverId: 1, //TODO
+      title: formData["title"],
+      body: formData["body"],
       category: formData["category"],
       type: formData["type"],
       privacy: formData["privacy"],
-      body: formData["body"],
     };
     RequestManager.request("POST", "feedbacks", data, (res) => {
       console.table(res);

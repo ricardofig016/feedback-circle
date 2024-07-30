@@ -16,6 +16,9 @@
           <span><b>Privacy:</b></span>
         </div>
         <div class="form-field form-label">
+          <span><b>Title:</b></span>
+        </div>
+        <div class="form-field form-label">
           <span><b>Body:</b></span>
         </div>
       </div>
@@ -48,6 +51,8 @@
           <option value="private">Private</option>
           <option value="public">Public</option>
         </select>
+        <!--Title-->
+        <input type="text" class="form-field form-input" id="title-input" placeholder="Enter title..." />
         <!--Body-->
         <textarea class="form-field form-textarea" id="body-input" placeholder="Enter feedback here..." style="min-height: 100px; flex-grow: 1"></textarea>
       </div>
@@ -69,6 +74,10 @@
         <div class="form-field form-icon">
           <i class="fa fa-info-circle" id="privacy-icon" aria-hidden="true"></i>
           <div class="tooltip" id="privacy-tooltip"></div>
+        </div>
+        <div class="form-field form-icon">
+          <i class="fa fa-info-circle" id="title-icon" aria-hidden="true"></i>
+          <div class="tooltip" id="title-tooltip"></div>
         </div>
         <div class="form-field form-icon">
           <i class="fa fa-info-circle" id="body-icon" aria-hidden="true"></i>
