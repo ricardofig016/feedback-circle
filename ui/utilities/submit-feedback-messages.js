@@ -41,6 +41,16 @@ const submitFeedbackMessages = {
       icon: "warning",
     },
   },
+  title: {
+    defaultInfo: {
+      text: "<p>The subject of your feedback</p><e>Should accurately reflect the feedback's content, while being clear, concise and specific</p><p>Use keywords/phrases</p>",
+      icon: "info",
+    },
+    missingValue: {
+      text: "<p>Title is a required field</p>",
+      icon: "warning",
+    },
+  },
   body: {
     defaultInfo: {
       text: "<p>Describe your experience with the person and provide any relevant details such as time and place</p>",
