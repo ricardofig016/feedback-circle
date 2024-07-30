@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 
-import { getUserId, getFeedbacks, getUsers, getUser, createFeedback, getUserByEmail, getFeedback } from "./database/database.js";
+import { getFeedbacks, getUsers, getUserById, createFeedback, getUserByEmail, getFeedbackById, getUsersByAppraiserId } from "./database/database.js";
 
 const app = express();
 
@@ -20,7 +20,7 @@ router.get("/users", async (req, res) => {
 
 router.get("/users/id/:id", async (req, res) => {
   const id = req.params.id;
-  const user = await getUser(id);
+  const user = await getUserById(id);
   if (!user) return res.status(404).send({ error: "No user found with id " + id });
   res.send(user);
 });
@@ -30,6 +30,13 @@ router.get("/users/email/:email", async (req, res) => {
   const user = await getUserByEmail(email);
   if (!user) return res.status(404).send({ error: "No user found with email " + email });
   res.send(user);
+});
+
+router.get("/users/appraiserid/:appraiserid", async (req, res) => {
+  const appraiserId = req.params.appraiserid;
+  const users = await getUsersByAppraiserId(appraiserId);
+  if (!users) return res.status(404).send({ error: "No users found with appraiser_id " + id });
+  res.send(users);
 });
 
 router.get("/feedbacks", async (req, res) => {
@@ -44,7 +51,7 @@ router.post("/feedbacks", async (req, res) => {
 
   if (!feedbackId) return res.status(400).send({ error: "Feedback creation failed" });
 
-  const feedback = await getFeedback(feedbackId);
+  const feedback = await getFeedbackById(feedbackId);
   if (!feedback) return res.status(404).send({ error: "Feedback not found after creation" });
 
   res.status(201).send(feedback);

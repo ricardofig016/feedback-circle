@@ -19,7 +19,7 @@ export async function getUsers() {
   return rows;
 }
 
-export async function getUser(id) {
+export async function getUserById(id) {
   const [rows] = await pool.query(
     `
     SELECT *
@@ -29,18 +29,6 @@ export async function getUser(id) {
     [id]
   );
   return rows[0];
-}
-
-export async function getUserId(email) {
-  const [rows] = await pool.query(
-    `
-    SELECT user_id 
-    FROM users
-    WHERE email = ?
-    `,
-    [email]
-  );
-  return rows[0]["user_id"];
 }
 
 export async function getUserByEmail(email) {
@@ -55,12 +43,24 @@ export async function getUserByEmail(email) {
   return rows[0] ? rows[0] : null;
 }
 
+export async function getUsersByAppraiserId(appraiserId) {
+  const [rows] = await pool.query(
+    `
+    SELECT *
+    FROM users
+    WHERE appraiser_id = ?
+    `,
+    [id]
+  );
+  return rows[0];
+}
+
 export async function getFeedbacks() {
   const [rows] = await pool.query("SELECT * FROM feedbacks");
   return rows;
 }
 
-export async function getFeedback(id) {
+export async function getFeedbackById(id) {
   const [rows] = await pool.query(
     `
     SELECT * 
