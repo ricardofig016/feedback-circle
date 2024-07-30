@@ -31,7 +31,7 @@ export default class Session {
               resolve(user);
             })
             .catch((error) => {
-              throwError("authentication failed " + error.message);
+              throw new Error("authentication failed " + error.message);
             });
         });
       } else {

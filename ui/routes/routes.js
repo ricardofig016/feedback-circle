@@ -5,13 +5,15 @@ import { throwError } from "../modules/errors/errors.js";
 import Tabs from "../modules/tabs/tabs.js";
 
 import HomeComponent from "../components/home/home.component.js";
+import MyAppraiseesComponent from "../components/my-appraisees/my-appraisees.component.js";
+import SubmitFeedbackComponent from "../components/submit-feedback/submit-feedback.component.js";
 import NotFoundComponent from "../components/not-found/not-found.component.js";
+import NoAccessComponent from "../components/no-access/no-access.component.js";
 import CompareDEEActionsListComponent from "../components/compare-dee-actions-list/compare-dee-actions-list.component.js";
 import CompareConfigurationsListComponent from "../components/compare-configurations-list/compare-configurations-list.component.js";
 import ShellLandingPageAdministrationComponent from "../components/shell-landingpage-administration/shell-landingpage-administration.component.js";
 import PageExampleComponent from "../components/shell-landingpage-example/shell-landingpage-example.component.js";
 import TestComponentComponent from "../components/test-component/test-component.component.js";
-import SubmitFeedbackComponent from "../components/submit-feedback/submit-feedback.component.js";
 import Ex1Component from "../components/ex1/ex1.component.js";
 import Ex2Component from "../components/ex2/ex2.component.js";
 import Ex3Component from "../components/ex3/ex3.component.js";
@@ -23,12 +25,13 @@ import Ex5Component from "../components/ex5/ex5.component.js";
  */
 const Routes = {
   Home: HomeComponent,
+  MyAppraisees: MyAppraiseesComponent,
+  SubmitFeedback: SubmitFeedbackComponent,
   Administration: ShellLandingPageAdministrationComponent,
   CompareDEEActionsList: CompareDEEActionsListComponent,
   CompareConfigurationsList: CompareConfigurationsListComponent,
   PageExample: PageExampleComponent,
   TestComponent: TestComponentComponent,
-  SubmitFeedback: SubmitFeedbackComponent,
   Ex1: Ex1Component,
   Ex2: Ex2Component,
   Ex3: Ex3Component,
@@ -96,7 +99,7 @@ function renderRoute() {
  * @param {*} routePath route path (URL) to redirect to.
  * @param {*} isToOpenInNewTab whether to open the page in a new tab or in the current one.
  */
-function redirect(routePath, isToOpenInNewTab, _onSuccess) {
+function redirect(routePath, isToOpenInNewTab, userAccess, _onSuccess) {
   const tabsManager = new Tabs();
   const tabToOpen = tabsManager.getTab(routePath);
   // If it is to open the page in a new tab and the tab doesn't yet exist for the provided routePath
@@ -105,8 +108,16 @@ function redirect(routePath, isToOpenInNewTab, _onSuccess) {
       // Switch to that already open tab
       _onSuccess();
     } else {
+      // Default to NotFoundComponent if route not found
+      let RoutedComponentType = Routes[stripURLQueryParameters(routePath)] || NotFoundComponent;
+      // Check access
+      let component = new RoutedComponentType();
+      if (!component.access.includes(userAccess)) {
+        RoutedComponentType = NoAccessComponent;
+      }
+      // Setting the created instance reference to null to make it eligeble for garbage collection
+      component = null;
       // Create new tab for the provided routePath, calling component's onInit()
-      const RoutedComponentType = Routes[stripURLQueryParameters(routePath)] || NotFoundComponent; // Default to NotFoundComponent if route not found
       tabsManager.createTab(routePath, RoutedComponentType, (tab) => {
         if (tab?.tabElement)
           tab.tabElement.onclick = (e) => {
@@ -123,6 +134,19 @@ function stripURLQueryParameters(url) {
     url = url.substring(0, url.indexOf("?"));
   }
   return url;
+}
+
+function getAccessibleComponents(userAccess) {
+  let accessibleComponents = [];
+  const keys = Object.keys(Routes);
+  keys.forEach((key) => {
+    let component = new Routes[key]();
+    if (component.access.includes(userAccess)) {
+      accessibleComponents.push({ title: component.pageTitle, href: key });
+    }
+    component = null;
+  });
+  return accessibleComponents;
 }
 
 /**
@@ -163,4 +187,4 @@ function buildURLMap(url) {
   return queryParamsMap;
 }
 
-export { renderRoute, redirect, stripURLQueryParameters, buildURL, buildURLMap };
+export { renderRoute, redirect, stripURLQueryParameters, buildURL, buildURLMap, getAccessibleComponents };
