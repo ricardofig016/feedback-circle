@@ -22,7 +22,6 @@ export default class Session {
   start() {
     return new Promise((resolve, reject) => {
       if (!this.user) {
-        // REMOVE COMMENTS: for development purposes only
         this.showAuthSection();
         const authForm = document.getElementById("auth-form");
         authForm.addEventListener("submit", (e) => {
@@ -67,7 +66,6 @@ export default class Session {
         url,
         null,
         (res) => {
-          // on success
           // TODO: password logic
           this.user = res;
           this.showMainSection();
@@ -75,7 +73,6 @@ export default class Session {
           resolve(this.user);
         },
         (error) => {
-          // on error
           alert("Wrong email or password");
           reject(error);
         }

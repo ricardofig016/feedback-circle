@@ -66,6 +66,12 @@ window.addEventListener("DOMContentLoaded", () => {
     // REMOVE: For development purposes only
     setTimeout(() => {
       window.location.href = "#/SubmitFeedback";
+      setTimeout(() => {
+        window.location.href = "#/PageExample";
+        setTimeout(() => {
+          window.location.href = "#/MyAppraisees";
+        });
+      });
     });
   });
 });
