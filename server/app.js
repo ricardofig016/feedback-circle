@@ -47,7 +47,8 @@ router.get("/feedbacks", async (req, res) => {
 
 router.post("/feedbacks", async (req, res) => {
   const { senderId, receiverId, title, body, category, type, privacy } = req.body;
-  const feedbackId = await createFeedback(senderId, receiverId, title, body, category, type, privacy);
+  const submissionDate = formatDate(new Date());
+  const feedbackId = await createFeedback(senderId, receiverId, title, body, submissionDate, category, type, privacy);
 
   if (!feedbackId) return res.status(400).send({ error: "Feedback creation failed" });
 
@@ -60,3 +61,14 @@ router.post("/feedbacks", async (req, res) => {
 app.listen(5000, () => {
   console.log("Server is running on port 5000");
 });
+
+function formatDate(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}

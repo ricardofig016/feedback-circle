@@ -75,13 +75,13 @@ export async function getFeedbackById(id) {
 /**
  * @returns the feedback_id of the created feedback
  */
-export async function createFeedback(senderId, receiverId, title, body, category, type, privacy) {
+export async function createFeedback(senderId, receiverId, title, body, submissionDate, category, type, privacy) {
   const [data] = await pool.query(
     `
-    INSERT INTO feedbacks (sender_id, receiver_id, title, body, category, type, privacy)
-    VALUES (?, ?, ?, ?, ?, ?, ?);
+    INSERT INTO feedbacks (sender_id, receiver_id, title, body, submission_date, category, type, privacy)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?);
     `,
-    [senderId, receiverId, title, body, category, type, privacy]
+    [senderId, receiverId, title, body, submissionDate, category, type, privacy]
   );
   // return the created object
   return data.insertId;
