@@ -1,5 +1,6 @@
 "use strict";
 
+import NoAccessComponent from "../../components/no-access/no-access.component.js";
 import NotFoundComponent from "../../components/not-found/not-found.component.js";
 import { buildURLMap } from "../../routes/routes.js";
 import { throwError } from "../errors/errors.js";
@@ -14,11 +15,13 @@ class Tab {
   #tabTitle;
   #tabIcon; // Only for Home tab
   #tabSplitter;
+  user;
 
-  constructor(_routePath, _RoutedComponentType) {
+  constructor(_routePath, _RoutedComponentType, user) {
     this.routePath = _routePath;
     this.#RoutedComponentType = _RoutedComponentType || NotFoundComponent;
     this.#parentContainer = document.getElementById("progress-indicator");
+    this.user = user;
   }
 
   /**
@@ -88,15 +91,21 @@ class Tab {
     // Instantiate component
     const queryParams = buildURLMap(this.routePath);
     this.component = new this.#RoutedComponentType(queryParams);
-    this.component.domContent = this.domContent;
     this.component
-      .render()
-      .then((html) => {
-        // Inject HTML, page title and page icon
-        this.domContent.innerHTML = html;
-        if (this.#tabTitle) this.#tabTitle.innerText = this.component.pageTitle;
-        this.component.onInit();
-        if (_onSuccess) _onSuccess(this);
+      .hasAccess(this.user)
+      .then((access) => {
+        console.log(this.component.pageTitle);
+        console.log(access);
+        if (!access) this.component = new NoAccessComponent(queryParams);
+
+        this.component.domContent = this.domContent;
+        this.component.render().then((html) => {
+          // Inject HTML, page title and page icon
+          this.domContent.innerHTML = html;
+          if (this.#tabTitle) this.#tabTitle.innerText = this.component.pageTitle;
+          this.component.onInit();
+          if (_onSuccess) _onSuccess(this);
+        });
       })
       .catch((error) => throwError(error));
   }
@@ -201,10 +210,10 @@ export default class Tabs {
    * @param {*} _RoutedComponentType
    * @param {*} _onSuccess
    */
-  createTab(_routePath, _RoutedComponentType, _onSuccess) {
+  createTab(_routePath, _RoutedComponentType, user, _onSuccess) {
     let tab = this.getTab(_routePath);
     if (!tab) {
-      tab = new Tab(_routePath, _RoutedComponentType);
+      tab = new Tab(_routePath, _RoutedComponentType, user);
       tab.create(Tabs.#tabAutoIncrementId++, (tab) => {
         Tabs.#tabs.push(tab);
         _onSuccess(tab);

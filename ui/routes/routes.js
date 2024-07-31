@@ -9,7 +9,6 @@ import MyAppraiseesComponent from "../components/my-appraisees/my-appraisees.com
 import AppraiseeComponent from "../components/appraisee/appraisee.component.js";
 import SubmitFeedbackComponent from "../components/submit-feedback/submit-feedback.component.js";
 import NotFoundComponent from "../components/not-found/not-found.component.js";
-import NoAccessComponent from "../components/no-access/no-access.component.js";
 import CompareDEEActionsListComponent from "../components/compare-dee-actions-list/compare-dee-actions-list.component.js";
 import CompareConfigurationsListComponent from "../components/compare-configurations-list/compare-configurations-list.component.js";
 import ShellLandingPageAdministrationComponent from "../components/shell-landingpage-administration/shell-landingpage-administration.component.js";
@@ -112,15 +111,8 @@ function redirect(routePath, isToOpenInNewTab, user, _onSuccess) {
     } else {
       // Default to NotFoundComponent if route not found
       let RoutedComponentType = Routes[stripURLQueryParameters(routePath)] || NotFoundComponent;
-      // Check access
-      let component = new RoutedComponentType();
-      if (!component.hasAccess(user)) {
-        RoutedComponentType = NoAccessComponent;
-      }
-      // Setting the created instance reference to null to make it eligeble for garbage collection
-      component = null;
       // Create new tab for the provided routePath, calling component's onInit()
-      tabsManager.createTab(routePath, RoutedComponentType, (tab) => {
+      tabsManager.createTab(routePath, RoutedComponentType, user, (tab) => {
         if (tab?.tabElement)
           tab.tabElement.onclick = (e) => {
             window.location.href = "#/" + routePath;
@@ -143,7 +135,7 @@ function getAccessibleComponents(user) {
   const keys = Object.keys(Routes);
   keys.forEach((key) => {
     let component = new Routes[key]();
-    if (component.hasAccess(user)) {
+    if (component.access.includes(user.role)) {
       accessibleComponents.push({ title: component.pageTitle, href: key });
     }
     component = null;

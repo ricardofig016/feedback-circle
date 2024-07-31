@@ -25,7 +25,12 @@ export default class AppraiseeComponent extends BaseComponent {
   }
 
   hasAccess(user) {
-    if (this.access.includes(user.role)) return true;
-    return true; // FOR DEV PURPOSES ONLY: "return false;"
+    return new Promise((resolve, reject) => {
+      RequestManager.request("GET", "users/id/" + this.queryParams["id"], null, (appraisee) => {
+        console.log(appraisee.appraiser_id, user.user_id);
+        if (appraisee.appraiser_id === user.user_id) resolve(true);
+        resolve(false);
+      });
+    });
   }
 }

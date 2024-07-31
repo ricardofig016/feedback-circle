@@ -60,6 +60,20 @@ export async function getFeedbacks() {
   return rows;
 }
 
+export async function getFeedbacksOfUser(id, order = "feedback_id", limit = 1000) {
+  const [rows] = await pool.query(
+    `
+    SELECT * 
+    FROM feedbacks
+    WHERE receiver_id = ?
+    ORDER BY ?
+    LIMIT ?
+    `,
+    [id, order, limit]
+  );
+  return rows;
+}
+
 export async function getFeedbackById(id) {
   const [rows] = await pool.query(
     `

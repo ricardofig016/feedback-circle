@@ -59,7 +59,9 @@ export default class BaseComponent {
   }
 
   hasAccess(user) {
-    if (this.access.includes(user.role)) return true;
-    return false;
+    return new Promise((resolve, reject) => {
+      if (this.access.includes(user.role)) resolve(true);
+      resolve(false);
+    });
   }
 }

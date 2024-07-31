@@ -26,26 +26,36 @@ export default class MyAppraiseesComponent extends BaseComponent {
         if (!appraisees || appraisees.length === 0) throw new Error("No users found with appraiser_id " + session.user.user_id);
         const appraiseesGrid = new DataGrid(this.getElementById("appraisees-data-grid"));
 
-        appraisees.forEach((appraisee) => {
-          console.table(appraisee);
-          // Create Row
-          const row = new Map();
-          // Name Column
-          const appraiseeUrl = buildURL("Appraisee", { id: appraisee.user_id });
-          row.set("name", "<a href=" + appraiseeUrl + ">" + appraisee.name + "</a>");
-          // Notes Column
-          const notes = appraisee.appraiser_notes;
-          row.set("notes", notes);
-          // Notification Column
-          const tooltipElem = "<div class='tooltip tooltip-small'><p>" + "you have 3 new feedbacks / you're all caught up" + "</p></div>"; // TODO: determine tooltip text and icon
-          const tooltipIcon = Icons.blue_exclamation_mark;
-          const notifications = "<div style='text-align:center'>" + tooltipIcon + tooltipElem + "</div>";
-          row.set("notifications", notifications);
-          // Add Row to Grid
-          appraiseesGrid.addRow(row);
-        });
+        for (let i = 0; i < appraisees.length; i++) {
+          const appraisee = appraisees[i];
+          RequestManager.request("GET", "feedbacks/mostrecent/receiverid/" + appraisee.user_id, null, (feedbacks) => {
+            // Create Row
+            const row = new Map();
+            // Name Column
+            const appraiseeUrl = buildURL("Appraisee", { id: appraisee.user_id });
+            const nameLink = "<a href=" + appraiseeUrl + ">" + appraisee.name + "</a>";
+            row.set("name", nameLink);
+            // Notes Column
+            const note = appraisee.appraiser_notes;
+            row.set("notes", note);
+            // Most recent feedback Column
+            const feedbackTitle = feedbacks[0] ? feedbacks[0].title : "---";
+            row.set("most recent feedback", feedbackTitle);
+            // Notification Column
+            let unreadFeedbacks = 0;
+            feedbacks.forEach((feedback) => {
+              if (!feedback.is_read) unreadFeedbacks++;
+            });
+            const notification = unreadFeedbacks ? "You have <span style='color:#f69414;font-weight:bold'>" + unreadFeedbacks + "</span> unread feedbacks" : "You're all caught up!";
+            row.set("notifications", notification);
 
-        appraiseesGrid.render();
+            // Add Row to Grid
+            appraiseesGrid.addRow(row);
+
+            // Render grid if all rows have been added
+            if (i === appraisees.length - 1) appraiseesGrid.render();
+          });
+        }
       },
       (error) => {
         throwError(error);

@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 
-import { getFeedbacks, getUsers, getUserById, createFeedback, getUserByEmail, getFeedbackById, getUsersByAppraiserId } from "./database/database.js";
+import { getFeedbacks, getUsers, getUserById, createFeedback, getUserByEmail, getFeedbackById, getUsersByAppraiserId, getFeedbacksOfUser } from "./database/database.js";
 
 const app = express();
 
@@ -56,6 +56,13 @@ router.post("/feedbacks", async (req, res) => {
   if (!feedback) return res.status(404).send({ error: "Feedback not found after creation" });
 
   res.status(201).send(feedback);
+});
+
+router.get("/feedbacks/mostrecent/receiverid/:id", async (req, res) => {
+  const user_id = req.params.id;
+  const feedbacks = await getFeedbacksOfUser(user_id, "submit_date");
+  if (!feedbacks) return res.status(404).send({ error: "No feedbacks found for user with id " + user_id });
+  res.send(feedbacks.reverse());
 });
 
 app.listen(5000, () => {
