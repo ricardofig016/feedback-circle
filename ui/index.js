@@ -31,10 +31,10 @@ function setupDragAndDrop() {
 }
 
 // Create sidebar items based on the acess of the user
-function createSidebarItems(userAccess) {
+function createSidebarItems(user) {
   const sidebarItems = document.getElementById("sidebar-items");
   // admin has access to all components
-  const accessibleComponents = getAccessibleComponents(userAccess);
+  const accessibleComponents = getAccessibleComponents(user);
   accessibleComponents.forEach((component) => {
     const anchorElem = document.createElement("a");
     anchorElem.href = "#/" + component.href;
@@ -46,7 +46,7 @@ function createSidebarItems(userAccess) {
 
 window.addEventListener("DOMContentLoaded", () => {
   new Session().start().then((user) => {
-    createSidebarItems(user.role);
+    createSidebarItems(user);
 
     setupDragAndDrop();
 
@@ -57,7 +57,7 @@ window.addEventListener("DOMContentLoaded", () => {
         redirectToHome();
       } else if (window.location.hash != null && window.location.hash.startsWith("#/")) {
         let routePath = window.location.hash.substring(2); // Remove the '#/' prefix
-        redirect(routePath, true, user.role, () => renderRoute());
+        redirect(routePath, true, user, () => renderRoute());
       }
     });
 
@@ -67,9 +67,12 @@ window.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
       window.location.href = "#/SubmitFeedback";
       setTimeout(() => {
-        window.location.href = "#/PageExample";
+        window.location.href = "#/MyAppraisees";
         setTimeout(() => {
-          window.location.href = "#/MyAppraisees";
+          window.location.href = "#/Appraisee?id=3";
+          setTimeout(() => {
+            window.location.href = "#/Appraisee?id=4";
+          });
         });
       });
     });

@@ -6,6 +6,7 @@ import Tabs from "../modules/tabs/tabs.js";
 
 import HomeComponent from "../components/home/home.component.js";
 import MyAppraiseesComponent from "../components/my-appraisees/my-appraisees.component.js";
+import AppraiseeComponent from "../components/appraisee/appraisee.component.js";
 import SubmitFeedbackComponent from "../components/submit-feedback/submit-feedback.component.js";
 import NotFoundComponent from "../components/not-found/not-found.component.js";
 import NoAccessComponent from "../components/no-access/no-access.component.js";
@@ -26,6 +27,7 @@ import Ex5Component from "../components/ex5/ex5.component.js";
 const Routes = {
   Home: HomeComponent,
   MyAppraisees: MyAppraiseesComponent,
+  Appraisee: AppraiseeComponent,
   SubmitFeedback: SubmitFeedbackComponent,
   Administration: ShellLandingPageAdministrationComponent,
   CompareDEEActionsList: CompareDEEActionsListComponent,
@@ -99,7 +101,7 @@ function renderRoute() {
  * @param {*} routePath route path (URL) to redirect to.
  * @param {*} isToOpenInNewTab whether to open the page in a new tab or in the current one.
  */
-function redirect(routePath, isToOpenInNewTab, userAccess, _onSuccess) {
+function redirect(routePath, isToOpenInNewTab, user, _onSuccess) {
   const tabsManager = new Tabs();
   const tabToOpen = tabsManager.getTab(routePath);
   // If it is to open the page in a new tab and the tab doesn't yet exist for the provided routePath
@@ -112,7 +114,7 @@ function redirect(routePath, isToOpenInNewTab, userAccess, _onSuccess) {
       let RoutedComponentType = Routes[stripURLQueryParameters(routePath)] || NotFoundComponent;
       // Check access
       let component = new RoutedComponentType();
-      if (!component.access.includes(userAccess)) {
+      if (!component.hasAccess(user)) {
         RoutedComponentType = NoAccessComponent;
       }
       // Setting the created instance reference to null to make it eligeble for garbage collection
@@ -136,12 +138,12 @@ function stripURLQueryParameters(url) {
   return url;
 }
 
-function getAccessibleComponents(userAccess) {
+function getAccessibleComponents(user) {
   let accessibleComponents = [];
   const keys = Object.keys(Routes);
   keys.forEach((key) => {
     let component = new Routes[key]();
-    if (component.access.includes(userAccess)) {
+    if (component.hasAccess(user)) {
       accessibleComponents.push({ title: component.pageTitle, href: key });
     }
     component = null;

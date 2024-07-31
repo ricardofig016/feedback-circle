@@ -57,4 +57,9 @@ export default class BaseComponent {
   getElementById(_id) {
     return this.domContent?.querySelector("#" + _id);
   }
+
+  hasAccess(user) {
+    if (this.access.includes(user.role)) return true;
+    return false;
+  }
 }

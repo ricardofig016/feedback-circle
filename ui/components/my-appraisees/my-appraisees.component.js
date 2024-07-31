@@ -31,7 +31,7 @@ export default class MyAppraiseesComponent extends BaseComponent {
           // Create Row
           const row = new Map();
           // Name Column
-          const appraiseeUrl = buildURL("Apraisee", { id: appraisee.user_id });
+          const appraiseeUrl = buildURL("Appraisee", { id: appraisee.user_id });
           row.set("name", "<a href=" + appraiseeUrl + ">" + appraisee.name + "</a>");
           // Notes Column
           const notes = appraisee.appraiser_notes;
