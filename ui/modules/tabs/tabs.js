@@ -94,8 +94,6 @@ class Tab {
     this.component
       .hasAccess(this.user)
       .then((access) => {
-        console.log(this.component.pageTitle);
-        console.log(access);
         if (!access) this.component = new NoAccessComponent(queryParams);
 
         this.component.domContent = this.domContent;

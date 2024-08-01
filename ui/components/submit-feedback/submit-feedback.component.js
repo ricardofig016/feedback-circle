@@ -50,7 +50,6 @@ export default class SubmitFeedbackComponent extends BaseComponent {
       privacy: formData["privacy"],
     };
     RequestManager.request("POST", "feedbacks", data, (res) => {
-      console.table(res);
       new ToastManager().showToast("Success", "Feedback submited", "success", 5000);
     });
   }

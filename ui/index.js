@@ -70,9 +70,6 @@ window.addEventListener("DOMContentLoaded", () => {
         window.location.href = "#/MyAppraisees";
         setTimeout(() => {
           window.location.href = "#/Appraisee?id=3";
-          setTimeout(() => {
-            window.location.href = "#/Appraisee?id=4";
-          });
         });
       });
     });

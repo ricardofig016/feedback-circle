@@ -2,11 +2,11 @@
 
 import BaseComponent from "../base/base.component.js";
 import DataGrid from "../../utilities/data-grid.js";
-import Icons from "../../utilities/icons.js";
 import { RequestManager } from "../../modules/requests/requests.js";
 import { buildURL } from "../../routes/routes.js";
 import Session from "../../modules/session/session.js";
 import { throwError } from "../../modules/errors/errors.js";
+import formatText from "../../utilities/format-text.js";
 
 export default class MyAppraiseesComponent extends BaseComponent {
   selector = "my-appraisees";
@@ -33,13 +33,13 @@ export default class MyAppraiseesComponent extends BaseComponent {
             const row = new Map();
             // Name Column
             const appraiseeUrl = buildURL("Appraisee", { id: appraisee.user_id });
-            const nameLink = "<a href=" + appraiseeUrl + ">" + appraisee.name + "</a>";
+            const nameLink = "<a href=" + appraiseeUrl + ">" + formatText(appraisee.name) + "</a>";
             row.set("name", nameLink);
             // Notes Column
-            const note = appraisee.appraiser_notes;
+            const note = formatText(appraisee.appraiser_notes);
             row.set("notes", note);
             // Most recent feedback Column
-            const feedbackTitle = feedbacks[0] ? feedbacks[0].title : "---";
+            const feedbackTitle = feedbacks[0] ? formatText(feedbacks[0].title) : "---";
             row.set("most recent feedback", feedbackTitle);
             // Notification Column
             let unreadFeedbacks = 0;
