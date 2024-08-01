@@ -41,8 +41,8 @@ export default class SubmitFeedbackComponent extends BaseComponent {
 
   serverRequest(formData) {
     const data = {
-      senderId: 1, //TODO
-      receiverId: 1, //TODO
+      senderId: 1, //TODO:
+      receiverId: 1, //TODO:
       title: formData["title"],
       body: formData["body"],
       category: formData["category"],

@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 
 import { getFeedbacks, getUsers, getUserById, createFeedback, getUserByEmail, getFeedbackById, getUsersByAppraiserId, getFeedbacksOfUser } from "./database/database.js";
+import { securityPortalAuth } from "./auth.js";
 
 const app = express();
 
@@ -12,6 +13,19 @@ const router = express.Router();
 app.use("/api", router);
 
 // Routes
+/*
+router.post("/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const accessToken = await securityPortalAuth(username, password);
+    res.status(200).send({ accessToken });
+  } catch (error) {
+    console.log(error);
+    res.status(401).send({ message: error.message });
+  }
+});
+*/
+
 router.get("/users", async (req, res) => {
   const users = await getUsers();
   if (!users) return res.status(404).send({ error: "No users found" });
