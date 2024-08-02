@@ -441,6 +441,7 @@ input {
 }
 
 .title-bar {
+  height: 100%;
   color: rgb(0, 0, 0);
   font-size: 15px;
   padding-left: 8px;
@@ -448,6 +449,28 @@ input {
   flex-direction: row;
   align-items: center;
   box-sizing: border-box;
+}
+
+.page-refresh {
+  height: 100%;
+  background-color: inherit;
+  border: none;
+  border-radius: 5px;
+  padding: 0;
+  width: 32px;
+  font-size: 20px;
+  color: rgba(0, 102, 161, 0.9);
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.page-refresh:hover {
+  background-color: rgb(235, 235, 235);
+}
+
+.page-refresh:active {
+  transform: scale(0.92);
 }
 
 .page-icon {

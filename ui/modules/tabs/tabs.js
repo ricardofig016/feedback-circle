@@ -2,7 +2,7 @@
 
 import NoAccessComponent from "../../components/no-access/no-access.component.js";
 import NotFoundComponent from "../../components/not-found/not-found.component.js";
-import { buildURLMap } from "../../routes/routes.js";
+import { buildURLMap, renderRoute } from "../../routes/routes.js";
 import { throwError } from "../errors/errors.js";
 
 class Tab {
@@ -31,12 +31,7 @@ class Tab {
    * @param {*} _onSuccess
    */
   async create(_tabId) {
-    // Instantiate component
-    const queryParams = buildURLMap(this.routePath);
-    this.component = new this.#RoutedComponentType(queryParams);
-    const access = await this.component.hasAccess(this.user);
-    if (!access) this.component = new NoAccessComponent(queryParams);
-
+    await this.instantiateComponent();
     // Create content
     this.domContent = document.createElement("div");
     this.domContent.id = `main-content${_tabId}`;
@@ -97,8 +92,7 @@ class Tab {
       this.tabElement.appendChild(this.#tabSplitter);
     }
 
-    this.component.domContent = this.domContent;
-    const html = await this.component.render();
+    const html = await this.renderComponent();
     // Inject HTML, page title and page icon
     this.domContent.innerHTML = html;
     if (this.#tabTitle) this.#tabTitle.innerText = this.component.pageTitle;
@@ -109,12 +103,15 @@ class Tab {
    * Opens this tab (for switching from another tab).
    */
   open() {
-    // Update rendered page title and page icon
-    const pageLabelElement = document.getElementById("page-label");
+    // Update rendered page icon
     const pageIconElement = document.getElementById("page-icon");
-    if (pageLabelElement) pageLabelElement.innerText = this.component.pageTitle;
     if (pageIconElement) pageIconElement.innerHTML = `<span><i class="fa ${this.component.pageIcon}" aria-hidden="true"></i></span>`;
+    // Update rendered page title
+    const pageLabelElement = document.getElementById("page-label");
+    if (pageLabelElement) pageLabelElement.innerText = this.component.pageTitle;
+    // Show page content
     this.domContent.style.display = "block";
+    // Select page's tab
     if (Tabs.currentlyOpenTab?.tabElement) Tabs.currentlyOpenTab.tabElement.classList.remove("selected");
     if (this.tabElement) this.tabElement.classList.add("selected");
     Tabs.currentlyOpenTab = this;
@@ -137,6 +134,19 @@ class Tab {
     delete this.component; // Destroy component to free up memory
     const tabsManager = new Tabs();
     tabsManager.closeTab(this.routePath);
+  }
+
+  async instantiateComponent() {
+    const queryParams = buildURLMap(this.routePath);
+    this.component = new this.#RoutedComponentType(queryParams);
+    const access = await this.component.hasAccess(this.user);
+    if (!access) this.component = new NoAccessComponent(queryParams);
+  }
+
+  async renderComponent() {
+    this.component.domContent = this.domContent;
+    const html = await this.component.render();
+    return html;
   }
 }
 

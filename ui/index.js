@@ -53,9 +53,19 @@ function createSidebarItems(user) {
 
 window.addEventListener("DOMContentLoaded", async () => {
   new Session().start().then((user) => {
+    console.count("index evt listeners");
     createSidebarItems(user);
 
     setupDragAndDrop();
+
+    // Refresh button event listener
+    const pageRefreshElement = document.getElementById("page-refresh");
+    if (pageRefreshElement) {
+      pageRefreshElement.addEventListener("click", async () => {
+        console.count("ev handler");
+        await Tabs.currentlyOpenTab.component.refresh();
+      });
+    }
 
     // Event listener for hashchange events to dynamically render components.
     // Renders a HTML page from the route present int the current URL hash.

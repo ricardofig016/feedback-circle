@@ -11,9 +11,9 @@ export default class SubmitFeedbackComponent extends BaseComponent {
   pageIcon = "fa-pencil";
   access = ["user", "appraiser", "admin"];
 
-  onInit() {
+  onInit(isRefresh = false) {
     super.onInit();
-    this.addEventListeners();
+    if (!isRefresh) this.addEventListeners();
   }
 
   addEventListeners() {

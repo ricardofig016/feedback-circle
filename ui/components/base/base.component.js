@@ -19,7 +19,7 @@ export default class BaseComponent {
    * When the user switches back to the component's tab, onInit() is not called again (only if the tab is closed and then reopened).
    * Calls onValidateQueryParameters() internally to perform a validation of the query parameters.
    */
-  onInit() {
+  onInit(isRefresh = false) {
     if (!this.onValidateQueryParameters(this.queryParams)) {
       const toastManager = new ToastManager();
       toastManager.showToast("Error", "Invalid query parameters for the component '" + this.selector + "'.");
@@ -61,5 +61,9 @@ export default class BaseComponent {
   hasAccess(user) {
     if (this.access.includes(user.role)) return true;
     else return false;
+  }
+
+  refresh() {
+    this.onInit(true);
   }
 }

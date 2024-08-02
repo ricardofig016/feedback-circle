@@ -41,6 +41,7 @@ export default class AppraiseeComponent extends BaseComponent {
       const titleLink = "<a href=" + feedbackUrl + ">" + formatText(feedback.title) + "</a>";
       row.set("title", titleLink);
       // From Column
+      //TODO: send a single request instead of dozens of them for all the users
       const sender = await RequestManager.request("GET", "users/id/" + feedback.sender_id); // Sender request
       const from = feedback.privacy === "anonymous" ? "<i>anonymous</i>" : formatText(sender.name);
       row.set("from", from);

@@ -28,6 +28,7 @@ export default class ProgressIndicator {
   }
 
   hide() {
+    // TODO: remove setTimeout (for development purposes)
     setTimeout(() => {
       if (ProgressIndicator.#progressIndicatorElement) {
         ProgressIndicator.#progressIndicatorElement.classList.remove("active");
@@ -35,6 +36,6 @@ export default class ProgressIndicator {
       if (ProgressIndicator.#progressIndicatorLoadingElement) {
         ProgressIndicator.#progressIndicatorLoadingElement.classList.remove("active");
       }
-    }, 100);
+    }, 200);
   }
 }
