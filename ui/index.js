@@ -71,6 +71,9 @@ window.addEventListener("DOMContentLoaded", async () => {
         window.location.href = "#/MyAppraisees";
         setTimeout(() => {
           window.location.href = "#/Appraisee?id=3";
+          setTimeout(() => {
+            window.location.href = "#/Appraisee?id=9";
+          });
         });
       });
     });

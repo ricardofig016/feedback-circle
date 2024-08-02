@@ -34,7 +34,6 @@ export class RequestManager {
       body: data ? JSON.stringify(data) : null,
     });
     // Check for client/server request errors
-    progressIndicator.hide();
     if (!res.ok) {
       let errorToDisplay = "";
       if (res.status >= 400 && res.status < 500) {
@@ -47,10 +46,12 @@ export class RequestManager {
         // Other errors
         errorToDisplay = LocalizedMessages.server_request_failed;
       }
+      progressIndicator.hide();
       throwError(errorToDisplay);
     }
-    progressIndicator.hide();
     if (res.Error?.length > 0) throwError(res.Error);
-    return await res.json();
+    const jsonData = await res.json();
+    progressIndicator.hide();
+    return jsonData;
   }
 }

@@ -105,6 +105,14 @@ VALUES (
         "-",
         2,
         "notes about vasco"
+    ),
+    (
+        "Another User",
+        "anotheruser@criticalmanufacturing.com",
+        "user",
+        "-",
+        null,
+        "this guy has no feedbacks"
     );
 --
 INSERT INTO feedbacks (

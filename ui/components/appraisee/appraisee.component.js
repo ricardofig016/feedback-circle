@@ -20,7 +20,12 @@ export default class AppraiseeComponent extends BaseComponent {
 
     // Feedbacks request
     const feedbacks = await RequestManager.request("GET", "feedbacks/mostrecent/receiverid/" + appraisee.user_id);
-    if (!feedbacks || feedbacks.length === 0) throw new Error("No feedbacks found for user with user_id " + appraisee.user_id);
+    const noFeedbacksSection = this.getElementById("no-feedbacks-section");
+    noFeedbacksSection.hidden = true;
+    if (!feedbacks || feedbacks.length === 0) {
+      noFeedbacksSection.hidden = false;
+      return;
+    }
 
     const feedbacksGrid = new DataGrid(this.getElementById("feedbacks-data-grid"));
 

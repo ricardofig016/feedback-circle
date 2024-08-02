@@ -21,10 +21,13 @@ export default class MyAppraiseesComponent extends BaseComponent {
 
     // Appraisees request
     const appraisees = await RequestManager.request("GET", "users/appraiserid/" + session.user.user_id);
+    const noAppraiseesSection = this.getElementById("no-appraisees-section");
+    noAppraiseesSection.hidden = true;
     if (!appraisees || appraisees.length === 0) {
-      throwError("No users found with appraiser_id " + session.user.user_id);
+      noAppraiseesSection.hidden = false;
       return;
     }
+
     const appraiseesGrid = new DataGrid(this.getElementById("appraisees-data-grid"));
 
     for (let i = 0; i < appraisees.length; i++) {

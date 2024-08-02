@@ -28,11 +28,13 @@ export default class ProgressIndicator {
   }
 
   hide() {
-    if (ProgressIndicator.#progressIndicatorElement) {
-      ProgressIndicator.#progressIndicatorElement.classList.remove("active");
-    }
-    if (ProgressIndicator.#progressIndicatorLoadingElement) {
-      ProgressIndicator.#progressIndicatorLoadingElement.classList.remove("active");
-    }
+    setTimeout(() => {
+      if (ProgressIndicator.#progressIndicatorElement) {
+        ProgressIndicator.#progressIndicatorElement.classList.remove("active");
+      }
+      if (ProgressIndicator.#progressIndicatorLoadingElement) {
+        ProgressIndicator.#progressIndicatorLoadingElement.classList.remove("active");
+      }
+    }, 100);
   }
 }
