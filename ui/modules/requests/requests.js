@@ -20,49 +20,37 @@ export class RequestManager {
    * @param {*} onSuccess - fucntion to run on success
    * @param {*} onError - fucntion to run on error
    */
-  static request(method, requestUrl, data, onSuccess, onError) {
+  static async request(method, requestUrl, data) {
     const progressIndicator = new ProgressIndicator(); // Show blurred loading screen
     progressIndicator.show();
     const baseURL = `${Config.protocol}://${Config.host}:${Config.port}/${Config.api}`;
     const url = baseURL + requestUrl;
-    fetch(url, {
+    const res = await fetch(url, {
       method: method,
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
       body: data ? JSON.stringify(data) : null,
-    })
-      .then((res) => {
-        // Check for client/server request errors
-        progressIndicator.hide();
-        if (!res.ok) {
-          let errorToDisplay = "";
-          if (res.status >= 400 && res.status < 500) {
-            // Client error
-            errorToDisplay = ` (${LocalizedMessages.client_error}: ${res.status} - ${res.statusText})`;
-          } else if (res.status >= 500 && res.status < 600) {
-            // Server error
-            errorToDisplay = ` (${LocalizedMessages.server_error}: ${res.status} - ${res.statusText})`;
-          } else {
-            // Other errors
-            errorToDisplay = LocalizedMessages.server_request_failed;
-          }
-          throw new Error(errorToDisplay);
-        }
-        return res.json();
-      })
-      // Process response callback on success
-      .then((res) => {
-        progressIndicator.hide();
-        if (res.Error?.length > 0) throwError(res.Error);
-        if (onSuccess) onSuccess(res);
-      })
-      // Process error callback on fail
-      .catch((error) => {
-        progressIndicator.hide();
-        if (onError) onError(error);
-        else throwError(error);
-      });
+    });
+    // Check for client/server request errors
+    progressIndicator.hide();
+    if (!res.ok) {
+      let errorToDisplay = "";
+      if (res.status >= 400 && res.status < 500) {
+        // Client error
+        errorToDisplay = ` (${LocalizedMessages.client_error}: ${res.status} - ${res.statusText})`;
+      } else if (res.status >= 500 && res.status < 600) {
+        // Server error
+        errorToDisplay = ` (${LocalizedMessages.server_error}: ${res.status} - ${res.statusText})`;
+      } else {
+        // Other errors
+        errorToDisplay = LocalizedMessages.server_request_failed;
+      }
+      throwError(errorToDisplay);
+    }
+    progressIndicator.hide();
+    if (res.Error?.length > 0) throwError(res.Error);
+    return await res.json();
   }
 }

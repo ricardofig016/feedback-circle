@@ -39,7 +39,7 @@ export default class SubmitFeedbackComponent extends BaseComponent {
     });
   }
 
-  serverRequest(formData) {
+  async serverRequest(formData) {
     const data = {
       senderId: 1, //TODO:
       receiverId: 1, //TODO:
@@ -49,9 +49,8 @@ export default class SubmitFeedbackComponent extends BaseComponent {
       type: formData["type"],
       privacy: formData["privacy"],
     };
-    RequestManager.request("POST", "feedbacks", data, (res) => {
-      new ToastManager().showToast("Success", "Feedback submited", "success", 5000);
-    });
+    const res = await RequestManager.request("POST", "feedbacks", data);
+    new ToastManager().showToast("Success", "Feedback submited", "success", 5000);
   }
 
   getFormData() {

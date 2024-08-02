@@ -24,14 +24,9 @@ export default class Session {
       if (!this.user) {
         this.showAuthSection();
         const authForm = document.getElementById("auth-form");
-        authForm.addEventListener("submit", (e) => {
-          this.handleSubmit(e)
-            .then((user) => {
-              resolve(user);
-            })
-            .catch((error) => {
-              throw new Error("authentication failed " + error.message);
-            });
+        authForm.addEventListener("submit", async (e) => {
+          const user = await this.handleSubmit(e);
+          resolve(user);
         });
       } else {
         resolve(this.user);
@@ -49,34 +44,23 @@ export default class Session {
     document.getElementById("main-section").hidden = false;
   }
 
-  handleSubmit(e) {
+  async handleSubmit(e) {
     e.preventDefault();
 
     const email = e.target.querySelector('input[type="email"]').value;
     const password = e.target.querySelector('input[type="password"]').value;
 
-    return this.authenticate(email, password);
+    const user = await this.authenticate(email, password);
+    return user;
   }
 
-  authenticate(email, password) {
-    return new Promise((resolve, reject) => {
-      const url = "users/email/" + email;
-      RequestManager.request(
-        "GET",
-        url,
-        null,
-        (res) => {
-          // TODO: password logic
-          this.user = res;
-          this.showMainSection();
-          new ToastManager().showToast("Welcome", "Authentication Succeded", "success", 5000);
-          resolve(this.user);
-        },
-        (error) => {
-          alert("Wrong email or password");
-          reject(error);
-        }
-      );
-    });
+  async authenticate(email, password) {
+    const url = "users/email/" + email;
+    const res = await RequestManager.request("GET", url);
+    // TODO: password logic
+    this.user = res;
+    this.showMainSection();
+    new ToastManager().showToast("Welcome", "Authentication Succeded", "success", 5000);
+    return this.user;
   }
 }

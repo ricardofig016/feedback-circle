@@ -29,7 +29,7 @@ class Tab {
    * @param {*} _tabId
    * @param {*} _onSuccess
    */
-  create(_tabId, _onSuccess) {
+  async create(_tabId) {
     // Create content
     this.domContent = document.createElement("div");
     this.domContent.id = `main-content${_tabId}`;
@@ -91,21 +91,15 @@ class Tab {
     // Instantiate component
     const queryParams = buildURLMap(this.routePath);
     this.component = new this.#RoutedComponentType(queryParams);
-    this.component
-      .hasAccess(this.user)
-      .then((access) => {
-        if (!access) this.component = new NoAccessComponent(queryParams);
+    const access = await this.component.hasAccess(this.user);
+    if (!access) this.component = new NoAccessComponent(queryParams);
 
-        this.component.domContent = this.domContent;
-        this.component.render().then((html) => {
-          // Inject HTML, page title and page icon
-          this.domContent.innerHTML = html;
-          if (this.#tabTitle) this.#tabTitle.innerText = this.component.pageTitle;
-          this.component.onInit();
-          if (_onSuccess) _onSuccess(this);
-        });
-      })
-      .catch((error) => throwError(error));
+    this.component.domContent = this.domContent;
+    const html = await this.component.render();
+    // Inject HTML, page title and page icon
+    this.domContent.innerHTML = html;
+    if (this.#tabTitle) this.#tabTitle.innerText = this.component.pageTitle;
+    await this.component.onInit();
   }
 
   /**
@@ -199,7 +193,8 @@ export default class Tabs {
    * @returns tab with the (unique) route path
    */
   getTab(_routePath) {
-    return Tabs.#tabs.find((tab) => tab.routePath == _routePath);
+    const tab = Tabs.#tabs.find((tab) => tab.routePath == _routePath);
+    return tab;
   }
 
   /**
@@ -208,14 +203,13 @@ export default class Tabs {
    * @param {*} _RoutedComponentType
    * @param {*} _onSuccess
    */
-  createTab(_routePath, _RoutedComponentType, user, _onSuccess) {
+  async createTab(_routePath, _RoutedComponentType, user) {
     let tab = this.getTab(_routePath);
     if (!tab) {
       tab = new Tab(_routePath, _RoutedComponentType, user);
-      tab.create(Tabs.#tabAutoIncrementId++, (tab) => {
-        Tabs.#tabs.push(tab);
-        _onSuccess(tab);
-      });
+      await tab.create(Tabs.#tabAutoIncrementId++);
+      Tabs.#tabs.push(tab);
+      return tab;
     }
   }
 

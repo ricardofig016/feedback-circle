@@ -100,25 +100,20 @@ function renderRoute() {
  * @param {*} routePath route path (URL) to redirect to.
  * @param {*} isToOpenInNewTab whether to open the page in a new tab or in the current one.
  */
-function redirect(routePath, isToOpenInNewTab, user, _onSuccess) {
+async function redirect(routePath, isToOpenInNewTab, user) {
   const tabsManager = new Tabs();
   const tabToOpen = tabsManager.getTab(routePath);
   // If it is to open the page in a new tab and the tab doesn't yet exist for the provided routePath
   if (isToOpenInNewTab) {
-    if (tabToOpen) {
-      // Switch to that already open tab
-      _onSuccess();
-    } else {
-      // Default to NotFoundComponent if route not found
-      let RoutedComponentType = Routes[stripURLQueryParameters(routePath)] || NotFoundComponent;
-      // Create new tab for the provided routePath, calling component's onInit()
-      tabsManager.createTab(routePath, RoutedComponentType, user, (tab) => {
-        if (tab?.tabElement)
-          tab.tabElement.onclick = (e) => {
-            window.location.href = "#/" + routePath;
-          };
-        _onSuccess();
-      });
+    if (tabToOpen) return;
+    // Default to NotFoundComponent if route not found
+    let RoutedComponentType = Routes[stripURLQueryParameters(routePath)] || NotFoundComponent;
+    // Create new tab for the provided routePath, calling component's onInit()
+    const tab = await tabsManager.createTab(routePath, RoutedComponentType, user);
+    if (tab?.tabElement) {
+      tab.tabElement.onclick = (e) => {
+        window.location.href = "#/" + routePath;
+      };
     }
   }
 }

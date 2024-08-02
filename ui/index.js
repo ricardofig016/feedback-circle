@@ -44,7 +44,7 @@ function createSidebarItems(user) {
   });
 }
 
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", async () => {
   new Session().start().then((user) => {
     createSidebarItems(user);
 
@@ -52,12 +52,13 @@ window.addEventListener("DOMContentLoaded", () => {
 
     // Event listener for hashchange events to dynamically render components.
     // Renders a HTML page from the route present int the current URL hash.
-    window.addEventListener("hashchange", () => {
+    window.addEventListener("hashchange", async () => {
       if (window.location.hash.length <= 2) {
         redirectToHome();
       } else if (window.location.hash != null && window.location.hash.startsWith("#/")) {
         let routePath = window.location.hash.substring(2); // Remove the '#/' prefix
-        redirect(routePath, true, user, () => renderRoute());
+        await redirect(routePath, true, user);
+        renderRoute();
       }
     });
 
