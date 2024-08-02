@@ -13,8 +13,9 @@ class Tab {
   component; // Component object
   #parentContainer;
   #tabTitle;
-  #tabIcon; // Only for Home tab
+  #tabIcon; // Only for square tabs
   #tabSplitter;
+  squareTabsRoutePaths = ["Home", "Profile"];
   user;
 
   constructor(_routePath, _RoutedComponentType, user) {
@@ -30,6 +31,12 @@ class Tab {
    * @param {*} _onSuccess
    */
   async create(_tabId) {
+    // Instantiate component
+    const queryParams = buildURLMap(this.routePath);
+    this.component = new this.#RoutedComponentType(queryParams);
+    const access = await this.component.hasAccess(this.user);
+    if (!access) this.component = new NoAccessComponent(queryParams);
+
     // Create content
     this.domContent = document.createElement("div");
     this.domContent.id = `main-content${_tabId}`;
@@ -37,26 +44,28 @@ class Tab {
     this.hide(); // Tab content hidden by default
     this.#parentContainer.appendChild(this.domContent);
 
-    // Tab for Home is different from the others
-    if (this.routePath === "Home") {
+    // Tabs for square tabs are different from the others
+    if (this.squareTabsRoutePaths.includes(this.routePath)) {
       // Create tab on the tabs bar
       const tabsBar = document.getElementById("tabs-bar");
       this.tabElement = document.createElement("div");
       this.tabElement.classList.add("tab");
-      this.tabElement.classList.add("home-tab");
-      tabsBar.insertBefore(this.tabElement, tabsBar.firstChild);
+      this.tabElement.classList.add("square-tab");
+      // Home tab is always the first tab
+      if (this.routePath === "Home") tabsBar.insertBefore(this.tabElement, tabsBar.firstChild);
+      else tabsBar.appendChild(this.tabElement);
       // Tab left filler
       const tabFillerLeft = document.createElement("div");
-      tabFillerLeft.classList.add("home-tab-filler-left");
+      tabFillerLeft.classList.add("square-tab-filler-left");
       this.tabElement.appendChild(tabFillerLeft);
-      // Home icon
+      // Icon
       this.#tabIcon = document.createElement("div");
-      this.#tabIcon.innerHTML = `<span><i class="fa fa-home" aria-hidden="true"></i></span>`;
-      this.#tabIcon.classList.add("home-tab-icon");
+      this.#tabIcon.innerHTML = '<span><i class="fa ' + this.component.pageIcon + '" aria-hidden="true"></i></span>';
+      this.#tabIcon.classList.add("square-tab-icon");
       this.tabElement.appendChild(this.#tabIcon);
       // Tab splitter
       this.#tabSplitter = document.createElement("div");
-      this.#tabSplitter.classList.add("home-tab-splitter");
+      this.#tabSplitter.classList.add("square-tab-splitter");
       this.tabElement.appendChild(this.#tabSplitter);
     } else {
       // Create tab on the tabs bar
@@ -87,12 +96,6 @@ class Tab {
       this.#tabSplitter.classList.add("tab-splitter");
       this.tabElement.appendChild(this.#tabSplitter);
     }
-
-    // Instantiate component
-    const queryParams = buildURLMap(this.routePath);
-    this.component = new this.#RoutedComponentType(queryParams);
-    const access = await this.component.hasAccess(this.user);
-    if (!access) this.component = new NoAccessComponent(queryParams);
 
     this.component.domContent = this.domContent;
     const html = await this.component.render();
@@ -243,7 +246,7 @@ export default class Tabs {
     event.preventDefault();
     const draggingTab = document.querySelector(".tab.dragging");
     const tabsBar = document.getElementById("tabs-bar");
-    const beforeTab = Tabs.getDragBeforeElement(tabsBar, draggingTab);
+    const beforeTab = Tabs.getDragBeforeElement(tabsBar);
 
     if (beforeTab == null) {
       tabsBar.appendChild(draggingTab);
@@ -275,6 +278,12 @@ export default class Tabs {
       }
     });
 
-    return closestElement.nextSibling;
+    const beforeElem = closestElement.nextSibling;
+    // Prevent sqauare tabs from being moved
+    if (beforeElem && beforeElem.classList.contains("square-tab")) {
+      return beforeElem.nextSibling; // return the tab to the right of the square-tab
+    }
+
+    return beforeElem;
   }
 }

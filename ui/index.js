@@ -3,7 +3,14 @@
 import { getAccessibleComponents, redirect, renderRoute } from "./routes/routes.js";
 import Tabs from "./modules/tabs/tabs.js";
 import Session from "./modules/session/session.js";
-import { throwError } from "./modules/errors/errors.js";
+
+function openBasicTabs(tabs) {
+  if (tabs.length === 0) return;
+  setTimeout(() => {
+    window.location.href = "#/" + tabs.shift();
+    openBasicTabs(tabs);
+  }, 5);
+}
 
 function redirectToHome() {
   const prevHash = window.location.hash;
@@ -62,20 +69,8 @@ window.addEventListener("DOMContentLoaded", async () => {
       }
     });
 
-    redirectToHome();
-
-    // REMOVE: For development purposes only
-    setTimeout(() => {
-      window.location.href = "#/SubmitFeedback";
-      setTimeout(() => {
-        window.location.href = "#/MyAppraisees";
-        setTimeout(() => {
-          window.location.href = "#/Appraisee?id=3";
-          setTimeout(() => {
-            window.location.href = "#/Appraisee?id=9";
-          });
-        });
-      });
-    });
+    // Open deafult tabs
+    const basicTabs = ["Home", "Profile", "SubmitFeedback", "MyAppraisees", "Appraisee?id=3", "Appraisee?id=9"];
+    openBasicTabs(basicTabs);
   });
 });
