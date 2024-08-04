@@ -39,14 +39,11 @@ export default class BaseComponent {
    * Renders the component in the page based on its HTML source.
    * @returns Promise
    */
-  render() {
-    return new Promise((resolve, reject) => {
-      const htmlPath = `components/${this.selector}/${this.selector}.component.html`;
-      fetch(htmlPath)
-        .then((html) => html.text())
-        .then((html) => resolve(html))
-        .catch((error) => reject(error));
-    });
+  async render() {
+    const htmlPath = `components/${this.selector}/${this.selector}.component.html`;
+    const html = await fetch(htmlPath);
+    const htmlText = html.text();
+    return htmlText;
   }
 
   /**

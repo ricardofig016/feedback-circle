@@ -8,6 +8,7 @@ import HomeComponent from "../components/home/home.component.js";
 import ProfileComponent from "../components/profile/profile.component.js";
 import MyAppraiseesComponent from "../components/my-appraisees/my-appraisees.component.js";
 import AppraiseeComponent from "../components/appraisee/appraisee.component.js";
+import FeedbackComponent from "../components/feedback/feedback.component.js";
 import SubmitFeedbackComponent from "../components/submit-feedback/submit-feedback.component.js";
 import NotFoundComponent from "../components/not-found/not-found.component.js";
 import CompareDEEActionsListComponent from "../components/compare-dee-actions-list/compare-dee-actions-list.component.js";
@@ -29,6 +30,7 @@ const Routes = {
   Profile: ProfileComponent,
   MyAppraisees: MyAppraiseesComponent,
   Appraisee: AppraiseeComponent,
+  Feedback: FeedbackComponent,
   SubmitFeedback: SubmitFeedbackComponent,
   Administration: ShellLandingPageAdministrationComponent,
   CompareDEEActionsList: CompareDEEActionsListComponent,

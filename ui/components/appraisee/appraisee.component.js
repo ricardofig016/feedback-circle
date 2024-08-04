@@ -10,16 +10,17 @@ export default class AppraiseeComponent extends BaseComponent {
   pageTitle = "Appraisee";
   pageIcon = "fa-user";
   access = ["admin"];
+  appraisee;
 
   async onInit() {
     super.onInit();
 
     // Appraisee request
-    const appraisee = await RequestManager.request("GET", "users/id/" + this.queryParams.id);
-    if (!appraisee) throw new Error("No user found with user_id " + this.queryParams.id);
+    if (!this.appraisee) this.appraisee = await RequestManager.request("GET", "users/id/" + this.queryParams.id);
+    if (!this.appraisee) throw new Error("No user found with user_id " + this.queryParams.id);
 
     // Feedbacks request
-    const feedbacks = await RequestManager.request("GET", "feedbacks/mostrecent/receiverid/" + appraisee.user_id);
+    const feedbacks = await RequestManager.request("GET", "feedbacks/mostrecent/receiverid/" + this.appraisee.user_id);
     const noFeedbacksSection = this.getElementById("no-feedbacks-section");
     noFeedbacksSection.hidden = true;
     if (!feedbacks || feedbacks.length === 0) {
@@ -67,18 +68,16 @@ export default class AppraiseeComponent extends BaseComponent {
   }
 
   async render() {
-    const response = await RequestManager.request("GET", "users/id/" + this.queryParams["id"]);
-    this.pageTitle = response.name;
-    const htmlPath = `components/${this.selector}/${this.selector}.component.html`;
-    const html = await fetch(htmlPath);
-    const htmlText = html.text();
-    return htmlText;
+    if (!this.appraisee) this.appraisee = await RequestManager.request("GET", "users/id/" + this.queryParams["id"]);
+    this.pageTitle = this.appraisee.name;
+    return super.render();
   }
 
   async hasAccess(user) {
-    const appraisee = await RequestManager.request("GET", "users/id/" + this.queryParams["id"]);
+    if (!this.appraisee) this.appraisee = await RequestManager.request("GET", "users/id/" + this.queryParams["id"]);
     const access = super.hasAccess(user);
-    if (access || appraisee.appraiser_id === user.user_id) return true;
-    else return false;
+    if (access) return true; // user is admin
+    if (this.appraisee.appraiser_id === user.user_id) return true; // user is the apraiser
+    return false;
   }
 }

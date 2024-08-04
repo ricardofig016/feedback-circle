@@ -457,7 +457,7 @@ input {
   border: none;
   border-radius: 5px;
   padding: 0;
-  width: 32px;
+  min-width: 32px;
   font-size: 20px;
   color: rgba(0, 102, 161, 0.9);
   text-align: center;
@@ -474,7 +474,7 @@ input {
 }
 
 .page-icon {
-  width: 32px;
+  min-width: 32px;
   font-size: 20px;
   color: rgba(0, 102, 161, 0.9);
   text-align: center;

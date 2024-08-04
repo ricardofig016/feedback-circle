@@ -80,7 +80,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     });
 
     // Open deafult tabs
-    const basicTabs = ["Home", "Profile", "SubmitFeedback", "MyAppraisees", "Appraisee?id=3", "Appraisee?id=9"];
+    const basicTabs = ["Home", "Profile", "SubmitFeedback", "MyAppraisees", "Appraisee?id=3", "Feedback?id=18"];
     openBasicTabs(basicTabs);
   });
 });

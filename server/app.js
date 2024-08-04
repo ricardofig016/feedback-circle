@@ -72,6 +72,13 @@ router.post("/feedbacks", async (req, res) => {
   res.status(201).send(feedback);
 });
 
+router.get("/feedbacks/id/:id", async (req, res) => {
+  const id = req.params.id;
+  const feedback = await getFeedbackById(id);
+  if (!feedback) return res.status(404).send({ error: "No feedback found with id " + id });
+  res.send(feedback);
+});
+
 router.get("/feedbacks/mostrecent/receiverid/:id", async (req, res) => {
   const user_id = req.params.id;
   const feedbacks = await getFeedbacksOfUser(user_id, "submit_date");

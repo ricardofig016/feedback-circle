@@ -3,6 +3,7 @@
 import NoAccessComponent from "../../components/no-access/no-access.component.js";
 import NotFoundComponent from "../../components/not-found/not-found.component.js";
 import { buildURLMap, renderRoute } from "../../routes/routes.js";
+import formatText from "../../utilities/format-text.js";
 import { throwError } from "../errors/errors.js";
 
 class Tab {
@@ -95,7 +96,7 @@ class Tab {
     const html = await this.renderComponent();
     // Inject HTML, page title and page icon
     this.domContent.innerHTML = html;
-    if (this.#tabTitle) this.#tabTitle.innerText = this.component.pageTitle;
+    if (this.#tabTitle) this.#tabTitle.innerText = formatText(this.component.pageTitle, 55);
     await this.component.onInit();
   }
 
@@ -108,7 +109,7 @@ class Tab {
     if (pageIconElement) pageIconElement.innerHTML = `<span><i class="fa ${this.component.pageIcon}" aria-hidden="true"></i></span>`;
     // Update rendered page title
     const pageLabelElement = document.getElementById("page-label");
-    if (pageLabelElement) pageLabelElement.innerText = this.component.pageTitle;
+    if (pageLabelElement) pageLabelElement.innerText = formatText(this.component.pageTitle, 180);
     // Show page content
     this.domContent.style.display = "block";
     // Select page's tab
