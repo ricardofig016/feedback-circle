@@ -5,6 +5,7 @@ import NotFoundComponent from "../../components/not-found/not-found.component.js
 import { buildURLMap, renderRoute } from "../../routes/routes.js";
 import formatText from "../../utilities/format-text.js";
 import { throwError } from "../errors/errors.js";
+import Session from "../session/session.js";
 
 class Tab {
   routePath; // Route path (URL) of the tab, serving as a unique identifier for the tab
@@ -17,13 +18,11 @@ class Tab {
   #tabIcon; // Only for square tabs
   #tabSplitter;
   squareTabsRoutePaths = ["Home", "Profile"];
-  user;
 
-  constructor(_routePath, _RoutedComponentType, user) {
+  constructor(_routePath, _RoutedComponentType) {
     this.routePath = _routePath;
     this.#RoutedComponentType = _RoutedComponentType || NotFoundComponent;
     this.#parentContainer = document.getElementById("progress-indicator");
-    this.user = user;
   }
 
   /**
@@ -140,7 +139,7 @@ class Tab {
   async instantiateComponent() {
     const queryParams = buildURLMap(this.routePath);
     this.component = new this.#RoutedComponentType(queryParams);
-    const access = await this.component.hasAccess(this.user);
+    const access = await this.component.hasAccess();
     if (!access) this.component = new NoAccessComponent(queryParams);
   }
 
@@ -217,10 +216,10 @@ export default class Tabs {
    * @param {*} _RoutedComponentType
    * @param {*} _onSuccess
    */
-  async createTab(_routePath, _RoutedComponentType, user) {
+  async createTab(_routePath, _RoutedComponentType) {
     let tab = this.getTab(_routePath);
     if (!tab) {
-      tab = new Tab(_routePath, _RoutedComponentType, user);
+      tab = new Tab(_routePath, _RoutedComponentType);
       await tab.create(Tabs.#tabAutoIncrementId++);
       Tabs.#tabs.push(tab);
       return tab;

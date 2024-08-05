@@ -22,14 +22,14 @@ export default class FeedbackComponent extends BaseComponent {
     return super.render();
   }
 
-  async hasAccess(user) {
+  async hasAccess() {
     if (!this.feedback) this.feedback = await RequestManager.request("GET", "feedbacks/id/" + this.queryParams["id"]);
     const receiverId = this.feedback.receiver_id;
     if (!this.receiver) this.receiver = await RequestManager.request("GET", "users/id/" + receiverId);
-    const access = super.hasAccess(user);
+    const access = super.hasAccess();
     if (access) return true; // user is admin
-    if (this.receiver.appraiser_id === user.user_id) return true; // user is the appraiser
-    if (this.receiver.user_id === user.user_id && feedback.visibility === "both") return true; // user is the receiver and has visibility
+    if (this.receiver.appraiser_id === this.session.user.user_id) return true; // user is the appraiser
+    if (this.receiver.user_id === this.session.user.user_id && feedback.visibility === "both") return true; // user is the receiver and has visibility
     return false;
   }
 }

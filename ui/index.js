@@ -62,7 +62,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     const pageRefreshElement = document.getElementById("page-refresh");
     if (pageRefreshElement) {
       pageRefreshElement.addEventListener("click", async () => {
-        console.count("ev handler");
         await Tabs.currentlyOpenTab.component.refresh();
       });
     }

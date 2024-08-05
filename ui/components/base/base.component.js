@@ -1,5 +1,6 @@
 "use strict";
 
+import Session from "../../modules/session/session.js";
 import { ToastManager } from "../../modules/toasts/toasts.js";
 
 export default class BaseComponent {
@@ -9,9 +10,11 @@ export default class BaseComponent {
   access = ["admin"];
   queryParams = "";
   domContent = undefined; // DOM content container
+  session;
 
   constructor(_queryParams) {
     this.queryParams = _queryParams;
+    this.session = new Session();
   }
 
   /**
@@ -19,7 +22,7 @@ export default class BaseComponent {
    * When the user switches back to the component's tab, onInit() is not called again (only if the tab is closed and then reopened).
    * Calls onValidateQueryParameters() internally to perform a validation of the query parameters.
    */
-  onInit(isRefresh = false) {
+  onInit() {
     if (!this.onValidateQueryParameters(this.queryParams)) {
       const toastManager = new ToastManager();
       toastManager.showToast("Error", "Invalid query parameters for the component '" + this.selector + "'.");
@@ -55,8 +58,8 @@ export default class BaseComponent {
     return this.domContent?.querySelector("#" + _id);
   }
 
-  hasAccess(user) {
-    if (this.access.includes(user.role)) return true;
+  hasAccess() {
+    if (this.access.includes(this.session.user.role)) return true;
     else return false;
   }
 

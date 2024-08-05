@@ -17,10 +17,8 @@ export default class MyAppraiseesComponent extends BaseComponent {
   async onInit() {
     super.onInit();
 
-    const session = new Session();
-
     // Appraisees request
-    const appraisees = await RequestManager.request("GET", "users/appraiserid/" + session.user.user_id);
+    const appraisees = await RequestManager.request("GET", "users/appraiserid/" + this.session.user.user_id);
     const noAppraiseesSection = this.getElementById("no-appraisees-section");
     noAppraiseesSection.hidden = true;
     if (!appraisees || appraisees.length === 0) {

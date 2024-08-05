@@ -18,11 +18,11 @@ export default class SubmitFeedbackComponent extends BaseComponent {
 
   addEventListeners() {
     // Submit button
-    const submitButton = this.getElementById("submit-button");
+    const submitButton = this.getElementById("submit-form-button");
     submitButton.addEventListener("click", () => {
       const formData = this.getFormData();
       if (!this.validateFormData(formData)) return false;
-      this.serverRequest(formData);
+      this.postFeedback(formData);
     });
 
     const fields = Object.keys(messages);
@@ -39,9 +39,9 @@ export default class SubmitFeedbackComponent extends BaseComponent {
     });
   }
 
-  async serverRequest(formData) {
+  async postFeedback(formData) {
     const data = {
-      senderId: 1, //TODO:
+      senderId: this.session.user.user_id,
       receiverId: 1, //TODO:
       title: formData["title"],
       body: formData["body"],
@@ -93,6 +93,13 @@ export default class SubmitFeedbackComponent extends BaseComponent {
         validation = false;
       }
     });
+
+    if (formData["title"].length > 120) {
+      const icon = "warning";
+      const message = "<p>The title is too long (" + formData["title"].length + "/120)</p>";
+      this.sendTooltipMessage("title", icon, message, "icon");
+      new ToastManager().showToast("Warning", message, "warning", 5000);
+    }
 
     return validation;
   }
