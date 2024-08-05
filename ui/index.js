@@ -72,7 +72,7 @@ async function start() {
 
   // Open deafult tabs
   // TODO: remove everything except Home and Profile
-  const basicTabs = ["Home", "Profile", "SubmitFeedback", "MyAppraisees", "Appraisee?id=3", "Feedback?id=13"];
+  const basicTabs = ["Home", "Profile", "SubmitFeedback", "MyAppraisees", "Appraisee?id=3", "Feedback?id=13", "MyFeedbacks"];
   await openBasicTabs(basicTabs);
 }
 
