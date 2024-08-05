@@ -21,7 +21,6 @@ export class RequestManager {
    * @param {*} onError - fucntion to run on error
    */
   static async request(method, requestUrl, data) {
-    console.log("request made to " + requestUrl);
     const progressIndicator = new ProgressIndicator(); // Show blurred loading screen
     progressIndicator.show();
     const baseURL = `${Config.protocol}://${Config.host}:${Config.port}/${Config.api}`;

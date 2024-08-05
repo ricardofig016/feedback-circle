@@ -94,7 +94,7 @@ export default class SubmitFeedbackComponent extends BaseComponent {
       }
     });
 
-    if (formData["title"].length > 120) {
+    if (formData.title && formData.title.length > 120) {
       const icon = "warning";
       const message = "<p>The title is too long (" + formData["title"].length + "/120)</p>";
       this.sendTooltipMessage("title", icon, message, "icon");

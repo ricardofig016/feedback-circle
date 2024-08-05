@@ -201,6 +201,15 @@ export default class Tabs {
   }
 
   /**
+   * Closes all tabs.
+   */
+  static closeTabs() {
+    while (Tabs.#tabs.length > 0) {
+      Tabs.#tabs[0].close();
+    }
+  }
+
+  /**
    * Returns tab identified by the provided route path (URL).
    * @param {*} _routePath
    * @returns tab with the (unique) route path

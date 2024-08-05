@@ -4,12 +4,12 @@ import { getAccessibleComponents, redirect, renderRoute } from "./routes/routes.
 import Tabs from "./modules/tabs/tabs.js";
 import Session from "./modules/session/session.js";
 
-function openBasicTabs(tabs) {
-  if (tabs.length === 0) return;
-  setTimeout(() => {
-    window.location.href = "#/" + tabs.shift();
-    openBasicTabs(tabs);
-  }, 5);
+async function openBasicTabs(routes) {
+  for (let i = 0; i < routes.length; i++) {
+    const route = routes[i];
+    await redirect(route, true);
+    renderRoute();
+  }
 }
 
 function redirectToHome() {
@@ -38,10 +38,10 @@ function setupDragAndDrop() {
 }
 
 // Create sidebar items based on the acess of the user
-function createSidebarItems(user) {
+function createSidebarItems() {
   const sidebarItems = document.getElementById("sidebar-items");
   // admin has access to all components
-  const accessibleComponents = getAccessibleComponents(user);
+  const accessibleComponents = getAccessibleComponents();
   accessibleComponents.forEach((component) => {
     const anchorElem = document.createElement("a");
     anchorElem.href = "#/" + component.href;
@@ -51,10 +51,35 @@ function createSidebarItems(user) {
   });
 }
 
-window.addEventListener("DOMContentLoaded", async () => {
-  new Session().start().then((user) => {
-    console.count("index evt listeners");
-    createSidebarItems(user);
+export function signOut() {
+  // Delete user
+  new Session().user = null;
+  // Close tabs
+  Tabs.closeTabs();
+  // Delete sidebar items
+  document.getElementById("sidebar-items").replaceChildren();
+  // Redirect to Home tab
+  redirectToHome();
+  // Restart
+  start();
+}
+
+async function start() {
+  // Wait for sign in
+  await new Session().start();
+
+  createSidebarItems();
+
+  // Open deafult tabs
+  // TODO: remove everything except Home and Profile
+  const basicTabs = ["Home", "Profile", "SubmitFeedback", "MyAppraisees", "Appraisee?id=3", "Feedback?id=13"];
+  await openBasicTabs(basicTabs);
+}
+
+window.addEventListener(
+  "DOMContentLoaded",
+  () => {
+    start();
 
     setupDragAndDrop();
 
@@ -69,17 +94,15 @@ window.addEventListener("DOMContentLoaded", async () => {
     // Event listener for hashchange events to dynamically render components.
     // Renders a HTML page from the route present int the current URL hash.
     window.addEventListener("hashchange", async () => {
+      if (!new Session().user) return;
       if (window.location.hash.length <= 2) {
         redirectToHome();
       } else if (window.location.hash != null && window.location.hash.startsWith("#/")) {
         let routePath = window.location.hash.substring(2); // Remove the '#/' prefix
-        await redirect(routePath, true, user);
+        await redirect(routePath, true);
         renderRoute();
       }
     });
-
-    // Open deafult tabs
-    const basicTabs = ["Home", "Profile", "SubmitFeedback", "MyAppraisees", "Appraisee?id=3", "Feedback?id=18"];
-    openBasicTabs(basicTabs);
-  });
-});
+  },
+  { once: true }
+);

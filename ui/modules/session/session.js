@@ -24,10 +24,14 @@ export default class Session {
       if (!this.user) {
         this.showAuthSection();
         const authForm = document.getElementById("auth-form");
-        authForm.addEventListener("submit", async (e) => {
-          const user = await this.handleSubmit(e);
-          resolve(user);
-        });
+        authForm.addEventListener(
+          "submit",
+          async (e) => {
+            const user = await this.handleSubmit(e);
+            resolve(user);
+          },
+          { once: true } // auto-remove the event after being triggered once
+        );
       } else {
         resolve(this.user);
       }

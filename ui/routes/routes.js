@@ -3,6 +3,7 @@
 import LocalizedMessages from "../localized-messages/localized-messages.js";
 import { throwError } from "../modules/errors/errors.js";
 import Tabs from "../modules/tabs/tabs.js";
+import Session from "../modules/session/session.js";
 
 import HomeComponent from "../components/home/home.component.js";
 import ProfileComponent from "../components/profile/profile.component.js";
@@ -104,7 +105,7 @@ function renderRoute() {
  * @param {*} routePath route path (URL) to redirect to.
  * @param {*} isToOpenInNewTab whether to open the page in a new tab or in the current one.
  */
-async function redirect(routePath, isToOpenInNewTab, user) {
+async function redirect(routePath, isToOpenInNewTab) {
   const tabsManager = new Tabs();
   const tabToOpen = tabsManager.getTab(routePath);
   // If it is to open the page in a new tab and the tab doesn't yet exist for the provided routePath
@@ -113,7 +114,7 @@ async function redirect(routePath, isToOpenInNewTab, user) {
     // Default to NotFoundComponent if route not found
     let RoutedComponentType = Routes[stripURLQueryParameters(routePath)] || NotFoundComponent;
     // Create new tab for the provided routePath, calling component's onInit()
-    const tab = await tabsManager.createTab(routePath, RoutedComponentType, user);
+    const tab = await tabsManager.createTab(routePath, RoutedComponentType);
     if (tab?.tabElement) {
       tab.tabElement.onclick = (e) => {
         window.location.href = "#/" + routePath;
@@ -129,12 +130,12 @@ function stripURLQueryParameters(url) {
   return url;
 }
 
-function getAccessibleComponents(user) {
+function getAccessibleComponents() {
   let accessibleComponents = [];
   const keys = Object.keys(Routes);
   keys.forEach((key) => {
     let component = new Routes[key]();
-    if (component.access.includes(user.role)) {
+    if (component.access.includes(new Session().user.role)) {
       accessibleComponents.push({ title: component.pageTitle, href: key });
     }
     component = null;

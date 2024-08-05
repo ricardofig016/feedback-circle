@@ -68,13 +68,13 @@ export default class AppraiseeComponent extends BaseComponent {
   }
 
   async render() {
-    if (!this.appraisee) this.appraisee = await RequestManager.request("GET", "users/id/" + this.queryParams["id"]);
+    if (!this.appraisee) this.appraisee = await RequestManager.request("GET", "users/id/" + this.queryParams.id);
     this.pageTitle = this.appraisee.name;
     return super.render();
   }
 
   async hasAccess() {
-    if (!this.appraisee) this.appraisee = await RequestManager.request("GET", "users/id/" + this.queryParams["id"]);
+    if (!this.appraisee) this.appraisee = await RequestManager.request("GET", "users/id/" + this.queryParams.id);
     const access = super.hasAccess();
     if (access) return true; // user is admin
     if (this.appraisee.appraiser_id === this.session.user.user_id) return true; // user is the apraiser

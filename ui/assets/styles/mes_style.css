@@ -197,14 +197,21 @@ td .fa-icon:hover + .tooltip {
   display: block; /* Show the tooltip on hover */
 }
 
-#buttons-container {
+#submit-form-buttons-container {
   display: flex;
   flex-grow: 0;
   justify-content: flex-end;
   margin: 8px 45px;
 }
-#buttons-container button {
+
+#submit-form-buttons-container button {
   margin-left: 16px;
+}
+
+#profile-buttons-container {
+  display: flex;
+  flex-grow: 0;
+  justify-content: flex-start;
 }
 
 .property-label {
@@ -340,6 +347,7 @@ input {
 .square-tab {
   height: 100%;
   width: var(--TABS_BAR_HEIGHT);
+  min-width: var(--TABS_BAR_HEIGHT);
 }
 
 .tab:not(.selected):hover {
@@ -773,6 +781,7 @@ input:checked + .slider:before {
 }
 
 .shell-landingpage {
+  margin: 20px 0;
   max-height: 100%;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(calc(var(--LANDING-PAGE-INCREMENT) + 116px), 1fr));
@@ -780,6 +789,10 @@ input:checked + .slider:before {
 }
 
 .shell-landingpage-item {
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 3px;
   color: black;
   font-size: 13px;
   background-color: rgba(0, 102, 161, 0.2);
@@ -788,16 +801,22 @@ input:checked + .slider:before {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-
-.shell-landingpage-item-icon {
-  background-color: #0066a1;
-  width: 42px;
-  height: 42px;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .shell-landingpage-item:hover {
   background-color: #afcee0;
+}
+
+.shell-landingpage-item:active {
+  transform: scale(0.94);
+}
+
+.shell-landingpage-item-icon {
+  margin-bottom: 8px;
+  color: #0066a1;
+  font-size: 32px !important;
 }
 
 .icon-core-st-lg-deeaction {
