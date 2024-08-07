@@ -7,6 +7,8 @@ import Session from "./modules/session/session.js";
 async function openBasicTabs(routes) {
   for (let i = 0; i < routes.length; i++) {
     const route = routes[i];
+    window.location.href = "#/" + route;
+    // Manually open the basic tab
     await redirect(route, true);
     renderRoute();
   }
@@ -51,7 +53,18 @@ function createSidebarItems() {
   });
 }
 
-export function signOut() {
+async function hashChangeHandler() {
+  if (!new Session().user) return;
+  if (window.location.hash.length <= 2) {
+    redirectToHome();
+  } else if (window.location.hash != null && window.location.hash.startsWith("#/")) {
+    let routePath = window.location.hash.substring(2); // Remove the '#/' prefix
+    await redirect(routePath, true);
+    renderRoute();
+  }
+}
+
+export async function signOut() {
   // Delete user
   new Session().user = null;
   // Close tabs
@@ -60,8 +73,10 @@ export function signOut() {
   document.getElementById("sidebar-items").replaceChildren();
   // Redirect to Home tab
   redirectToHome();
+  // Remove hashchange event listener
+  window.removeEventListener("hashchange", hashChangeHandler);
   // Restart
-  start();
+  await start();
 }
 
 async function start() {
@@ -74,12 +89,16 @@ async function start() {
   // TODO: remove everything except Home and Profile
   const basicTabs = ["Home", "Profile", "SubmitFeedback", "MyAppraisees", "Appraisee?id=3", "Feedback?id=13", "MyFeedbacks"];
   await openBasicTabs(basicTabs);
+
+  // Event listener for hashchange events to dynamically render components.
+  // Renders a HTML page from the route present int the current URL hash.
+  window.addEventListener("hashchange", hashChangeHandler);
 }
 
 window.addEventListener(
   "DOMContentLoaded",
-  () => {
-    start();
+  async () => {
+    await start();
 
     setupDragAndDrop();
 
@@ -90,19 +109,6 @@ window.addEventListener(
         await Tabs.currentlyOpenTab.component.refresh();
       });
     }
-
-    // Event listener for hashchange events to dynamically render components.
-    // Renders a HTML page from the route present int the current URL hash.
-    window.addEventListener("hashchange", async () => {
-      if (!new Session().user) return;
-      if (window.location.hash.length <= 2) {
-        redirectToHome();
-      } else if (window.location.hash != null && window.location.hash.startsWith("#/")) {
-        let routePath = window.location.hash.substring(2); // Remove the '#/' prefix
-        await redirect(routePath, true);
-        renderRoute();
-      }
-    });
   },
   { once: true }
 );
