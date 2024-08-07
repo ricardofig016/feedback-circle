@@ -60,16 +60,16 @@ export async function getFeedbacks() {
   return rows;
 }
 
-export async function getFeedbacksOfUser(id, order = "feedback_id", limit = 1000) {
+export async function getFeedbacksOfUser(id, order = "feedback_id") {
   const [rows] = await pool.query(
     `
-    SELECT * 
-    FROM feedbacks
-    WHERE receiver_id = ?
+    SELECT f.*, u.name AS sender_name
+    FROM feedbacks AS f
+    JOIN users AS u ON f.sender_id = u.user_id
+    WHERE f.receiver_id = ?
     ORDER BY ?
-    LIMIT ?
     `,
-    [id, order, limit]
+    [id, order]
   );
   return rows;
 }

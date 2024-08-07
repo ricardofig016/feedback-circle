@@ -28,9 +28,8 @@ export default class MyFeedbacksComponent extends BaseComponent {
 
     for (let i = 0; i < feedbacks.length; i++) {
       const feedback = feedbacks[i];
-      console.table(feedback);
 
-      if (feedback.visibility != "both") continue;
+      if (feedback.visibility != "both") continue; // The user does not have access to this feedback
 
       // Create Row
       const row = new Map();
@@ -40,9 +39,7 @@ export default class MyFeedbacksComponent extends BaseComponent {
       const titleLink = "<a href=" + feedbackUrl + ">" + formatText(feedback.title) + "</a>";
       row.set("title", titleLink);
       // From Column
-      //TODO: send a single request instead of dozens of them for all the users
-      const sender = await RequestManager.request("GET", "users/id/" + feedback.sender_id); // Sender request
-      const from = feedback.privacy === "anonymous" ? "<i>anonymous</i>" : formatText(sender.name);
+      const from = feedback.privacy === "anonymous" ? "<i>anonymous</i>" : formatText(feedback.sender_name);
       row.set("from", from);
       // Body Column
       row.set("body", formatText(feedback.body));

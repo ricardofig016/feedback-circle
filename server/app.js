@@ -79,6 +79,7 @@ router.get("/feedbacks/id/:id", async (req, res) => {
   res.send(feedback);
 });
 
+// get feedbacks given to the user with user_id = id, joined with the name of the sender, ordered from most recent to oldest
 router.get("/feedbacks/mostrecent/receiverid/:id", async (req, res) => {
   const user_id = req.params.id;
   const feedbacks = await getFeedbacksOfUser(user_id, "submit_date");
