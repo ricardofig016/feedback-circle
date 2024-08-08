@@ -86,11 +86,23 @@ export async function getFeedbackById(id) {
   return rows[0];
 }
 
-export async function updateFeedbackIsRead(isRead, id) {
+export async function updateFeedbackIsReadReceiver(isRead, id) {
   const [data] = await pool.query(
     `
     UPDATE feedbacks 
-    SET is_read = ?
+    SET is_read_receiver = ?
+    WHERE feedback_id = ?
+    `,
+    [isRead, id]
+  );
+  return data;
+}
+
+export async function updateFeedbackIsReadAppraiser(isRead, id) {
+  const [data] = await pool.query(
+    `
+    UPDATE feedbacks 
+    SET is_read_appraiser = ?
     WHERE feedback_id = ?
     `,
     [isRead, id]

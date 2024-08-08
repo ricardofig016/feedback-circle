@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 
-import { getFeedbacks, getUsers, getUserById, createFeedback, getUserByEmail, getFeedbackById, getUsersByAppraiserId, getFeedbacksOfUser, updateFeedbackAppraiserNotes, updateFeedbackIsRead, updateFeedbackVisibility } from "./database/database.js";
+import { getFeedbacks, getUsers, getUserById, createFeedback, getUserByEmail, getFeedbackById, getUsersByAppraiserId, getFeedbacksOfUser, updateFeedbackAppraiserNotes, updateFeedbackVisibility, updateFeedbackIsReadAppraiser, updateFeedbackIsReadReceiver } from "./database/database.js";
 import { securityPortalAuth } from "./auth.js";
 
 const app = express();
@@ -79,11 +79,14 @@ router.get("/feedbacks/:id", async (req, res) => {
   res.send(feedback);
 });
 
-// update is_read on feedbacks table
-router.put("/feedbacks/:id/isread", async (req, res) => {
+// update is_read (receiver and appraiser) on feedbacks table
+router.put("/feedbacks/:id/isread/:role", async (req, res) => {
   const id = req.params.id;
+  const role = req.params.role;
   const { isRead } = req.body;
-  await updateFeedbackIsRead(isRead, id);
+  if (role === "receiver") await updateFeedbackIsReadReceiver(isRead, id);
+  else if (role === "appraiser") await updateFeedbackIsReadAppraiser(isRead, id);
+  else return res.status(400).send({ error: 'Invalid role, should be "receiver" or "appraiser"' });
   res.status(204).send({});
 });
 
@@ -95,8 +98,8 @@ router.put("/feedbacks/:id/visibility", async (req, res) => {
   res.status(204).send({});
 });
 
-// update appraiser_notes on feedbacks table with feedback_id = _id_
-router.put("/feedbacks/appraisernotes/:id", async (req, res) => {
+// update appraiser_notes on feedbacks table
+router.put("/feedbacks/:id/appraisernotes", async (req, res) => {
   console.log("now processing request");
   const { notes } = req.body;
   const id = req.params.id;

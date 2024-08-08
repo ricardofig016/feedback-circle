@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS users(
     FOREIGN KEY (appraiser_id) REFERENCES users(user_id)
 );
 --
+-- not used atm
 CREATE TABLE IF NOT EXISTS user_circle (
     user_id INT UNSIGNED NOT NULL,
     related_user_id INT UNSIGNED NOT NULL,
@@ -50,7 +51,8 @@ CREATE TABLE IF NOT EXISTS feedbacks(
     type ENUM('positive', 'negative') NOT NULL,
     privacy ENUM('anonymous', 'private', 'public') NOT NULL,
     visibility ENUM('appraiser', 'both') NOT NULL DEFAULT "appraiser",
-    is_read BOOLEAN DEFAULT false,
+    is_read_receiver BOOLEAN DEFAULT false,
+    is_read_appraiser BOOLEAN DEFAULT false,
     appraiser_notes TEXT DEFAULT NULL,
     PRIMARY KEY (feedback_id),
     FOREIGN KEY (sender_id) REFERENCES users(user_id),
@@ -66,14 +68,7 @@ SELECT *
 FROM feedbacks;
 --@block
 -- insert dummy data
-INSERT INTO users (
-        name,
-        email,
-        role,
-        encrypted_password,
-        appraiser_id,
-        appraiser_notes
-    )
+INSERT INTO users (name, email, role, encrypted_password, appraiser_id, appraiser_notes)
 VALUES (
         "Ricardo Castro",
         "ricardocastro@criticalmanufacturing.com",

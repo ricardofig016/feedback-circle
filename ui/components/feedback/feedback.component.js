@@ -13,6 +13,7 @@ export default class FeedbackComponent extends BaseComponent {
   feedback;
   sender;
   receiver;
+  role;
 
   async onInit(isRefresh = false) {
     super.onInit();
@@ -22,9 +23,13 @@ export default class FeedbackComponent extends BaseComponent {
     if (!this.receiver) this.receiver = await RequestManager.request("GET", "users/id/" + this.feedback.receiver_id);
     console.table(this.feedback);
 
+    // get role of the user related to this feedback
+    this.role = this.session.user.user_id == this.receiver.user_id ? "receiver" : "appraiser";
+    // show appraiser only container to the appraiser
+    if (this.role == "appraiser") this.getElementById("appraiser-only-container").hidden = false;
+
     // mark the feedback as read every time this tab is opened/refreshed
-    await RequestManager.request("PUT", "feedbacks/" + this.queryParams.id + "/isread", { isRead: true });
-    this.feedback.is_read = true;
+    this.updateIsRead(true);
 
     // sender and receiver
     this.getElementById("sender").innerHTML = this.feedback.privacy === "anonymous" ? "<i>anonymous</i>" : formatText(this.sender.name, 1000);
@@ -53,7 +58,7 @@ export default class FeedbackComponent extends BaseComponent {
     };
     this.getElementById("type").innerText = types[this.feedback.type];
     // unread checkbox
-    document.getElementById("unread-checkbox").checked = !Boolean(this.feedback.is_read);
+    document.getElementById("unread-checkbox").checked = !Boolean(this.feedback["is_read_" + this.role]);
     // share checkbox
     this.getElementById("share-span").innerText = this.receiver.name.substring(0, this.receiver.name.indexOf(" "));
     document.getElementById("share-checkbox").checked = this.feedback.visibility === "both";
@@ -68,8 +73,7 @@ export default class FeedbackComponent extends BaseComponent {
     // mark as read/unread
     const unreadCheckbox = this.getElementById("unread-checkbox");
     unreadCheckbox.addEventListener("change", async (e) => {
-      this.feedback.is_read = !e.target.checked;
-      await RequestManager.request("PUT", "feedbacks/" + this.queryParams.id + "/isread", { isRead: this.feedback.is_read });
+      this.updateIsRead(!e.target.checked);
     });
     // share/unshare with apraisee
     const shareCheckbox = this.getElementById("share-checkbox");
@@ -103,7 +107,7 @@ export default class FeedbackComponent extends BaseComponent {
     const newNotes = this.getElementById("appraiser-notes-textarea").value;
     if (newNotes != this.feedback.appraiser_notes) {
       // update database
-      await RequestManager.request("PUT", "feedbacks/appraisernotes/" + this.feedback.feedback_id, { notes: newNotes });
+      await RequestManager.request("PUT", "feedbacks/" + this.feedback.feedback_id + "/appraisernotes", { notes: newNotes });
       // update feedback oject
       this.feedback.appraiser_notes = newNotes;
       // update notes in display mode
@@ -137,5 +141,11 @@ export default class FeedbackComponent extends BaseComponent {
     if (this.receiver.appraiser_id === this.session.user.user_id) return true; // user is the appraiser
     if (this.receiver.user_id === this.session.user.user_id && this.feedback.visibility === "both") return true; // user is the receiver and has visibility
     return false;
+  }
+
+  async updateIsRead(isRead) {
+    const url = "feedbacks/" + this.queryParams.id + "/isread/" + this.role;
+    await RequestManager.request("PUT", url, { isRead: isRead });
+    this.feedback["is_read_" + this.role] = isRead;
   }
 }
