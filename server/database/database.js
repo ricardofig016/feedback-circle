@@ -86,6 +86,42 @@ export async function getFeedbackById(id) {
   return rows[0];
 }
 
+export async function updateFeedbackIsRead(isRead, id) {
+  const [data] = await pool.query(
+    `
+    UPDATE feedbacks 
+    SET is_read = ?
+    WHERE feedback_id = ?
+    `,
+    [isRead, id]
+  );
+  return data;
+}
+
+export async function updateFeedbackVisibility(visibility, id) {
+  const [data] = await pool.query(
+    `
+    UPDATE feedbacks 
+    SET visibility = ?
+    WHERE feedback_id = ?
+    `,
+    [visibility, id]
+  );
+  return data;
+}
+
+export async function updateFeedbackAppraiserNotes(notes, id) {
+  const [data] = await pool.query(
+    `
+    UPDATE feedbacks 
+    SET appraiser_notes = ?
+    WHERE feedback_id = ?
+    `,
+    [notes, id]
+  );
+  return data;
+}
+
 /**
  * @returns the feedback_id of the created feedback
  */

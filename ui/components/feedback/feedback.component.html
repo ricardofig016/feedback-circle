@@ -1,1 +1,34 @@
-<h3>Feedback</h3>
+<div class="split-vert" style="width: 800px">
+  <p>
+    Sent from <b><span id="sender">sender</span></b> to <b><span id="receiver">receiver</span></b> on <b><span id="date">0000-00-00</span></b> at <b><span id="time">00:00:00</span></b>
+  </p>
+  <p id="body">body</p>
+  <p style="margin-bottom: 0">
+    Category: <b><span id="category">category</span></b>
+  </p>
+  <p>
+    Type: <b><span id="type">type</span></b>
+  </p>
+  <div class="split-vert" id="appraiser-only-container">
+    <div style="margin: 14px 0">
+      <label for="unread-checkbox">Mark as unread</label>
+      <input type="checkbox" id="unread-checkbox" name="unread-checkbox" />
+      <br />
+      <label for="share-checkbox">Share with <span id="share-span">receiver</span></label>
+      <input type="checkbox" id="share-checkbox" name="share-checkbox" />
+    </div>
+    <div id="appraiser-notes-container">
+      Your private notes:
+      <div id="appraiser-notes-display-mode">
+        <button class="edit-button" id="edit-appraiser-notes-button">
+          <i class="fa fa-edit"></i>
+          <span>edit</span>
+        </button>
+        <p id="appraiser-notes"><i>Your private notes</i></p>
+      </div>
+      <div id="appraiser-notes-edit-mode" hidden>
+        <textarea id="appraiser-notes-textarea" placeholder="Write your private notes here..."></textarea>
+      </div>
+    </div>
+  </div>
+</div>

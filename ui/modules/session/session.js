@@ -64,7 +64,6 @@ export default class Session {
     // TODO: password logic
     this.user = res;
     this.showMainSection();
-    new ToastManager().showToast("Welcome", "Authentication Succeded", "success", 5000);
     return this.user;
   }
 }

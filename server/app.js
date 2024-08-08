@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 
-import { getFeedbacks, getUsers, getUserById, createFeedback, getUserByEmail, getFeedbackById, getUsersByAppraiserId, getFeedbacksOfUser } from "./database/database.js";
+import { getFeedbacks, getUsers, getUserById, createFeedback, getUserByEmail, getFeedbackById, getUsersByAppraiserId, getFeedbacksOfUser, updateFeedbackAppraiserNotes, updateFeedbackIsRead, updateFeedbackVisibility } from "./database/database.js";
 import { securityPortalAuth } from "./auth.js";
 
 const app = express();
@@ -72,14 +72,39 @@ router.post("/feedbacks", async (req, res) => {
   res.status(201).send(feedback);
 });
 
-router.get("/feedbacks/id/:id", async (req, res) => {
+router.get("/feedbacks/:id", async (req, res) => {
   const id = req.params.id;
   const feedback = await getFeedbackById(id);
   if (!feedback) return res.status(404).send({ error: "No feedback found with id " + id });
   res.send(feedback);
 });
 
-// get feedbacks given to the user with user_id = id, joined with the name of the sender, ordered from most recent to oldest
+// update is_read on feedbacks table
+router.put("/feedbacks/:id/isread", async (req, res) => {
+  const id = req.params.id;
+  const { isRead } = req.body;
+  await updateFeedbackIsRead(isRead, id);
+  res.status(204).send({});
+});
+
+// update visibility on feedbacks table
+router.put("/feedbacks/:id/visibility", async (req, res) => {
+  const id = req.params.id;
+  const { visibility } = req.body;
+  await updateFeedbackVisibility(visibility, id);
+  res.status(204).send({});
+});
+
+// update appraiser_notes on feedbacks table with feedback_id = _id_
+router.put("/feedbacks/appraisernotes/:id", async (req, res) => {
+  console.log("now processing request");
+  const { notes } = req.body;
+  const id = req.params.id;
+  await updateFeedbackAppraiserNotes(notes, id);
+  res.status(204).send({});
+});
+
+// get feedbacks given to the user with user_id = _id_, joined with the name of the sender, ordered from most recent to oldest
 router.get("/feedbacks/mostrecent/receiverid/:id", async (req, res) => {
   const user_id = req.params.id;
   const feedbacks = await getFeedbacksOfUser(user_id);

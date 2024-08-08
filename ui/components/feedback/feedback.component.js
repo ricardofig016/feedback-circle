@@ -3,6 +3,7 @@
 import BaseComponent from "../base/base.component.js";
 import { RequestManager } from "../../modules/requests/requests.js";
 import formatText from "../../utilities/format-text.js";
+import formatDate from "../../utilities/format-date.js";
 
 export default class FeedbackComponent extends BaseComponent {
   selector = "feedback";
@@ -10,20 +11,125 @@ export default class FeedbackComponent extends BaseComponent {
   pageIcon = "fa-tag";
   access = ["admin"];
   feedback;
+  sender;
   receiver;
 
-  onInit() {
+  async onInit(isRefresh = false) {
     super.onInit();
+
+    if (!this.feedback) this.feedback = await RequestManager.request("GET", "feedbacks/" + this.queryParams.id);
+    if (!this.sender) this.sender = await RequestManager.request("GET", "users/id/" + this.feedback.sender_id);
+    if (!this.receiver) this.receiver = await RequestManager.request("GET", "users/id/" + this.feedback.receiver_id);
+    console.table(this.feedback);
+
+    // mark the feedback as read every time this tab is opened/refreshed
+    await RequestManager.request("PUT", "feedbacks/" + this.queryParams.id + "/isread", { isRead: true });
+    this.feedback.is_read = true;
+
+    // sender and receiver
+    this.getElementById("sender").innerHTML = this.feedback.privacy === "anonymous" ? "<i>anonymous</i>" : formatText(this.sender.name, 1000);
+    this.getElementById("receiver").innerText = this.receiver.name;
+    // date and time
+    const fullDate = formatDate(new Date(this.feedback.submission_date));
+    this.getElementById("date").innerText = fullDate.substring(0, fullDate.indexOf(" "));
+    this.getElementById("time").innerText = fullDate.substring(fullDate.indexOf(" "));
+    // body
+    this.getElementById("body").innerText = this.feedback.body;
+    // category
+    const categories = {
+      general: "General",
+      "execution-and-delivery": "Execution and Delivery",
+      innovation: "Innovation",
+      agility: "Agility",
+      commitment: "Commitment",
+      communication: "Communication",
+      "customer-orientation": "Customer Orientation",
+    };
+    this.getElementById("category").innerText = categories[this.feedback.category];
+    // type
+    const types = {
+      positive: "Positive",
+      negative: "Needs Improvement",
+    };
+    this.getElementById("type").innerText = types[this.feedback.type];
+    // unread checkbox
+    document.getElementById("unread-checkbox").checked = !Boolean(this.feedback.is_read);
+    // share checkbox
+    this.getElementById("share-span").innerText = this.receiver.name.substring(0, this.receiver.name.indexOf(" "));
+    document.getElementById("share-checkbox").checked = this.feedback.visibility === "both";
+    // appraiser notes
+    this.getElementById("appraiser-notes").innerText = this.feedback.appraiser_notes;
+    this.getElementById("appraiser-notes-textarea").value = this.feedback.appraiser_notes;
+
+    if (!isRefresh) this.addEventListeners();
+  }
+
+  addEventListeners() {
+    // mark as read/unread
+    const unreadCheckbox = this.getElementById("unread-checkbox");
+    unreadCheckbox.addEventListener("change", async (e) => {
+      this.feedback.is_read = !e.target.checked;
+      await RequestManager.request("PUT", "feedbacks/" + this.queryParams.id + "/isread", { isRead: this.feedback.is_read });
+    });
+    // share/unshare with apraisee
+    const shareCheckbox = this.getElementById("share-checkbox");
+    shareCheckbox.addEventListener("change", async (e) => {
+      this.feedback.visibility = e.target.checked ? "both" : "appraiser";
+      await RequestManager.request("PUT", "feedbacks/" + this.queryParams.id + "/visibility", { visibility: this.feedback.visibility });
+    });
+    // edit appraiser notes
+    const editButton = this.getElementById("edit-appraiser-notes-button");
+    editButton.addEventListener("click", () => {
+      this.goToEditNotes();
+    });
+    // submit change to appraiser notes
+    const notesTextarea = this.getElementById("appraiser-notes-textarea");
+    notesTextarea.addEventListener("keydown", async (e) => {
+      if (e.key === "Enter") return await this.submitNotes();
+      if (e.key === "Escape") return this.exitEditMode();
+    });
+  }
+
+  goToEditNotes() {
+    // go to edit mode
+    this.getElementById("appraiser-notes-display-mode").hidden = true;
+    this.getElementById("appraiser-notes-edit-mode").hidden = false;
+    // make the textarea element active
+    this.getElementById("appraiser-notes-textarea").focus();
+  }
+
+  async submitNotes() {
+    // submit
+    const newNotes = this.getElementById("appraiser-notes-textarea").value;
+    if (newNotes != this.feedback.appraiser_notes) {
+      // update database
+      await RequestManager.request("PUT", "feedbacks/appraisernotes/" + this.feedback.feedback_id, { notes: newNotes });
+      // update feedback oject
+      this.feedback.appraiser_notes = newNotes;
+      // update notes in display mode
+      this.getElementById("appraiser-notes").innerText = newNotes;
+    }
+    // go to display mode
+    this.getElementById("appraiser-notes-display-mode").hidden = false;
+    this.getElementById("appraiser-notes-edit-mode").hidden = true;
+  }
+
+  exitEditMode() {
+    // reset notes
+    this.getElementById("appraiser-notes-textarea").value = this.feedback.appraiser_notes;
+    // go to display mode
+    this.getElementById("appraiser-notes-display-mode").hidden = false;
+    this.getElementById("appraiser-notes-edit-mode").hidden = true;
   }
 
   async render() {
-    if (!this.feedback) this.feedback = await RequestManager.request("GET", "feedbacks/id/" + this.queryParams.id);
+    if (!this.feedback) this.feedback = await RequestManager.request("GET", "feedbacks/" + this.queryParams.id);
     this.pageTitle = this.feedback.title;
     return super.render();
   }
 
   async hasAccess() {
-    if (!this.feedback) this.feedback = await RequestManager.request("GET", "feedbacks/id/" + this.queryParams.id);
+    if (!this.feedback) this.feedback = await RequestManager.request("GET", "feedbacks/" + this.queryParams.id);
     const receiverId = this.feedback.receiver_id;
     if (!this.receiver) this.receiver = await RequestManager.request("GET", "users/id/" + receiverId);
     const access = super.hasAccess();

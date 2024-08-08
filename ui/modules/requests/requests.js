@@ -49,9 +49,10 @@ export class RequestManager {
       progressIndicator.hide();
       throwError(errorToDisplay);
     }
-    if (res.Error?.length > 0) throwError(res.Error);
-    const jsonData = await res.json();
     progressIndicator.hide();
+    if (res.Error?.length > 0) throwError(res.Error);
+    if (res.status === 204) return;
+    const jsonData = await res.json();
     return jsonData;
   }
 }
