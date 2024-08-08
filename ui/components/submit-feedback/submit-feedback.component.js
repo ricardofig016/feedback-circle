@@ -42,7 +42,7 @@ export default class SubmitFeedbackComponent extends BaseComponent {
   async postFeedback(formData) {
     const data = {
       senderId: this.session.user.user_id,
-      receiverId: 1, //TODO:
+      receiverId: 3, //TODO:
       title: formData["title"],
       body: formData["body"],
       category: formData["category"],

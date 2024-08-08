@@ -25,8 +25,9 @@ export default class FeedbackComponent extends BaseComponent {
 
     // get role of the user related to this feedback
     this.role = this.session.user.user_id == this.receiver.user_id ? "receiver" : "appraiser";
+    console.log(this.session.user.user_id, this.receiver.user_id, this.role);
     // show appraiser only container to the appraiser
-    if (this.role == "appraiser") this.getElementById("appraiser-only-container").hidden = false;
+    if (this.role === "appraiser") this.getElementById("appraiser-only-container").style.display = "block";
 
     // mark the feedback as read every time this tab is opened/refreshed
     this.updateIsRead(true);

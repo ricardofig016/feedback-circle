@@ -81,13 +81,16 @@ export async function signOut() {
 
 async function start() {
   // Wait for sign in
-  await new Session().start();
+  const session = new Session();
+  await session.start();
 
   createSidebarItems();
 
   // Open deafult tabs
   // TODO: remove everything except Home and Profile
-  const basicTabs = ["Home", "Profile", "SubmitFeedback", "MyAppraisees", "MyFeedbacks", "Appraisee?id=3", "Feedback?id=5"];
+  let basicTabs;
+  if (session.user.user_id == 2) basicTabs = ["Home", "Profile", "SubmitFeedback", "MyAppraisees", "Appraisee?id=3", "Feedback?id=1"];
+  if (session.user.user_id == 3) basicTabs = ["Home", "Profile", "MyFeedbacks", "Feedback?id=2"];
   await openBasicTabs(basicTabs);
 
   // Event listener for hashchange events to dynamically render components.
