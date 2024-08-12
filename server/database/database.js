@@ -86,50 +86,15 @@ export async function getFeedbackById(id) {
   return rows[0];
 }
 
-export async function updateFeedbackIsReadReceiver(isRead, id) {
+// caution: columnName parameter can never be sent by the user, to prevent sql injection
+export async function updateFeedback(columnName, value, id) {
   const [data] = await pool.query(
     `
     UPDATE feedbacks 
-    SET is_read_receiver = ?
+    SET ${columnName} = ?
     WHERE feedback_id = ?
     `,
-    [isRead, id]
-  );
-  return data;
-}
-
-export async function updateFeedbackIsReadAppraiser(isRead, id) {
-  const [data] = await pool.query(
-    `
-    UPDATE feedbacks 
-    SET is_read_appraiser = ?
-    WHERE feedback_id = ?
-    `,
-    [isRead, id]
-  );
-  return data;
-}
-
-export async function updateFeedbackVisibility(visibility, id) {
-  const [data] = await pool.query(
-    `
-    UPDATE feedbacks 
-    SET visibility = ?
-    WHERE feedback_id = ?
-    `,
-    [visibility, id]
-  );
-  return data;
-}
-
-export async function updateFeedbackAppraiserNotes(notes, id) {
-  const [data] = await pool.query(
-    `
-    UPDATE feedbacks 
-    SET appraiser_notes = ?
-    WHERE feedback_id = ?
-    `,
-    [notes, id]
+    [value, id]
   );
   return data;
 }
@@ -137,13 +102,13 @@ export async function updateFeedbackAppraiserNotes(notes, id) {
 /**
  * @returns the feedback_id of the created feedback
  */
-export async function createFeedback(senderId, receiverId, title, body, submissionDate, category, type, privacy) {
+export async function createFeedback(senderId, receiverId, title, positiveMessage, negativeMessage, submissionDate, category, privacy, rating) {
   const [data] = await pool.query(
     `
-    INSERT INTO feedbacks (sender_id, receiver_id, title, body, submission_date, category, type, privacy)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+    INSERT INTO feedbacks (sender_id, receiver_id, title, positive_message, negative_message , submission_date, category, privacy, rating)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
     `,
-    [senderId, receiverId, title, body, submissionDate, category, type, privacy]
+    [senderId, receiverId, title, positiveMessage, negativeMessage, submissionDate, category, privacy, rating]
   );
   // return the created object
   return data.insertId;

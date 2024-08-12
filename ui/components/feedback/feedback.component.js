@@ -25,12 +25,11 @@ export default class FeedbackComponent extends BaseComponent {
 
     // get role of the user related to this feedback
     this.role = this.session.user.user_id == this.receiver.user_id ? "receiver" : "appraiser";
-    console.log(this.session.user.user_id, this.receiver.user_id, this.role);
     // show appraiser only container to the appraiser
     if (this.role === "appraiser") this.getElementById("appraiser-only-container").style.display = "block";
 
     // mark the feedback as read every time this tab is opened/refreshed
-    this.updateIsRead(true);
+    await this.updateIsRead(true);
 
     // sender and receiver
     this.getElementById("sender").innerHTML = this.feedback.privacy === "anonymous" ? "<i>anonymous</i>" : formatText(this.sender.name, 1000);
@@ -39,8 +38,10 @@ export default class FeedbackComponent extends BaseComponent {
     const fullDate = formatDate(new Date(this.feedback.submission_date));
     this.getElementById("date").innerText = fullDate.substring(0, fullDate.indexOf(" "));
     this.getElementById("time").innerText = fullDate.substring(fullDate.indexOf(" "));
-    // body
-    this.getElementById("body").innerText = this.feedback.body;
+    // positive message
+    this.getElementById("positive").innerText = this.feedback.positive_message;
+    // negative message
+    this.getElementById("negative").innerText = this.feedback.negative_message;
     // category
     const categories = {
       general: "General",
@@ -52,12 +53,8 @@ export default class FeedbackComponent extends BaseComponent {
       "customer-orientation": "Customer Orientation",
     };
     this.getElementById("category").innerText = categories[this.feedback.category];
-    // type
-    const types = {
-      positive: "Positive",
-      negative: "Needs Improvement",
-    };
-    this.getElementById("type").innerText = types[this.feedback.type];
+    // rating
+    for (let i = 1; i <= this.feedback.rating; i++) this.getElementById("star" + i).classList.add("blue-star");
     // unread checkbox
     document.getElementById("unread-checkbox").checked = !Boolean(this.feedback["is_read_" + this.role]);
     // share checkbox

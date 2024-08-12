@@ -1,89 +1,109 @@
 <form class="form" onsubmit="return false;" style="width: 90%">
   <div class="split-vert">
+    <!--Name-->
     <div class="split-hor">
-      <div class="split-vert">
-        <!--Labels-->
-        <div class="form-field form-label">
-          <span><b>Name:</b></span>
-        </div>
-        <div class="form-field form-label">
-          <span><b>Category:</b></span>
-        </div>
-        <div class="form-field form-label">
-          <span><b>Type:</b></span>
-        </div>
-        <div class="form-field form-label">
-          <span><b>Privacy:</b></span>
-        </div>
-        <div class="form-field form-label">
-          <span><b>Title:</b></span>
-        </div>
-        <div class="form-field form-label">
-          <span><b>Body:</b></span>
-        </div>
+      <div class="form-field form-label">
+        <span><b>Name:</b></span>
       </div>
-
-      <!--Inputs-->
-      <div class="split-vert" style="flex-grow: 1">
-        <!--Name-->
-        <input type="text" class="form-field form-input" id="name-input" placeholder="Search name..." />
-        <!--Category-->
-        <select class="form-field form-select" id="category-input">
-          <option value="" disabled selected>Select a category</option>
-          <option value="general">General</option>
-          <option value="execution-and-delivery">Execution and Delivery</option>
-          <option value="innovation">Innovation</option>
-          <option value="agility">Agility</option>
-          <option value="commitment">Commitment</option>
-          <option value="communication">Communication</option>
-          <option value="customer-orientation">Customer Orientation</option>
-        </select>
-        <!--Type-->
-        <select class="form-field form-select" id="type-input">
-          <option value="" disabled selected>Select an type</option>
-          <option value="positive">Positive</option>
-          <option value="negative">Needs Improvement</option>
-        </select>
-        <!--Privacy-->
-        <select class="form-field form-select" id="privacy-input">
-          <option value="" disabled selected>Select Privacy</option>
-          <option value="anonymous">Anonymous</option>
-          <option value="private">Private</option>
-          <option value="public">Public</option>
-        </select>
-        <!--Title-->
-        <input type="text" class="form-field form-input" id="title-input" placeholder="Enter title..." />
-        <!--Body-->
-        <textarea class="form-field form-textarea" id="body-input" placeholder="Enter feedback here..."></textarea>
+      <input type="text" class="form-field form-input" id="name-input" placeholder="Search name..." />
+      <div class="form-field form-icon">
+        <i class="fa fa-info-circle" id="name-icon" aria-hidden="true"></i>
+        <div class="tooltip" id="name-tooltip"></div>
       </div>
+    </div>
+    <!--Category-->
+    <div class="split-hor">
+      <div class="form-field form-label">
+        <span><b>Category:</b></span>
+      </div>
+      <select class="form-field form-select" id="category-input">
+        <option value="" disabled selected>Select a category</option>
+        <option value="general">General</option>
+        <option value="execution-and-delivery">Execution and Delivery</option>
+        <option value="innovation">Innovation</option>
+        <option value="agility">Agility</option>
+        <option value="commitment">Commitment</option>
+        <option value="communication">Communication</option>
+        <option value="customer-orientation">Customer Orientation</option>
+      </select>
+      <div class="form-field form-icon">
+        <i class="fa fa-info-circle" id="category-icon" aria-hidden="true"></i>
+        <div class="tooltip" id="category-tooltip"></div>
+      </div>
+    </div>
+    <!--Privacy-->
+    <div class="split-hor">
+      <div class="form-field form-label">
+        <span><b>Privacy:</b></span>
+      </div>
+      <select class="form-field form-select" id="privacy-input">
+        <option value="" disabled selected>Select privacy level</option>
+        <option value="anonymous">Anonymous</option>
+        <option value="private">Private</option>
+        <option value="public">Public</option>
+      </select>
+      <div class="form-field form-icon">
+        <i class="fa fa-info-circle" id="privacy-icon" aria-hidden="true"></i>
+        <div class="tooltip" id="privacy-tooltip"></div>
+      </div>
+    </div>
+    <!--Rating-->
+    <div class="split-hor">
+      <div class="form-field form-label">
+        <span><b>Rating:</b></span>
+      </div>
+      <div class="form-field form-rating" id="rating-input">
+        <input type="radio" id="star4" name="rating" value="4" />
+        <label for="star4">&#9733;</label>
+        <input type="radio" id="star3" name="rating" value="3" />
+        <label for="star3">&#9733;</label>
+        <input type="radio" id="star2" name="rating" value="2" />
+        <label for="star2">&#9733;</label>
+        <input type="radio" id="star1" name="rating" value="1" />
+        <label for="star1">&#9733;</label>
+      </div>
+      <div class="form-field form-icon">
+        <i class="fa fa-info-circle" id="rating-icon" aria-hidden="true"></i>
+        <div class="tooltip" id="rating-tooltip"></div>
+      </div>
+    </div>
+    <!--Title-->
+    <div class="split-hor">
+      <div class="form-field form-label">
+        <span><b>Title:</b></span>
+      </div>
+      <input type="text" class="form-field form-input" id="title-input" placeholder="Enter title..." />
+      <div class="form-field form-icon">
+        <i class="fa fa-info-circle" id="title-icon" aria-hidden="true"></i>
+        <div class="tooltip" id="title-tooltip"></div>
+      </div>
+    </div>
+    <!--Positive Message-->
+    <div class="split-hor">
+      <div class="form-field form-label">
+        <span><b>Positive:</b></span>
+      </div>
+      <textarea class="form-field form-textarea" id="positive-input" placeholder="Describe positive aspects..."></textarea>
+      <div class="form-field form-icon">
+        <i class="fa fa-info-circle" id="positive-icon" aria-hidden="true"></i>
+        <div class="tooltip" id="positive-tooltip"></div>
+      </div>
+    </div>
+    <!--Negative Message-->
+    <div class="split-hor">
+      <div class="form-field form-label">
+        <span><b>To be improved:</b></span>
+      </div>
+      <textarea class="form-field form-textarea" id="negative-input" placeholder="Describe aspects to be improved..."></textarea>
+      <div class="form-field form-icon">
+        <i class="fa fa-info-circle" id="negative-icon" aria-hidden="true"></i>
+        <div class="tooltip" id="negative-tooltip"></div>
+      </div>
+    </div>
 
+    <div class="split-hor">
       <!--Tooltips-->
-      <div class="split-vert">
-        <div class="form-field form-icon">
-          <i class="fa fa-info-circle" id="name-icon" aria-hidden="true"></i>
-          <div class="tooltip" id="name-tooltip"></div>
-        </div>
-        <div class="form-field form-icon">
-          <i class="fa fa-info-circle" id="category-icon" aria-hidden="true"></i>
-          <div class="tooltip" id="category-tooltip"></div>
-        </div>
-        <div class="form-field form-icon">
-          <i class="fa fa-info-circle" id="type-icon" aria-hidden="true"></i>
-          <div class="tooltip" id="type-tooltip"></div>
-        </div>
-        <div class="form-field form-icon">
-          <i class="fa fa-info-circle" id="privacy-icon" aria-hidden="true"></i>
-          <div class="tooltip" id="privacy-tooltip"></div>
-        </div>
-        <div class="form-field form-icon">
-          <i class="fa fa-info-circle" id="title-icon" aria-hidden="true"></i>
-          <div class="tooltip" id="title-tooltip"></div>
-        </div>
-        <div class="form-field form-icon">
-          <i class="fa fa-info-circle" id="body-icon" aria-hidden="true"></i>
-          <div class="tooltip" id="body-tooltip"></div>
-        </div>
-      </div>
+      <div class="split-vert"></div>
     </div>
 
     <div id="submit-form-buttons-container">

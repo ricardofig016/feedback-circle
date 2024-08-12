@@ -114,14 +114,21 @@ a {
 }
 
 .form-label {
+  min-width: 100px;
   display: flex;
   justify-content: flex-end;
+}
+
+.form-label span {
+  display: flex;
+  align-items: center;
 }
 
 .form-select,
 .form-input,
 .form-radio,
 .form-textarea {
+  flex-grow: 1;
   background-color: #f5f5f5;
   border: 0;
   border-radius: 0;
@@ -134,6 +141,46 @@ a {
 .form-select {
   cursor: pointer;
   box-sizing: content-box;
+}
+
+.form-rating {
+  height: 54px;
+  margin: 0;
+  padding: 0;
+  flex-grow: 1;
+  direction: rtl;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+
+.form-rating input[type="radio"] {
+  display: none;
+}
+
+.form-rating label {
+  padding: 0 10px;
+  font-size: 26px;
+  color: lightgray;
+  cursor: pointer;
+}
+
+.form-rating input[type="radio"]:checked ~ label {
+  color: rgba(0, 102, 161, 0.95);
+}
+
+.form-rating label:hover {
+  color: rgba(0, 102, 161, 0.95);
+  transform: scale(1.15);
+}
+.form-rating label:hover ~ label {
+  color: rgba(0, 102, 161, 0.95);
+}
+
+.form-textarea {
+  flex-grow: 1;
+  min-height: 140px;
+  resize: none;
 }
 
 .form-icon {
@@ -195,12 +242,6 @@ a {
 .form-icon i:hover + .tooltip,
 td .fa-icon:hover + .tooltip {
   display: block; /* Show the tooltip on hover */
-}
-
-.form-textarea {
-  flex-grow: 1;
-  min-height: 140px;
-  resize: none;
 }
 
 #submit-form-buttons-container {
@@ -946,6 +987,21 @@ input:checked + .slider:before {
   display: flex;
   justify-content: end;
   margin-top: 40px;
+}
+
+.star-container {
+  display: flex;
+  align-items: center;
+}
+
+.star-container span {
+  padding: 0 10px;
+  font-size: 26px;
+  color: lightgray;
+}
+
+.star-container .blue-star {
+  color: rgba(0, 102, 161, 0.95);
 }
 
 #appraiser-notes-container {

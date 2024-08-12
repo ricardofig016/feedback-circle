@@ -37,7 +37,10 @@ CREATE TABLE IF NOT EXISTS feedbacks(
     sender_id INT UNSIGNED NOT NULL,
     receiver_id INT UNSIGNED NOT NULL,
     title TEXT NOT NULL,
-    body TEXT NOT NULL,
+    positive_message TEXT DEFAULT NULL,
+    positive_message_appraiser_edit TEXT DEFAULT NULL,
+    negative_message TEXT DEFAULT NULL,
+    negative_message_appraiser_edit TEXT DEFAULT NULL,
     submission_date DATETIME NOT NULL,
     category ENUM(
         'general',
@@ -48,9 +51,9 @@ CREATE TABLE IF NOT EXISTS feedbacks(
         'communication',
         'customer-orientation'
     ) NOT NULL,
-    type ENUM('positive', 'negative') NOT NULL,
     privacy ENUM('anonymous', 'private', 'public') NOT NULL,
     visibility ENUM('appraiser', 'both') NOT NULL DEFAULT "appraiser",
+    rating INT UNSIGNED NOT NULL,
     is_read_receiver BOOLEAN DEFAULT false,
     is_read_appraiser BOOLEAN DEFAULT false,
     appraiser_notes TEXT DEFAULT NULL,
@@ -75,11 +78,11 @@ VALUES  ("Ricardo Castro", "ricardocastro@criticalmanufacturing.com", "admin", "
         ("Vasco Cruz", "vascocruz@criticalmanufacturing.com", "user", "-", 2, "notes about vasco"),
         ("Another User", "anotheruser@criticalmanufacturing.com", "user", "-", null, "this guy has no feedbacks");
 --
-INSERT INTO feedbacks (sender_id, receiver_id, title, body, submission_date, category, type, privacy, visibility, appraiser_notes)
-VALUES  (1, 3, "Feedback 1", "This is the body for feedback 1", "2003-01-01 00:58:00", "general", "positive", "anonymous", "appraiser", "Appraiser notes for feedback 1" ),
-        (2, 3, "Feedback 2", "This is the body for feedback 2", "2006-03-10 05:50:03", "execution-and-delivery", "negative", "private", "appraiser", "Appraiser notes for feedback 2" ),
-        (1, 3, "Feedback 3", "This is the body for feedback 3", "2012-05-20 09:40:14", "innovation", "positive", "public", "appraiser", "Appraiser notes for feedback 3" ),
-        (2, 3, "Feedback 4", "This is the body for feedback 4", "2018-07-30 12:32:25", "agility", "negative", "anonymous", "appraiser", "Appraiser notes for feedback 4" ),
-        (1, 3, "Feedback 5", "This is the body for feedback 5", "2022-09-15 15:24:36", "commitment", "positive", "private", "appraiser", "Appraiser notes for feedback 5" ),
-        (2, 3, "Feedback 6", "This is the body for feedback 6", "2023-12-25 19:12:47", "communication", "negative", "public", "appraiser", "Appraiser notes for feedback 6" ),
-        (1, 3, "Feedback 7", "This is the body for feedback 7", "2024-03-31 23:01:59", "customer-orientation", "positive", "anonymous", "appraiser", "Appraiser notes for feedback 7" );
+INSERT INTO feedbacks (sender_id, receiver_id, title, positive_message, negative_message , submission_date, category, privacy, rating, appraiser_notes)
+VALUES  (1, 3, "Feedback 1", "This is the positive_message for feedback 1", "This is the negative_message for feedback 1", "2003-01-01 00:58:00", "general", "anonymous", 1, "Appraiser notes for feedback 1" ),
+        (2, 3, "Feedback 2", "This is the positive_message for feedback 2", "This is the negative_message for feedback 2", "2006-03-10 05:50:03", "execution-and-delivery", "private", 2, "Appraiser notes for feedback 2" ),
+        (1, 3, "Feedback 3", "This is the positive_message for feedback 3", "This is the negative_message for feedback 3", "2012-05-20 09:40:14", "innovation", "public", 3, "Appraiser notes for feedback 3" ),
+        (2, 3, "Feedback 4", "This is the positive_message for feedback 4", "This is the negative_message for feedback 4", "2018-07-30 12:32:25", "agility", "anonymous", 4, "Appraiser notes for feedback 4" ),
+        (1, 3, "Feedback 5", "This is the positive_message for feedback 5", "This is the negative_message for feedback 5", "2022-09-15 15:24:36", "commitment", "private", 1, "Appraiser notes for feedback 5" ),
+        (2, 3, "Feedback 6", "This is the positive_message for feedback 6", "This is the negative_message for feedback 6", "2023-12-25 19:12:47", "communication", "public", 2, "Appraiser notes for feedback 6" ),
+        (1, 3, "Feedback 7", "This is the positive_message for feedback 7", "This is the negative_message for feedback 7", "2024-03-31 23:01:59", "customer-orientation", "anonymous", 3, "Appraiser notes for feedback 7" );

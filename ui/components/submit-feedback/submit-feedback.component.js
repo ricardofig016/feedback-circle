@@ -44,12 +44,15 @@ export default class SubmitFeedbackComponent extends BaseComponent {
       senderId: this.session.user.user_id,
       receiverId: 3, //TODO:
       title: formData["title"],
-      body: formData["body"],
+      positiveMessage: formData["positive"],
+      negativeMessage: formData["negative"],
       category: formData["category"],
-      type: formData["type"],
       privacy: formData["privacy"],
+      rating: formData["rating"],
     };
+    console.table(data);
     const res = await RequestManager.request("POST", "feedbacks", data);
+    console.table(res);
     new ToastManager().showToast("Success", "Feedback submited", "success", 5000);
   }
 
@@ -65,7 +68,7 @@ export default class SubmitFeedbackComponent extends BaseComponent {
   getInputFieldValue(field) {
     const inputElem = this.getElementById(field + "-input");
     // Radio inputs
-    if (inputElem.classList.contains("form-radio")) {
+    if (inputElem.classList.contains("form-radio") || inputElem.classList.contains("form-rating")) {
       // Find the selected radio
       const selectedRadio = inputElem.querySelector('input[name="' + field + '"]:checked');
       if (selectedRadio && selectedRadio.value) return selectedRadio.value;
@@ -83,14 +86,16 @@ export default class SubmitFeedbackComponent extends BaseComponent {
     fields.forEach((field) => {
       // Missing value
       if (!formData[field]) {
-        // Tooltip
-        const icon = messages[field]["missingValue"]["icon"];
-        const message = messages[field]["missingValue"]["text"];
-        this.sendTooltipMessage(field, icon, message, "icon");
-        // Toast
-        new ToastManager().showToast("Warning", message, "warning", 5000);
-        // Unvalidate form data
-        validation = false;
+        if (!["positive", "negative"].includes(field) || (!formData["positive"] && !formData["negative"])) {
+          // Tooltip
+          const icon = messages[field]["missingValue"]["icon"];
+          const message = messages[field]["missingValue"]["text"];
+          this.sendTooltipMessage(field, icon, message, "icon");
+          // Toast
+          if (field !== "negative") new ToastManager().showToast("Warning", message, "warning", 5000);
+          // Unvalidate form data
+          validation = false;
+        }
       }
     });
 

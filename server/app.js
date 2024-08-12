@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 
-import { getFeedbacks, getUsers, getUserById, createFeedback, getUserByEmail, getFeedbackById, getUsersByAppraiserId, getFeedbacksOfUser, updateFeedbackAppraiserNotes, updateFeedbackVisibility, updateFeedbackIsReadAppraiser, updateFeedbackIsReadReceiver } from "./database/database.js";
+import { getFeedbacks, getUsers, getUserById, createFeedback, getUserByEmail, getFeedbackById, getUsersByAppraiserId, getFeedbacksOfUser, updateFeedback } from "./database/database.js";
 import { securityPortalAuth } from "./auth.js";
 
 const app = express();
@@ -60,9 +60,9 @@ router.get("/feedbacks", async (req, res) => {
 });
 
 router.post("/feedbacks", async (req, res) => {
-  const { senderId, receiverId, title, body, category, type, privacy } = req.body;
+  const { senderId, receiverId, title, positiveMessage, negativeMessage, category, privacy, rating } = req.body;
   const submissionDate = formatDate(new Date());
-  const feedbackId = await createFeedback(senderId, receiverId, title, body, submissionDate, category, type, privacy);
+  const feedbackId = await createFeedback(senderId, receiverId, title, positiveMessage, negativeMessage, submissionDate, category, privacy, rating);
 
   if (!feedbackId) return res.status(400).send({ error: "Feedback creation failed" });
 
@@ -84,9 +84,11 @@ router.put("/feedbacks/:id/isread/:role", async (req, res) => {
   const id = req.params.id;
   const role = req.params.role;
   const { isRead } = req.body;
-  if (role === "receiver") await updateFeedbackIsReadReceiver(isRead, id);
-  else if (role === "appraiser") await updateFeedbackIsReadAppraiser(isRead, id);
+  let columnName;
+  if (role === "receiver") columnName = "is_read_receiver";
+  else if (role === "appraiser") columnName = "is_read_appraiser";
   else return res.status(400).send({ error: 'Invalid role, should be "receiver" or "appraiser"' });
+  await updateFeedback(columnName, isRead, id);
   res.status(204).send({});
 });
 
@@ -94,7 +96,7 @@ router.put("/feedbacks/:id/isread/:role", async (req, res) => {
 router.put("/feedbacks/:id/visibility", async (req, res) => {
   const id = req.params.id;
   const { visibility } = req.body;
-  await updateFeedbackVisibility(visibility, id);
+  await updateFeedback("visibility", visibility, id);
   res.status(204).send({});
 });
 
@@ -103,7 +105,7 @@ router.put("/feedbacks/:id/appraisernotes", async (req, res) => {
   console.log("now processing request");
   const { notes } = req.body;
   const id = req.params.id;
-  await updateFeedbackAppraiserNotes(notes, id);
+  await updateFeedback("appraiser_notes", notes, id);
   res.status(204).send({});
 });
 

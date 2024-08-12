@@ -3,7 +3,7 @@
 const submitFeedbackMessages = {
   name: {
     defaultInfo: {
-      text: "<p>The name of the person you want to give feedback</p><p>This person must belong to your <b>work circle</b> ( ex.: someone from your team )</p>",
+      text: "<p>The name of the person you want to give feedback</p>",
       icon: "info",
     },
     missingValue: {
@@ -21,16 +21,6 @@ const submitFeedbackMessages = {
       icon: "warning",
     },
   },
-  type: {
-    defaultInfo: {
-      text: "<p>Specify whether your feedback refers to a positive aspect or an area needing improvement</p>",
-      icon: "info",
-    },
-    missingValue: {
-      text: "<p>Type is a required field</p>",
-      icon: "warning",
-    },
-  },
   privacy: {
     defaultInfo: {
       text: "<h3>Privacy Options Description</h3><p><b>Anonymous:</b> Your identity will not be shared with anyone</p><p><b>Private:</b> Your identity will be shared with the appraiser only, you will appear as anonymous to the person you are giving feedback to</p><p><b>Public:</b> Your identity will be shared with both the person you are giving feedback to and their appraiser</p>",
@@ -38,6 +28,17 @@ const submitFeedbackMessages = {
     },
     missingValue: {
       text: "<p>Privacy is a required field</p>",
+      icon: "warning",
+    },
+  },
+
+  rating: {
+    defaultInfo: {
+      text: "<h3>The Rating System</h3><p><b>Excellent (4*):</b> The CM Employee consistently exceeds what's expected for their grade</p><p><b>Good (3*):</b> The CM Employee exceeds what's expected for their grade</p><p><b>Sufficient (2*):</b> The CM Employee meets what's expected for their grade</p><p><b>Insufficient (1*):</b> The CM Employee does not what's expected for their grade</p>",
+      icon: "info",
+    },
+    missingValue: {
+      text: "<p>Type is a required field</p>",
       icon: "warning",
     },
   },
@@ -51,13 +52,23 @@ const submitFeedbackMessages = {
       icon: "warning",
     },
   },
-  body: {
+  positive: {
     defaultInfo: {
       text: "<p>Describe your experience with the person and provide any relevant details such as time and place</p>",
       icon: "info",
     },
     missingValue: {
-      text: "<p>Body is a required field</p>",
+      text: "<p>At least one field between 'Positive' and 'To be improved' is required</p>",
+      icon: "warning",
+    },
+  },
+  negative: {
+    defaultInfo: {
+      text: "<p>Describe your experience with the person and provide any relevant details such as time and place</p>",
+      icon: "info",
+    },
+    missingValue: {
+      text: "<p>At least one field between 'Positive' and 'To be improved' is required</p>",
       icon: "warning",
     },
   },
