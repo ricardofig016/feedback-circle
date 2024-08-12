@@ -25,8 +25,11 @@ export default class FeedbackComponent extends BaseComponent {
 
     // get role of the user related to this feedback
     this.role = this.session.user.user_id == this.receiver.user_id ? "receiver" : "appraiser";
-    // show appraiser only container to the appraiser
-    if (this.role === "appraiser") this.getElementById("appraiser-only-container").style.display = "block";
+    // hide all appraiser only elements if user is the receiver
+    if (this.role === "receiver") {
+      const appraiserOnlyElems = this.getElementsByClassName("appraiser-only");
+      appraiserOnlyElems.forEach((element) => (element.classList = "do-not-display"));
+    }
 
     // mark the feedback as read every time this tab is opened/refreshed
     await this.updateIsRead(true);
@@ -38,10 +41,11 @@ export default class FeedbackComponent extends BaseComponent {
     const fullDate = formatDate(new Date(this.feedback.submission_date));
     this.getElementById("date").innerText = fullDate.substring(0, fullDate.indexOf(" "));
     this.getElementById("time").innerText = fullDate.substring(fullDate.indexOf(" "));
-    // positive message
-    this.getElementById("positive").innerText = this.feedback.positive_message;
-    // negative message
-    this.getElementById("negative").innerText = this.feedback.negative_message;
+    // messages
+    this.switchAppraiserMessage("positive", "original");
+    this.switchAppraiserMessage("negative", "original");
+    this.resetMessage("positive");
+    this.resetMessage("negative");
     // category
     const categories = {
       general: "General",
@@ -61,7 +65,7 @@ export default class FeedbackComponent extends BaseComponent {
     this.getElementById("share-span").innerText = this.receiver.name.substring(0, this.receiver.name.indexOf(" "));
     document.getElementById("share-checkbox").checked = this.feedback.visibility === "both";
     // appraiser notes
-    this.getElementById("appraiser-notes").innerText = this.feedback.appraiser_notes;
+    if (this.feedback.appraiser_notes) this.getElementById("appraiser-notes").innerText = this.feedback.appraiser_notes;
     this.getElementById("appraiser-notes-textarea").value = this.feedback.appraiser_notes;
 
     if (!isRefresh) this.addEventListeners();
@@ -79,49 +83,113 @@ export default class FeedbackComponent extends BaseComponent {
       this.feedback.visibility = e.target.checked ? "both" : "appraiser";
       await RequestManager.request("PUT", "feedbacks/" + this.queryParams.id + "/visibility", { visibility: this.feedback.visibility });
     });
-    // edit appraiser notes
-    const editButton = this.getElementById("edit-appraiser-notes-button");
-    editButton.addEventListener("click", () => {
-      this.goToEditNotes();
+
+    const codes = ["negative-message", "positive-message", "appraiser-notes"];
+    codes.forEach((code) => {
+      // edit
+      const editButton = this.getElementById("edit-" + code + "-button");
+      editButton.addEventListener("click", () => {
+        this.goToEditMode(code);
+      });
+      // exit
+      const textarea = this.getElementById(code + "-textarea");
+      textarea.addEventListener("keydown", async (e) => {
+        if (e.key === "Escape") this.exitEditMode(code);
+      });
     });
-    // submit change to appraiser notes
-    const notesTextarea = this.getElementById("appraiser-notes-textarea");
-    notesTextarea.addEventListener("keydown", async (e) => {
-      if (e.key === "Enter") return await this.submitNotes();
-      if (e.key === "Escape") return this.exitEditMode();
+    // save buttons
+    const positiveSaveButton = this.getElementById("positive-message-save-button");
+    positiveSaveButton.addEventListener("click", async () => await this.submitAppraiserMessage("positive"));
+    const negativeSaveButton = this.getElementById("negative-message-save-button");
+    negativeSaveButton.addEventListener("click", async () => await this.submitAppraiserMessage("negative"));
+    const appraiserNotesSaveButton = this.getElementById("appraiser-notes-save-button");
+    appraiserNotesSaveButton.addEventListener("click", async () => await this.submitAppraiserNotes());
+    // message anchors
+    const positiveAnchor = this.getElementById("positive-anchor");
+    positiveAnchor.addEventListener("click", () => {
+      const message = positiveAnchor.innerText.includes("original") ? "original" : "appraiser";
+      this.switchAppraiserMessage("positive", message);
+    });
+    const negativeAnchor = this.getElementById("negative-anchor");
+    negativeAnchor.addEventListener("click", () => {
+      const message = negativeAnchor.innerText.includes("original") ? "original" : "appraiser";
+      this.switchAppraiserMessage("negative", message);
     });
   }
 
-  goToEditNotes() {
+  goToEditMode(code) {
     // go to edit mode
-    this.getElementById("appraiser-notes-display-mode").hidden = true;
-    this.getElementById("appraiser-notes-edit-mode").hidden = false;
+    this.getElementById(code + "-display-mode").hidden = true;
+    this.getElementById(code + "-edit-mode").hidden = false;
     // make the textarea element active
-    this.getElementById("appraiser-notes-textarea").focus();
+    this.getElementById(code + "-textarea").focus();
   }
 
-  async submitNotes() {
+  async submitAppraiserMessage(type) {
+    const message = this.getElementById(type + "-message-textarea").value;
+    if (message != this.feedback[type + "_message_appraiser_edit"]) {
+      // update database
+      const url = "feedbacks/" + this.feedback.feedback_id + "/appraisermessage/" + type;
+      console.log(url);
+      await RequestManager.request("PUT", url, { message: message });
+      // update feedback oject
+      this.feedback[type + "_message_appraiser_edit"] = message;
+      // update message in display mode
+      this.switchAppraiserMessage(type, "appraiser");
+    }
+    // go to display mode
+    this.getElementById(type + "-message-display-mode").hidden = false;
+    this.getElementById(type + "-message-edit-mode").hidden = true;
+  }
+
+  async submitAppraiserNotes() {
     // submit
     const newNotes = this.getElementById("appraiser-notes-textarea").value;
     if (newNotes != this.feedback.appraiser_notes) {
       // update database
-      await RequestManager.request("PUT", "feedbacks/" + this.feedback.feedback_id + "/appraisernotes", { notes: newNotes });
+      const url = "feedbacks/" + this.feedback.feedback_id + "/appraisernotes";
+      await RequestManager.request("PUT", url, { notes: newNotes });
       // update feedback oject
       this.feedback.appraiser_notes = newNotes;
       // update notes in display mode
-      this.getElementById("appraiser-notes").innerText = newNotes;
+      const notesElem = this.getElementById("appraiser-notes");
+      if (newNotes) notesElem.innerText = newNotes;
+      else notesElem.innerHTML = "<i>your notes</i>";
     }
     // go to display mode
     this.getElementById("appraiser-notes-display-mode").hidden = false;
     this.getElementById("appraiser-notes-edit-mode").hidden = true;
   }
 
-  exitEditMode() {
+  exitEditMode(code) {
+    ["negative-message", "positive-message", "appraiser-notes"];
     // reset notes
-    this.getElementById("appraiser-notes-textarea").value = this.feedback.appraiser_notes;
+    if (code === "negative-message") this.resetMessage("negative");
+    if (code === "positive-message") this.resetMessage("positive");
+    if (code === "appraiser-notes") this.resetNotes();
     // go to display mode
-    this.getElementById("appraiser-notes-display-mode").hidden = false;
-    this.getElementById("appraiser-notes-edit-mode").hidden = true;
+    this.getElementById(code + "-display-mode").hidden = false;
+    this.getElementById(code + "-edit-mode").hidden = true;
+  }
+
+  resetMessage(type) {
+    this.getElementById(type + "-message-textarea").value = this.feedback[type + "_message_appraiser_edit"];
+  }
+
+  resetNotes() {
+    this.getElementById("appraiser-notes-textarea").value = this.feedback.appraiser_notes;
+  }
+
+  /**
+   *
+   * @param {string} type positive or negative
+   * @param {string} message original or appraiser (which one to switch to)
+   */
+  switchAppraiserMessage(type, message) {
+    const column = message === "original" ? "" : "_appraiser_edit";
+    const text = message === "original" ? "show appraiser edit" : "show original";
+    this.getElementById(type).innerText = this.feedback[type + "_message" + column];
+    this.getElementById(type + "-anchor").innerText = text;
   }
 
   async render() {

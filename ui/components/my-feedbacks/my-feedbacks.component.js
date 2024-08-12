@@ -41,17 +41,11 @@ export default class MyFeedbacksComponent extends BaseComponent {
       // From Column
       const from = feedback.privacy === "anonymous" ? "<i>anonymous</i>" : formatText(feedback.sender_name);
       row.set("from", from);
-      // Body Column
-      row.set("body", formatText(feedback.body));
       // Submitted On Column
       const submssionDate = formatDate(new Date(feedback.submission_date));
       row.set("submitted on", submssionDate);
       // Category Column
       row.set("category", formatText(feedback.category));
-      // Type Column
-      const typeSymbol = feedback.type === "positive" ? "+" : "-";
-      const typeElem = '<div style="text-align:center">' + typeSymbol + "</div>";
-      row.set("type", typeElem);
 
       // Add Row to Grid
       feedbacksGrid.addRow(row);

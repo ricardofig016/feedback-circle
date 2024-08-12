@@ -45,14 +45,15 @@ export default class SubmitFeedbackComponent extends BaseComponent {
       receiverId: 3, //TODO:
       title: formData["title"],
       positiveMessage: formData["positive"],
+      positiveMessageAppraiserEdit: formData["positive"],
       negativeMessage: formData["negative"],
+      negativeMessageAppraiserEdit: formData["negative"],
       category: formData["category"],
       privacy: formData["privacy"],
       rating: formData["rating"],
     };
-    console.table(data);
     const res = await RequestManager.request("POST", "feedbacks", data);
-    console.table(res);
+    //console.table(res);
     new ToastManager().showToast("Success", "Feedback submited", "success", 5000);
   }
 

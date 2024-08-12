@@ -60,9 +60,9 @@ router.get("/feedbacks", async (req, res) => {
 });
 
 router.post("/feedbacks", async (req, res) => {
-  const { senderId, receiverId, title, positiveMessage, negativeMessage, category, privacy, rating } = req.body;
+  const { senderId, receiverId, title, positiveMessage, positiveMessageAppraiserEdit, negativeMessage, negativeMessageAppraiserEdit, category, privacy, rating } = req.body;
   const submissionDate = formatDate(new Date());
-  const feedbackId = await createFeedback(senderId, receiverId, title, positiveMessage, negativeMessage, submissionDate, category, privacy, rating);
+  const feedbackId = await createFeedback(senderId, receiverId, title, positiveMessage, positiveMessageAppraiserEdit, negativeMessage, negativeMessageAppraiserEdit, submissionDate, category, privacy, rating);
 
   if (!feedbackId) return res.status(400).send({ error: "Feedback creation failed" });
 
@@ -102,10 +102,20 @@ router.put("/feedbacks/:id/visibility", async (req, res) => {
 
 // update appraiser_notes on feedbacks table
 router.put("/feedbacks/:id/appraisernotes", async (req, res) => {
-  console.log("now processing request");
   const { notes } = req.body;
   const id = req.params.id;
   await updateFeedback("appraiser_notes", notes, id);
+  res.status(204).send({});
+});
+
+router.put("/feedbacks/:id/appraisermessage/:type", async (req, res) => {
+  const { message } = req.body;
+  const id = req.params.id;
+  const type = req.params.type;
+  if (!["positive", "negative"].includes(type)) {
+    return res.status(400).send({ error: 'Invalid type, should be "positive" or "negative"' });
+  }
+  await updateFeedback(type + "_message_appraiser_edit", message, id);
   res.status(204).send({});
 });
 

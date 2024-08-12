@@ -58,6 +58,15 @@ export default class BaseComponent {
     return this.domContent?.querySelector("#" + _id);
   }
 
+  /**
+   * Returns all of the DOM elements with the provided class, only within the context of the current component (or null/undefined if none).
+   * @param {*} _class
+   * @returns DOM element
+   */
+  getElementsByClassName(_class) {
+    return Array.from(this.domContent?.querySelectorAll("." + _class) || []);
+  }
+
   hasAccess() {
     if (this.access.includes(this.session.user.role)) return true;
     else return false;
