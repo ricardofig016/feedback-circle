@@ -169,14 +169,14 @@ router.get("/feedbacks/mostrecent/receiverid/:id/role/:role", async (req, res) =
   }
   // filtering for receiver role
   else if (role === "receiver") {
-    const sharedFeedbacks = feedbacks.filter((feedback) => feedback.visibility === "both");
-    sharedFeedbacks.forEach((feedback) => {
+    const sharedWithReceiver = feedbacks.filter((feedback) => feedback.visibility === "receiver");
+    sharedWithReceiver.forEach((feedback) => {
       if (["anonymous", "private"].includes(feedback.privacy)) feedback.sender_name = "anonymous";
       delete feedback.appraiser_notes;
       delete feedback.visibility;
       delete feedback.privacy;
     });
-    return res.send(sharedFeedbacks);
+    return res.send(sharedWithReceiver);
   }
   // filtering for appraiser role
   else if (role === "appraiser") {

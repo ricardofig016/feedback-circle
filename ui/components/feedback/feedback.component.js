@@ -36,9 +36,24 @@ export default class FeedbackComponent extends BaseComponent {
     this.getElementById("date").innerText = fullDate.substring(0, fullDate.indexOf(" "));
     this.getElementById("time").innerText = fullDate.substring(fullDate.indexOf(" "));
     // messages
-    const message = this.feedback.user_role === "sender" ? "original" : "appraiser";
-    this.switchAppraiserMessage("positive", message);
-    this.switchAppraiserMessage("negative", message);
+    if (this.feedback.user_role === "appraiser") {
+      if (this.feedback.positive_message === this.feedback.positive_message_appraiser_edit) {
+        this.switchAppraiserMessage("positive", "original");
+        // hide anchor
+        this.getElementById("positive-anchor").hidden = true;
+      } else this.switchAppraiserMessage("positive", "appraiser");
+      if (this.feedback.negative_message === this.feedback.negative_message_appraiser_edit) {
+        this.switchAppraiserMessage("negative", "original");
+        // hide anchor
+        this.getElementById("negative-anchor").hidden = true;
+      } else this.switchAppraiserMessage("negative", "appraiser");
+    } else {
+      let message;
+      if (this.feedback.user_role === "sender") message = "original";
+      if (this.feedback.user_role === "receiver") message = "appraiser";
+      this.switchAppraiserMessage("positive", message);
+      this.switchAppraiserMessage("negative", message);
+    }
     this.resetMessage("positive");
     this.resetMessage("negative");
     // category
@@ -74,7 +89,7 @@ export default class FeedbackComponent extends BaseComponent {
     if (this.feedback.user_role === "appraiser") {
       // share checkbox
       this.getElementById("share-span").innerText = this.feedback.receiver_name.substring(0, this.feedback.receiver_name.indexOf(" "));
-      document.getElementById("share-checkbox").checked = this.feedback.visibility === "both";
+      document.getElementById("share-checkbox").checked = this.feedback.visibility === "receiver";
       // appraiser notes
       if (this.feedback.appraiser_notes) this.getElementById("appraiser-notes").innerText = this.feedback.appraiser_notes;
       this.getElementById("appraiser-notes-textarea").value = this.feedback.appraiser_notes;
@@ -98,7 +113,7 @@ export default class FeedbackComponent extends BaseComponent {
       // share/unshare with apraisee
       const shareCheckbox = this.getElementById("share-checkbox");
       shareCheckbox.addEventListener("change", async (e) => {
-        this.feedback.visibility = e.target.checked ? "both" : "appraiser";
+        this.feedback.visibility = e.target.checked ? "receiver" : "appraiser";
         await RequestManager.request("PUT", "feedbacks/" + this.queryParams.id + "/visibility", { visibility: this.feedback.visibility });
       });
 
@@ -154,6 +169,10 @@ export default class FeedbackComponent extends BaseComponent {
       this.feedback[type + "_message_appraiser_edit"] = message;
       // update message in display mode
       this.switchAppraiserMessage(type, "appraiser");
+      //
+      if (this.feedback[type + "_message"] === this.feedback[type + "_message_appraiser_edit"]) {
+        this.getElementById(type + "-anchor").hidden = true;
+      } else this.getElementById(type + "-anchor").hidden = false;
     }
     // go to display mode
     this.getElementById(type + "-message-display-mode").hidden = false;
@@ -230,9 +249,9 @@ export default class FeedbackComponent extends BaseComponent {
     await this.getFeedback();
     const access = super.hasAccess();
     if (access) return true; // user is admin
-    if (this.feedback.user_role === "appraiser") return true; // user is the appraiser
+    if (this.feedback.user_role === "appraiser" && this.feedback.visibility !== "sender") return true; // user is the appraiser and has visibility
     if (this.feedback.user_role === "sender") return true; // user is the sender
-    if (this.feedback.user_role === "receiver" && this.feedback.visibility === "both") return true; // user is the receiver and has visibility
+    if (this.feedback.user_role === "receiver" && this.feedback.visibility === "receiver") return true; // user is the receiver and has visibility
     return false;
   }
 }
