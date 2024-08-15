@@ -72,9 +72,43 @@ router.post("/feedbacks", async (req, res) => {
   res.status(201).send(feedback);
 });
 
-router.get("/feedbacks/:id", async (req, res) => {
+// get feedback with feedback_id filtered to be shown to user with userid
+router.get("/feedbacks/:id/user/:userid", async (req, res) => {
   const id = req.params.id;
+  const userId = req.params.userid;
   const feedback = await getFeedbackById(id);
+
+  // filtering for appraiser
+  if (userId == feedback.appraiser_id) {
+    if (feedback.privacy == "anonymous") feedback.sender_name = "anonymous";
+    feedback.user_role = "appraiser";
+    delete feedback.is_read_receiver;
+  }
+  // filtering for sender
+  else if (userId == feedback.sender_id) {
+    feedback.user_role = "sender";
+    delete feedback.positive_message_appraiser_edit;
+    delete feedback.negative_message_appraiser_edit;
+    delete feedback.is_read_receiver;
+    delete feedback.is_read_appraiser;
+    delete feedback.appraiser_notes;
+    delete feedback.visibility;
+  }
+  // filtering for receiver
+  else if (userId == feedback.receiver_id) {
+    feedback.user_role = "receiver";
+    if (["anonymous", "private"].includes(feedback.privacy)) feedback.sender_name = "anonymous";
+    delete feedback.positive_message;
+    delete feedback.negative_message;
+    delete feedback.is_read_appraiser;
+    delete feedback.appraiser_notes;
+  }
+
+  delete feedback.appraiser_id;
+  delete feedback.sender_id;
+  delete feedback.receiver_id;
+  delete feedback.privacy;
+
   if (!feedback) return res.status(404).send({ error: "No feedback found with id " + id });
   res.send(feedback);
 });
@@ -109,9 +143,9 @@ router.put("/feedbacks/:id/appraisernotes", async (req, res) => {
 });
 
 router.put("/feedbacks/:id/appraisermessage/:type", async (req, res) => {
-  const { message } = req.body;
   const id = req.params.id;
   const type = req.params.type;
+  const { message } = req.body;
   if (!["positive", "negative"].includes(type)) {
     return res.status(400).send({ error: 'Invalid type, should be "positive" or "negative"' });
   }
@@ -120,10 +154,38 @@ router.put("/feedbacks/:id/appraisermessage/:type", async (req, res) => {
 });
 
 // get feedbacks given to the user with user_id = _id_, joined with the name of the sender, ordered from most recent to oldest
-router.get("/feedbacks/mostrecent/receiverid/:id", async (req, res) => {
+router.get("/feedbacks/mostrecent/receiverid/:id/role/:role", async (req, res) => {
   const user_id = req.params.id;
+  const role = req.params.role;
   const feedbacks = await getFeedbacksOfUser(user_id);
   if (!feedbacks) return res.status(404).send({ error: "No feedbacks found for user with id " + user_id });
+  // filtering for sender role
+  if (role === "sender") {
+    feedbacks.forEach((feedback) => {
+      delete feedback.appraiser_notes;
+      delete feedback.visibility;
+      delete feedback.privacy;
+    });
+  }
+  // filtering for receiver role
+  else if (role === "receiver") {
+    const sharedFeedbacks = feedbacks.filter((feedback) => feedback.visibility === "both");
+    sharedFeedbacks.forEach((feedback) => {
+      if (["anonymous", "private"].includes(feedback.privacy)) feedback.sender_name = "anonymous";
+      delete feedback.appraiser_notes;
+      delete feedback.visibility;
+      delete feedback.privacy;
+    });
+    return res.send(sharedFeedbacks);
+  }
+  // filtering for appraiser role
+  else if (role === "appraiser") {
+    feedbacks.forEach((feedback) => {
+      if (feedback.privacy === "anonymous") feedback.sender_name = "anonymous";
+      delete feedback.visibility;
+      delete feedback.privacy;
+    });
+  }
   res.send(feedbacks);
 });
 

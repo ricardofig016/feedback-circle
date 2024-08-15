@@ -46,11 +46,26 @@ export async function getUserByEmail(email) {
 export async function getUsersByAppraiserId(appraiserId) {
   const [rows] = await pool.query(
     `
-    SELECT *
-    FROM users
-    WHERE appraiser_id = ?
+    SELECT u.user_id, u.name, u.appraiser_notes, f.title AS feedback_title, unread_count.count AS unread_count
+    FROM users AS u
+    LEFT JOIN feedbacks as f 
+      ON f.receiver_id = u.user_id
+      AND f.submission_date = (
+        SELECT MAX(f.submission_date)
+        FROM feedbacks AS f
+        WHERE f.receiver_id = u.user_id
+      )
+    LEFT JOIN
+      (
+        SELECT f.receiver_id, COUNT(*) AS count
+        FROM feedbacks AS f
+        JOIN users AS u ON u.appraiser_id = ?
+        WHERE f.receiver_id = u.user_id AND f.is_read_appraiser = false
+        GROUP BY f.receiver_id
+      ) AS unread_count ON unread_count.receiver_id = u.user_id
+    WHERE u.appraiser_id = ?
     `,
-    [appraiserId]
+    [appraiserId, appraiserId]
   );
   return rows;
 }
@@ -63,7 +78,7 @@ export async function getFeedbacks() {
 export async function getFeedbacksOfUser(id) {
   const [rows] = await pool.query(
     `
-    SELECT f.*, u.name AS sender_name
+    SELECT f.feedback_id, f.title, f.submission_date, f.category, f.appraiser_notes, f.privacy, f.visibility, u.name AS sender_name
     FROM feedbacks AS f
     JOIN users AS u ON f.sender_id = u.user_id
     WHERE f.receiver_id = ?
@@ -77,8 +92,10 @@ export async function getFeedbacksOfUser(id) {
 export async function getFeedbackById(id) {
   const [rows] = await pool.query(
     `
-    SELECT * 
-    FROM feedbacks
+    SELECT f.title, f.positive_message, f.positive_message_appraiser_edit, f.negative_message, f.negative_message_appraiser_edit,  f.submission_date, f.category, f.rating, f.visibility, f.privacy, f.is_read_receiver, f.is_read_appraiser, f.appraiser_notes, f.sender_id, f.receiver_id, sender.name AS sender_name, receiver.name AS receiver_name, receiver.appraiser_id
+    FROM feedbacks AS f
+    JOIN users AS sender ON f.sender_id = sender.user_id
+    JOIN users AS receiver ON f.receiver_id = receiver.user_id
     WHERE feedback_id = ?
     `,
     [id]

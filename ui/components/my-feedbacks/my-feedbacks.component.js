@@ -10,26 +10,26 @@ export default class MyFeedbacksComponent extends BaseComponent {
   pageTitle = "My Feedbacks";
   pageIcon = "fa-list-ul";
   access = ["user", "appraiser", "admin"];
-  appraisee;
+  feedbacks;
 
   async onInit() {
     super.onInit();
 
     // Feedbacks request
-    const feedbacks = await RequestManager.request("GET", "feedbacks/mostrecent/receiverid/" + this.session.user.user_id);
+    const url = "feedbacks/mostrecent/receiverid/" + this.session.user.user_id + "/role/receiver";
+    this.feedbacks = await RequestManager.request("GET", url);
+
     const noFeedbacksSection = this.getElementById("no-feedbacks-section");
     noFeedbacksSection.hidden = true;
-    if (!feedbacks || feedbacks.length === 0) {
+    if (!this.feedbacks || this.feedbacks.length === 0) {
       noFeedbacksSection.hidden = false;
       return;
     }
 
     const feedbacksGrid = new DataGrid(this.getElementById("feedbacks-data-grid"));
 
-    for (let i = 0; i < feedbacks.length; i++) {
-      const feedback = feedbacks[i];
-
-      if (feedback.visibility != "both") continue; // The user does not have access to this feedback
+    this.feedbacks.forEach((feedback) => {
+      console.table(feedback);
 
       // Create Row
       const row = new Map();
@@ -39,7 +39,7 @@ export default class MyFeedbacksComponent extends BaseComponent {
       const titleLink = "<a href=" + feedbackUrl + ">" + formatText(feedback.title) + "</a>";
       row.set("title", titleLink);
       // From Column
-      const from = feedback.privacy === "anonymous" ? "<i>anonymous</i>" : formatText(feedback.sender_name);
+      const from = feedback.sender_name === "anonymous" ? "<i>" + feedback.sender_name + "</i>" : formatText(feedback.sender_name);
       row.set("from", from);
       // Submitted On Column
       const submssionDate = formatDate(new Date(feedback.submission_date));
@@ -49,8 +49,8 @@ export default class MyFeedbacksComponent extends BaseComponent {
 
       // Add Row to Grid
       feedbacksGrid.addRow(row);
-      // Render grid if all rows have been added
-    }
+    });
+    // Render grid
     feedbacksGrid.render();
   }
 }

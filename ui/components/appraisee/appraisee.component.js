@@ -11,28 +11,27 @@ export default class AppraiseeComponent extends BaseComponent {
   pageIcon = "fa-user";
   access = ["admin"];
   appraisee;
+  feedbacks;
 
   async onInit() {
     super.onInit();
 
-    // Appraisee request
-    if (!this.appraisee) this.appraisee = await RequestManager.request("GET", "users/id/" + this.queryParams.id);
-    if (!this.appraisee) throw new Error("No user found with user_id " + this.queryParams.id);
-
     // Feedbacks request
-    const feedbacks = await RequestManager.request("GET", "feedbacks/mostrecent/receiverid/" + this.appraisee.user_id);
+    const url = "feedbacks/mostrecent/receiverid/" + this.queryParams.id + "/role/appraiser";
+    this.feedbacks = await RequestManager.request("GET", url);
+
     const noFeedbacksSection = this.getElementById("no-feedbacks-section");
     noFeedbacksSection.hidden = true;
-    if (!feedbacks || feedbacks.length === 0) {
+    if (!this.feedbacks || this.feedbacks.length === 0) {
       noFeedbacksSection.hidden = false;
       return;
     }
 
     const feedbacksGrid = new DataGrid(this.getElementById("feedbacks-data-grid"));
 
-    for (let i = 0; i < feedbacks.length; i++) {
-      const feedback = feedbacks[i];
-      //console.table(feedback);
+    for (let i = 0; i < this.feedbacks.length; i++) {
+      const feedback = this.feedbacks[i];
+      console.table(feedback);
 
       // Create Row
       const row = new Map();
@@ -42,7 +41,7 @@ export default class AppraiseeComponent extends BaseComponent {
       const titleLink = "<a href=" + feedbackUrl + ">" + formatText(feedback.title) + "</a>";
       row.set("title", titleLink);
       // From Column
-      const from = feedback.privacy === "anonymous" ? "<i>anonymous</i>" : formatText(feedback.sender_name);
+      const from = feedback.sender_name === "anonymous" ? "<i>" + feedback.sender_name + "</i>" : formatText(feedback.sender_name);
       row.set("from", from);
       // Submitted On Column
       const submssionDate = formatDate(new Date(feedback.submission_date));
@@ -55,7 +54,7 @@ export default class AppraiseeComponent extends BaseComponent {
       // Add Row to Grid
       feedbacksGrid.addRow(row);
       // Render grid if all rows have been added
-      if (i === feedbacks.length - 1) feedbacksGrid.render();
+      if (i === this.feedbacks.length - 1) feedbacksGrid.render();
     }
   }
 

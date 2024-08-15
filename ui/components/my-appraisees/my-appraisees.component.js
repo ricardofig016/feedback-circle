@@ -13,25 +13,26 @@ export default class MyAppraiseesComponent extends BaseComponent {
   pageTitle = "My Appraisees";
   pageIcon = "fa-th";
   access = ["appraiser", "admin"];
+  appraisees;
 
   async onInit() {
     super.onInit();
 
     // Appraisees request
-    const appraisees = await RequestManager.request("GET", "users/appraiserid/" + this.session.user.user_id);
+    const url = "users/appraiserid/" + this.session.user.user_id;
+    this.appraisees = await RequestManager.request("GET", url);
+
     const noAppraiseesSection = this.getElementById("no-appraisees-section");
     noAppraiseesSection.hidden = true;
-    if (!appraisees || appraisees.length === 0) {
+    if (!this.appraisees || this.appraisees.length === 0) {
       noAppraiseesSection.hidden = false;
       return;
     }
 
     const appraiseesGrid = new DataGrid(this.getElementById("appraisees-data-grid"));
 
-    for (let i = 0; i < appraisees.length; i++) {
-      const appraisee = appraisees[i];
-      // Feedbacks request
-      const feedbacks = await RequestManager.request("GET", "feedbacks/mostrecent/receiverid/" + appraisee.user_id);
+    this.appraisees.forEach((appraisee) => {
+      console.table(appraisee);
 
       // Create Row
       const row = new Map();
@@ -40,24 +41,20 @@ export default class MyAppraiseesComponent extends BaseComponent {
       const nameLink = "<a href=" + appraiseeUrl + ">" + formatText(appraisee.name) + "</a>";
       row.set("name", nameLink);
       // Notes Column
-      const note = formatText(appraisee.appraiser_notes);
+      const note = appraisee.appraiser_notes ? formatText(appraisee.appraiser_notes) : "---";
       row.set("notes", note);
       // Most recent feedback Column
-      const feedbackTitle = feedbacks[0] ? formatText(feedbacks[0].title) : "---";
+      const feedbackTitle = appraisee.feedback_title ? formatText(appraisee.feedback_title) : "---";
       row.set("most recent feedback", feedbackTitle);
       // Notification Column
-      let unreadFeedbacks = 0;
-      feedbacks.forEach((feedback) => {
-        if (!feedback.is_read) unreadFeedbacks++;
-      });
+      const unreadFeedbacks = appraisee.unread_count ? appraisee.unread_count : 0;
       const notification = unreadFeedbacks ? "You have <span style='color:#f69414;font-weight:bold'>" + unreadFeedbacks + "</span> unread feedbacks" : "You're all caught up!";
       row.set("notifications", notification);
 
       // Add Row to Grid
       appraiseesGrid.addRow(row);
-
-      // Render grid if all rows have been added
-      if (i === appraisees.length - 1) appraiseesGrid.render();
-    }
+    });
+    // Render grid
+    appraiseesGrid.render();
   }
 }
