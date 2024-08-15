@@ -60,9 +60,9 @@ router.get("/feedbacks", async (req, res) => {
 });
 
 router.post("/feedbacks", async (req, res) => {
-  const { senderId, receiverId, title, positiveMessage, positiveMessageAppraiserEdit, negativeMessage, negativeMessageAppraiserEdit, category, privacy, rating } = req.body;
+  const { senderId, receiverId, title, positiveMessage, positiveMessageAppraiserEdit, negativeMessage, negativeMessageAppraiserEdit, category, visibility, privacy, rating } = req.body;
   const submissionDate = formatDate(new Date());
-  const feedbackId = await createFeedback(senderId, receiverId, title, positiveMessage, positiveMessageAppraiserEdit, negativeMessage, negativeMessageAppraiserEdit, submissionDate, category, privacy, rating);
+  const feedbackId = await createFeedback(senderId, receiverId, title, positiveMessage, positiveMessageAppraiserEdit, negativeMessage, negativeMessageAppraiserEdit, submissionDate, category, visibility, privacy, rating);
 
   if (!feedbackId) return res.status(400).send({ error: "Feedback creation failed" });
 
@@ -180,11 +180,13 @@ router.get("/feedbacks/mostrecent/receiverid/:id/role/:role", async (req, res) =
   }
   // filtering for appraiser role
   else if (role === "appraiser") {
-    feedbacks.forEach((feedback) => {
+    const sharedWithAppraiser = feedbacks.filter((feedback) => feedback.visibility !== "sender");
+    sharedWithAppraiser.forEach((feedback) => {
       if (feedback.privacy === "anonymous") feedback.sender_name = "anonymous";
       delete feedback.visibility;
       delete feedback.privacy;
     });
+    return res.send(sharedWithAppraiser);
   }
   res.send(feedbacks);
 });

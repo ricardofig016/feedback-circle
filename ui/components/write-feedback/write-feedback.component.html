@@ -53,14 +53,14 @@
         <span><b>Rating:</b></span>
       </div>
       <div class="form-field form-rating" id="rating-input">
-        <input type="radio" id="star4" name="rating" value="4" />
-        <label for="star4">&#9733;</label>
-        <input type="radio" id="star3" name="rating" value="3" />
-        <label for="star3">&#9733;</label>
-        <input type="radio" id="star2" name="rating" value="2" />
-        <label for="star2">&#9733;</label>
-        <input type="radio" id="star1" name="rating" value="1" />
-        <label for="star1">&#9733;</label>
+        <input type="radio" class="star-input" id="star4" name="rating" value="4" />
+        <label for="star4" class="star-label">&#9733;</label>
+        <input type="radio" class="star-input" id="star3" name="rating" value="3" />
+        <label for="star3" class="star-label">&#9733;</label>
+        <input type="radio" class="star-input" id="star2" name="rating" value="2" />
+        <label for="star2" class="star-label">&#9733;</label>
+        <input type="radio" class="star-input" id="star1" name="rating" value="1" />
+        <label for="star1" class="star-label">&#9733;</label>
       </div>
       <div class="form-field form-icon">
         <i class="fa fa-info-circle" id="rating-icon" aria-hidden="true"></i>
@@ -100,10 +100,11 @@
         <div class="tooltip" id="negative-tooltip"></div>
       </div>
     </div>
-    <!--Save/Share Buttons-->
+    <!--Buttons-->
     <div id="submit-form-buttons-container">
       <button type="reset" class="cmf-button cmf-button-primary" id="reset-form-button">Reset</button>
-      <button type="submit" class="cmf-button cmf-button-primary" id="submit-form-button">Submit</button>
+      <button type="submit" class="cmf-button cmf-button-primary" id="save-form-button">Save</button>
+      <button type="submit" class="cmf-button cmf-button-primary" id="share-form-button">Share</button>
     </div>
   </div>
 </form>

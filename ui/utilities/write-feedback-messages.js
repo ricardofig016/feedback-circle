@@ -38,7 +38,7 @@ const writeFeedbackMessages = {
       icon: "info",
     },
     missingValue: {
-      text: "<p>Type is a required field</p>",
+      text: "<p>Rating is a required field</p>",
       icon: "warning",
     },
   },

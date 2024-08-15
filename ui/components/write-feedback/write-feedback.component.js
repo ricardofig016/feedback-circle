@@ -17,12 +17,19 @@ export default class WriteFeedbackComponent extends BaseComponent {
   }
 
   addEventListeners() {
-    // Save/Share buttons
-    const submitButton = this.getElementById("submit-form-button");
-    submitButton.addEventListener("click", () => {
+    // Save button
+    const saveButton = this.getElementById("save-form-button");
+    saveButton.addEventListener("click", () => {
       const formData = this.getFormData();
       if (!this.validateFormData(formData)) return false;
-      this.postFeedback(formData);
+      this.postFeedback(formData, "sender");
+    });
+    // Share button
+    const shareButton = this.getElementById("share-form-button");
+    shareButton.addEventListener("click", () => {
+      const formData = this.getFormData();
+      if (!this.validateFormData(formData)) return false;
+      this.postFeedback(formData, "appraiser");
     });
 
     const fields = Object.keys(messages);
@@ -37,20 +44,35 @@ export default class WriteFeedbackComponent extends BaseComponent {
         this.sendTooltipMessage(field, icon, message, "default");
       });
     });
+
+    // Rating
+    const starLabels = this.getElementsByClassName("star-label");
+    starLabels.forEach((label) => {
+      label.addEventListener("click", (e) => {
+        // deselect all stars
+        this.getElementsByClassName("star-input").forEach((star) => {
+          star.checked = false;
+        });
+        // select the corresponding radio
+        const radio = this.getElementById(e.target.getAttribute("for"));
+        radio.checked = true;
+      });
+    });
   }
 
-  async postFeedback(formData) {
+  async postFeedback(formData, visibility) {
     const data = {
       senderId: this.session.user.user_id,
       receiverId: 3, //TODO:
-      title: formData["title"],
-      positiveMessage: formData["positive"],
-      positiveMessageAppraiserEdit: formData["positive"],
-      negativeMessage: formData["negative"],
-      negativeMessageAppraiserEdit: formData["negative"],
-      category: formData["category"],
-      privacy: formData["privacy"],
-      rating: formData["rating"],
+      title: formData.title,
+      positiveMessage: formData.positive,
+      positiveMessageAppraiserEdit: formData.positive,
+      negativeMessage: formData.negative,
+      negativeMessageAppraiserEdit: formData.negative,
+      category: formData.category,
+      visibility,
+      privacy: formData.privacy,
+      rating: formData.rating,
     };
     const res = await RequestManager.request("POST", "feedbacks", data);
     //console.table(res);

@@ -60,7 +60,7 @@ export async function getUsersByAppraiserId(appraiserId) {
         SELECT f.receiver_id, COUNT(*) AS count
         FROM feedbacks AS f
         JOIN users AS u ON u.appraiser_id = ?
-        WHERE f.receiver_id = u.user_id AND f.is_read_appraiser = false
+        WHERE f.receiver_id = u.user_id AND f.is_read_appraiser = false AND f.visibility != "sender" 
         GROUP BY f.receiver_id
       ) AS unread_count ON unread_count.receiver_id = u.user_id
     WHERE u.appraiser_id = ?
@@ -119,13 +119,13 @@ export async function updateFeedback(columnName, value, id) {
 /**
  * @returns the feedback_id of the created feedback
  */
-export async function createFeedback(senderId, receiverId, title, positiveMessage, positiveMessageAppraiserEdit, negativeMessage, negativeMessageAppraiserEdit, submissionDate, category, privacy, rating) {
+export async function createFeedback(senderId, receiverId, title, positiveMessage, positiveMessageAppraiserEdit, negativeMessage, negativeMessageAppraiserEdit, submissionDate, category, visibility, privacy, rating) {
   const [data] = await pool.query(
     `
-    INSERT INTO feedbacks (sender_id, receiver_id, title, positive_message, positive_message_appraiser_edit, negative_message, negative_message_appraiser_edit, submission_date, category, privacy, rating)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    INSERT INTO feedbacks (sender_id, receiver_id, title, positive_message, positive_message_appraiser_edit, negative_message, negative_message_appraiser_edit, submission_date, category, visibility, privacy, rating)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     `,
-    [senderId, receiverId, title, positiveMessage, positiveMessageAppraiserEdit, negativeMessage, negativeMessageAppraiserEdit, submissionDate, category, privacy, rating]
+    [senderId, receiverId, title, positiveMessage, positiveMessageAppraiserEdit, negativeMessage, negativeMessageAppraiserEdit, submissionDate, category, visibility, privacy, rating]
   );
   // return the created object
   return data.insertId;
