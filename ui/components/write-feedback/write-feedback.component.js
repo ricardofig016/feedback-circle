@@ -3,11 +3,11 @@
 import BaseComponent from "../base/base.component.js";
 import { RequestManager } from "../../modules/requests/requests.js";
 import { ToastManager } from "../../modules/toasts/toasts.js";
-import messages from "../../utilities/submit-feedback-messages.js";
+import messages from "../../utilities/write-feedback-messages.js";
 
-export default class SubmitFeedbackComponent extends BaseComponent {
-  selector = "submit-feedback";
-  pageTitle = "Submit Feedback";
+export default class WriteFeedbackComponent extends BaseComponent {
+  selector = "write-feedback";
+  pageTitle = "Write Feedback";
   pageIcon = "fa-pencil";
   access = ["user", "appraiser", "admin"];
 
@@ -17,7 +17,7 @@ export default class SubmitFeedbackComponent extends BaseComponent {
   }
 
   addEventListeners() {
-    // Submit button
+    // Save/Share buttons
     const submitButton = this.getElementById("submit-form-button");
     submitButton.addEventListener("click", () => {
       const formData = this.getFormData();

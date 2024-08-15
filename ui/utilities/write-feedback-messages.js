@@ -1,6 +1,6 @@
 "use strict";
 
-const submitFeedbackMessages = {
+const writeFeedbackMessages = {
   name: {
     defaultInfo: {
       text: "<p>The name of the person you want to give feedback</p>",
@@ -74,4 +74,4 @@ const submitFeedbackMessages = {
   },
 };
 
-export default submitFeedbackMessages;
+export default writeFeedbackMessages;

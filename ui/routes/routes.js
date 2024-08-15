@@ -11,7 +11,7 @@ import MyFeedbacksComponent from "../components/my-feedbacks/my-feedbacks.compon
 import MyAppraiseesComponent from "../components/my-appraisees/my-appraisees.component.js";
 import AppraiseeComponent from "../components/appraisee/appraisee.component.js";
 import FeedbackComponent from "../components/feedback/feedback.component.js";
-import SubmitFeedbackComponent from "../components/submit-feedback/submit-feedback.component.js";
+import WriteFeedbackComponent from "../components/write-feedback/write-feedback.component.js";
 import NotFoundComponent from "../components/not-found/not-found.component.js";
 import CompareDEEActionsListComponent from "../components/compare-dee-actions-list/compare-dee-actions-list.component.js";
 import CompareConfigurationsListComponent from "../components/compare-configurations-list/compare-configurations-list.component.js";
@@ -34,7 +34,7 @@ const Routes = {
   MyAppraisees: MyAppraiseesComponent,
   Appraisee: AppraiseeComponent,
   Feedback: FeedbackComponent,
-  SubmitFeedback: SubmitFeedbackComponent,
+  WriteFeedback: WriteFeedbackComponent,
   Administration: ShellLandingPageAdministrationComponent,
   CompareDEEActionsList: CompareDEEActionsListComponent,
   CompareConfigurationsList: CompareConfigurationsListComponent,
