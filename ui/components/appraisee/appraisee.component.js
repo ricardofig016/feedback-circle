@@ -17,7 +17,7 @@ export default class AppraiseeComponent extends BaseComponent {
     super.onInit();
 
     // Feedbacks request
-    const url = "feedbacks/mostrecent/receiverid/" + this.queryParams.id + "/role/appraiser";
+    const url = "feedbacks/receiverid/" + this.queryParams.id + "/role/appraiser";
     this.feedbacks = await RequestManager.request("GET", url);
 
     const noFeedbacksSection = this.getElementById("no-feedbacks-section");

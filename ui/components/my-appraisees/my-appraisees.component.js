@@ -11,7 +11,7 @@ import formatText from "../../utilities/format-text.js";
 export default class MyAppraiseesComponent extends BaseComponent {
   selector = "my-appraisees";
   pageTitle = "My Appraisees";
-  pageIcon = "fa-th";
+  pageIcon = "fa-users";
   access = ["appraiser", "admin"];
   appraisees;
 

@@ -89,6 +89,20 @@ export async function getFeedbacksOfUser(id) {
   return rows;
 }
 
+export async function getSavedAndSharedFeedbacks(id) {
+  const [rows] = await pool.query(
+    `
+    SELECT f.feedback_id, f.title, f.submission_date, f.category, f.visibility, u.name AS receiver_name
+    FROM feedbacks AS f
+    JOIN users AS u ON f.receiver_id = u.user_id
+    WHERE f.sender_id = ?
+    ORDER BY f.submission_date DESC
+    `,
+    [id]
+  );
+  return rows;
+}
+
 export async function getFeedbackById(id) {
   const [rows] = await pool.query(
     `

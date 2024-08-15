@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 
-import { getFeedbacks, getUsers, getUserById, createFeedback, getUserByEmail, getFeedbackById, getUsersByAppraiserId, getFeedbacksOfUser, updateFeedback } from "./database/database.js";
+import { getFeedbacks, getUsers, getUserById, createFeedback, getUserByEmail, getFeedbackById, getUsersByAppraiserId, getFeedbacksOfUser, updateFeedback, getSavedAndSharedFeedbacks } from "./database/database.js";
 import { securityPortalAuth } from "./auth.js";
 
 const app = express();
@@ -154,7 +154,7 @@ router.put("/feedbacks/:id/appraisermessage/:type", async (req, res) => {
 });
 
 // get feedbacks given to the user with user_id = _id_, joined with the name of the sender, ordered from most recent to oldest
-router.get("/feedbacks/mostrecent/receiverid/:id/role/:role", async (req, res) => {
+router.get("/feedbacks/receiverid/:id/role/:role", async (req, res) => {
   const user_id = req.params.id;
   const role = req.params.role;
   const feedbacks = await getFeedbacksOfUser(user_id);
@@ -189,6 +189,18 @@ router.get("/feedbacks/mostrecent/receiverid/:id/role/:role", async (req, res) =
     return res.send(sharedWithAppraiser);
   }
   res.send(feedbacks);
+});
+
+// get feedbacks with sender_id = _id_, with scope "saved" or "shared", ordered from most recent to oldest
+router.get("/feedbacks/senderid/:id/scope/:scope", async (req, res) => {
+  const user_id = req.params.id;
+  const scope = req.params.scope;
+  const feedbacks = await getSavedAndSharedFeedbacks(user_id);
+  if (!feedbacks) return res.status(404).send({ error: "No feedbacks found for user with id " + user_id });
+  // visibility
+  if (scope === "saved") res.send(feedbacks.filter((feedback) => feedback.visibility === "sender"));
+  else if (scope === "shared") res.send(feedbacks.filter((feedback) => feedback.visibility !== "sender"));
+  else res.status(400).send({ error: 'Invalid scope, should be  "saved" or "shared"' });
 });
 
 app.listen(5000, () => {

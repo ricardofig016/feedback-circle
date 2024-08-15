@@ -5,10 +5,10 @@ import formatDate from "../../utilities/format-date.js";
 import formatText from "../../utilities/format-text.js";
 import { buildURL } from "../../routes/routes.js";
 
-export default class MyFeedbacksComponent extends BaseComponent {
-  selector = "my-feedbacks";
-  pageTitle = "My Feedbacks";
-  pageIcon = "fa-list-ul";
+export default class SavedFeedbacksComponent extends BaseComponent {
+  selector = "saved-feedbacks";
+  pageTitle = "Saved Feedbacks";
+  pageIcon = "fa-folder-open";
   access = ["user", "appraiser", "admin"];
   feedbacks;
 
@@ -16,7 +16,7 @@ export default class MyFeedbacksComponent extends BaseComponent {
     super.onInit();
 
     // Feedbacks request
-    const url = "feedbacks/receiverid/" + this.session.user.user_id + "/role/receiver";
+    const url = "/feedbacks/senderid/" + this.session.user.user_id + "/scope/saved";
     this.feedbacks = await RequestManager.request("GET", url);
 
     const noFeedbacksSection = this.getElementById("no-feedbacks-section");
@@ -38,9 +38,9 @@ export default class MyFeedbacksComponent extends BaseComponent {
       const feedbackUrl = buildURL("Feedback", { id: feedback.feedback_id });
       const titleLink = "<a href=" + feedbackUrl + ">" + formatText(feedback.title) + "</a>";
       row.set("title", titleLink);
-      // From Column
-      const from = feedback.sender_name === "anonymous" ? "<i>" + feedback.sender_name + "</i>" : formatText(feedback.sender_name);
-      row.set("from", from);
+      // To Column
+      const to = formatText(feedback.receiver_name);
+      row.set("to", to);
       // Submitted On Column
       const submssionDate = formatDate(new Date(feedback.submission_date));
       row.set("submitted on", submssionDate);

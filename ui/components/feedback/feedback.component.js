@@ -71,7 +71,7 @@ export default class FeedbackComponent extends BaseComponent {
     for (let i = 1; i <= this.feedback.rating; i++) this.getElementById("star" + i).classList.add("blue-star");
 
     // unread checkbox
-    const unreadCheckbox = document.getElementById("unread-checkbox");
+    const unreadCheckbox = this.getElementById("unread-checkbox");
     if (this.feedback.user_role === "sender") {
       // sender has no option read/unread
       unreadCheckbox.parentElement.hidden = true;
@@ -89,7 +89,7 @@ export default class FeedbackComponent extends BaseComponent {
     if (this.feedback.user_role === "appraiser") {
       // share checkbox
       this.getElementById("share-span").innerText = this.feedback.receiver_name.substring(0, this.feedback.receiver_name.indexOf(" "));
-      document.getElementById("share-checkbox").checked = this.feedback.visibility === "receiver";
+      this.getElementById("share-checkbox").checked = this.feedback.visibility === "receiver";
       // appraiser notes
       if (this.feedback.appraiser_notes) this.getElementById("appraiser-notes").innerText = this.feedback.appraiser_notes;
       this.getElementById("appraiser-notes-textarea").value = this.feedback.appraiser_notes;

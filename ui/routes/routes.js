@@ -8,6 +8,8 @@ import Session from "../modules/session/session.js";
 import HomeComponent from "../components/home/home.component.js";
 import ProfileComponent from "../components/profile/profile.component.js";
 import MyFeedbacksComponent from "../components/my-feedbacks/my-feedbacks.component.js";
+import SavedFeedbacksComponent from "../components/saved-feedbacks/saved-feedbacks.component.js";
+import SharedFeedbacksComponent from "../components/shared-feedbacks/shared-feedbacks.component.js";
 import MyAppraiseesComponent from "../components/my-appraisees/my-appraisees.component.js";
 import AppraiseeComponent from "../components/appraisee/appraisee.component.js";
 import FeedbackComponent from "../components/feedback/feedback.component.js";
@@ -31,6 +33,8 @@ const Routes = {
   Home: HomeComponent,
   Profile: ProfileComponent,
   MyFeedbacks: MyFeedbacksComponent,
+  SavedFeedbacks: SavedFeedbacksComponent,
+  SharedFeedbacks: SharedFeedbacksComponent,
   MyAppraisees: MyAppraiseesComponent,
   Appraisee: AppraiseeComponent,
   Feedback: FeedbackComponent,
