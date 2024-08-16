@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 
-import { getFeedbacks, getUsers, getUserById, createFeedback, getUserByEmail, getFeedbackById, getUsersByAppraiserId, getFeedbacksOfUser, updateFeedback, getSavedAndSharedFeedbacks } from "./database/database.js";
+import { getFeedbacks, getUsers, getUserById, createFeedback, getUserByEmail, getFeedbackById, getUsersByAppraiserId, getFeedbacksOfUser, updateFeedback, getSavedAndSharedFeedbacks, getPinnedUsers, createUserPin, deleteUserPin } from "./database/database.js";
 import { securityPortalAuth } from "./auth.js";
 
 const app = express();
@@ -26,10 +26,31 @@ router.post("/login", async (req, res) => {
 });
 */
 
-router.get("/users", async (req, res) => {
+router.get("/users/withpins/userid/:id", async (req, res) => {
+  const userId = req.params.id;
   const users = await getUsers();
+  const pinnedUsers = await getPinnedUsers(userId);
+  const pinnedUsersIds = pinnedUsers.map((pinned_user) => pinned_user.pinned_user_id);
   if (!users) return res.status(404).send({ error: "No users found" });
+  users.forEach((user) => {
+    user.is_pinned = pinnedUsersIds.includes(user.user_id) ? true : false;
+  });
   res.send(users);
+});
+
+router.put("/users/updatepin/:userid/:pinneduserid", async (req, res) => {
+  const userId = req.params.userid;
+  const pinnedUserId = req.params.pinneduserid;
+  const { newIsPinned } = req.body;
+  try {
+    if (newIsPinned) {
+      res.status(200).send(await createUserPin(userId, pinnedUserId));
+    } else {
+      res.status(200).send(await deleteUserPin(userId, pinnedUserId));
+    }
+  } catch (error) {
+    return res.status(500).json({ error: "An unexpected error occurred" });
+  }
 });
 
 router.get("/users/id/:id", async (req, res) => {

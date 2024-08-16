@@ -24,6 +24,40 @@ export async function getUsers() {
   return rows;
 }
 
+export async function getPinnedUsers(id) {
+  const [rows] = await pool.query(
+    `
+    SELECT pu.pinned_user_id
+    FROM pinned_users AS pu
+    WHERE pu.user_id = ?
+    `,
+    [id]
+  );
+  return rows;
+}
+
+export async function createUserPin(userId, pinnedUserId) {
+  const [data] = await pool.query(
+    `
+    INSERT INTO pinned_users (user_id, pinned_user_id)
+    VALUES (?, ?)
+    `,
+    [userId, pinnedUserId]
+  );
+  return data;
+}
+
+export async function deleteUserPin(userId, pinnedUserId) {
+  const [data] = await pool.query(
+    `
+    DELETE FROM pinned_users
+    WHERE user_id = ? AND pinned_user_id = ?
+    `,
+    [userId, pinnedUserId]
+  );
+  return data;
+}
+
 export async function getUserById(id) {
   const [rows] = await pool.query(
     `

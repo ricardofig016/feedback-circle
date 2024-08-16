@@ -10,6 +10,27 @@
 
   --LANDING-PAGE-INCREMENT: 0px;
   --LANDING-PAGE-WIDTH-INCREMENT: 0px;
+
+  --scrollbar-bg: #f1f1f1;
+  --scrollbar-thumb: #999;
+  --scrollbar-thumb-hover: #777;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
 }
 
 html,
@@ -197,17 +218,35 @@ a {
   width: calc(100% - 160px);
 }
 
-.suggestion-item {
+.suggestion-container {
   min-width: 300px;
-  padding: 10px 16px;
   cursor: pointer;
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+}
+
+.suggestion-item {
+  padding-left: 16px;
+  height: 42px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.suggestion-icon {
+  padding: 0 12px;
+  height: 42px;
+  color: rgba(0, 102, 161, 0.95);
+  display: flex;
   align-items: center;
 }
 
 .suggestion-item:hover {
   background-color: rgba(22, 123, 181, 0.2);
+}
+
+.suggestion-icon:hover i {
+  transform: scale(1.1);
 }
 
 .form-icon {

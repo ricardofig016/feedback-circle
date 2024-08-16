@@ -11,28 +11,25 @@ export default class WriteFeedbackComponent extends BaseComponent {
   pageTitle = "Write Feedback";
   pageIcon = "fa-pencil";
   access = ["user", "appraiser", "admin"];
-  users; // all users NAME and ID, in alphabetical order
+  users; // all users NAME, ID and IS_PINNED (in alphabetical order)
   suggestions = [];
   receiverId;
 
   async onInit(isRefresh = false) {
     super.onInit();
-    this.users = await RequestManager.request("GET", "users");
+    this.users = await RequestManager.request("GET", "users/withpins/userid/" + this.session.user.user_id);
     if (!isRefresh) this.addEventListeners();
   }
 
   addEventListeners() {
     // Name field
     const nameInput = this.getElementById("name-input");
-    nameInput.addEventListener("focus", (e) => {
-      const query = e.target.value.trim();
-      this.updateSuggestions(query);
-      if (this.suggestions.length > 0) this.getElementById("suggestions-dropdown").hidden = false; // Show the dropdown
-    });
-    nameInput.addEventListener("blur", () => {
-      setTimeout(() => {
-        this.getElementById("suggestions-dropdown").hidden = true; // Hide the dropdown
-      }, 100);
+    nameInput.addEventListener("click", (e) => {
+      const dropdown = this.getElementById("suggestions-dropdown");
+      if (dropdown.hidden) {
+        const query = e.target.value.trim();
+        this.updateSuggestions(query);
+      } else dropdown.hidden = true; // hide dropdown on click if the dropdown is not hidden
     });
     nameInput.addEventListener(
       "input",
@@ -88,35 +85,65 @@ export default class WriteFeedbackComponent extends BaseComponent {
     });
   }
 
-  // Update name suggestions
+  // update name suggestions
   updateSuggestions(query) {
     this.calcSuggestions(query);
     const suggestionsContainer = this.getElementById("suggestions-dropdown");
     suggestionsContainer.innerHTML = ""; // Clear previous suggestions
-    suggestionsContainer.hidden = this.suggestions.length === 0 ? true : false;
+    suggestionsContainer.hidden = false;
 
     this.suggestions.forEach((suggestion) => {
       // create suggestion
-      const item = document.createElement("div");
-      item.className = "suggestion-item";
-      const span = "<span>" + suggestion.name + "</span>";
-      item.innerHTML = span;
-      suggestionsContainer.appendChild(item);
+      const suggContainer = document.createElement("div");
+      suggContainer.className = "suggestion-container";
+      suggContainer.dataset.user_id = suggestion.user_id;
 
-      // Event listener for clicking a suggestion
-      const nameInput = this.getElementById("name-input");
-      item.addEventListener("click", () => {
+      const suggItem = document.createElement("div");
+      suggItem.className = "suggestion-item";
+      suggItem.innerHTML = "<span>" + suggestion.name + "</span>";
+      suggContainer.appendChild(suggItem);
+
+      const suggIcon = document.createElement("div");
+      suggIcon.className = "suggestion-icon";
+      const heartMode = suggestion.is_pinned ? "fa-heart" : "fa-heart-o";
+      suggIcon.innerHTML = "<i class='fa fa-2x " + heartMode + "'></i>";
+      suggContainer.appendChild(suggIcon);
+
+      suggestionsContainer.appendChild(suggContainer);
+
+      // clicking a suggestion
+      suggItem.addEventListener("click", () => {
         this.receiverId = suggestion.user_id;
-        nameInput.value = suggestion.name;
+        this.getElementById("name-input").value = suggestion.name;
         suggestionsContainer.innerHTML = ""; // Clear suggestions
         suggestionsContainer.hidden = true;
+      });
+
+      // clicking a pin icon
+      suggIcon.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const container = e.target.classList.contains("suggestion-icon") ? e.target.parentElement : e.target.parentElement.parentElement;
+        this.users.forEach(async (user) => {
+          // clicked user
+          if (user.user_id == container.dataset.user_id) {
+            const newIsPinned = !user.is_pinned;
+            // update client, database and suggestions
+            user.is_pinned = newIsPinned;
+            await RequestManager.request("PUT", "users/updatepin/" + this.session.user.user_id + "/" + user.user_id, { newIsPinned });
+            this.updateSuggestions(this.getElementById("name-input").value.trim());
+          }
+        });
       });
     });
   }
 
-  // Filter and sort the names
+  // filter name suggestions
   calcSuggestions(query) {
-    if (!query) return (this.suggestions = []);
+    if (!query) {
+      this.suggestions = this.users;
+      this.sortSuggestions();
+      return;
+    }
     query = query.toLowerCase();
     const firstNameStartsWithQuery = [];
     const otherNameStartsWithQuery = [];
@@ -138,6 +165,16 @@ export default class WriteFeedbackComponent extends BaseComponent {
     });
 
     this.suggestions = [...firstNameStartsWithQuery, ...otherNameStartsWithQuery, ...containsQuery];
+    this.sortSuggestions();
+  }
+
+  sortSuggestions() {
+    this.suggestions.sort((a, b) => {
+      if (a.is_pinned === b.is_pinned) {
+        return 0; // preserve order
+      }
+      return a.is_pinned ? -1 : 1; // if a is pinned and b isnt, a should come first
+    });
   }
 
   async postFeedback(formData, visibility) {
