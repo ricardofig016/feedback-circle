@@ -1,11 +1,12 @@
 <form class="form" onsubmit="return false;" style="width: 90%">
   <div class="split-vert">
     <!--Name-->
-    <div class="split-hor">
+    <div class="split-hor" style="position: relative">
       <div class="form-field form-label">
         <span><b>Name:</b></span>
       </div>
-      <input type="text" class="form-field form-input" id="name-input" placeholder="Search name..." />
+      <input type="text" class="form-field form-input" id="name-input" placeholder="Search name..." autocomplete="off" />
+      <div id="suggestions-dropdown" class="form-field" hidden></div>
       <div class="form-field form-icon">
         <i class="fa fa-info-circle" id="name-icon" aria-hidden="true"></i>
         <div class="tooltip" id="name-tooltip"></div>
