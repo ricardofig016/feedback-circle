@@ -60,6 +60,32 @@ export default class WriteFeedbackComponent extends BaseComponent {
       }, 300)
     );
 
+    // Type field
+    const showAndHideTypeDependentElems = (selectedType) => {
+      // continuous only elems
+      this.getElementsByClassName("continuous-type-only").forEach((elem) => {
+        elem.style.display = selectedType === "performance" ? "none" : "";
+      });
+      // performance only elems
+      this.getElementsByClassName("performance-type-only").forEach((elem) => {
+        elem.style.display = selectedType === "performance" ? "" : "none";
+      });
+    };
+    const clearContextField = () => {
+      const contextInput = this.getElementById("context-input");
+      contextInput.value = "";
+    };
+    const performanceRadio = this.getElementById("performance-radio");
+    performanceRadio.addEventListener("change", () => {
+      showAndHideTypeDependentElems("performance");
+      clearContextField();
+    });
+    const continuousRadio = this.getElementById("continuous-radio");
+    continuousRadio.addEventListener("change", () => {
+      showAndHideTypeDependentElems("continuous");
+      clearContextField();
+    });
+
     // Rating field
     const starLabels = this.getElementsByClassName("star-label");
     starLabels.forEach((label) => {
@@ -79,12 +105,12 @@ export default class WriteFeedbackComponent extends BaseComponent {
     fields.forEach((field) => {
       // Add default tooltip messages on input fields
       const icon = messages[field]["defaultInfo"]["icon"];
-      const message = messages[field]["defaultInfo"]["text"];
-      this.sendTooltipMessage(field, icon, message, "default");
+      const text = messages[field]["defaultInfo"]["text"];
+      this.sendTooltipMessage(field, icon, text, "default");
       const fieldInput = this.getElementById(field + "-input");
       fieldInput.addEventListener("click", () => {
         // Set warning/error messages on input fields to default info messages
-        this.sendTooltipMessage(field, icon, message, "default");
+        this.sendTooltipMessage(field, icon, text, "default");
       });
     });
 
@@ -206,7 +232,7 @@ export default class WriteFeedbackComponent extends BaseComponent {
     const data = {
       senderId: this.session.user.user_id,
       receiverId: this.receiver.user_id,
-      title: this.receiver.name + " - " + "squad",
+      title: this.receiver.name + " - " + formData.context,
       positiveMessage: formData.positive,
       positiveMessageAppraiserEdit: formData.positive,
       negativeMessage: formData.negative,
@@ -224,7 +250,6 @@ export default class WriteFeedbackComponent extends BaseComponent {
     };
     console.table(data);
     await RequestManager.request("POST", "feedbacks", data);
-    console.table(res);
     new ToastManager().showToast("Success", "Feedback submited", "success", 5000);
   }
 
@@ -329,5 +354,14 @@ export default class WriteFeedbackComponent extends BaseComponent {
       const tooltipElem = this.getElementById(field + "-tooltip");
       tooltipElem.innerHTML = message;
     }
+  }
+
+  resetAllTooltipMessages() {
+    const fields = Object.keys(messages);
+    fields.forEach((field) => {
+      const icon = messages[field]["defaultInfo"]["icon"];
+      const text = messages[field]["defaultInfo"]["text"];
+      this.sendTooltipMessage(field, icon, text, "default");
+    });
   }
 }

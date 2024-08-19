@@ -39,16 +39,16 @@
       </div>
       <select class="form-field form-select" id="context-input">
         <option value="" disabled selected>Select a context</option>
-        <option value="feedback">Feedback</option>
-        <option value="council">Council</option>
-        <option value="squad">Squad</option>
-        <option value="quality">Quality</option>
-        <option value="other">Other</option>
-        <option value="team care">Team Care</option>
-        <option value="1:1">1:1</option>
-        <option value="PRP">PRP</option>
-        <option value="TL/PM feedback">TL/PM Feedback</option>
-        <option value="radar">Radar</option>
+        <option class="performance-type-only" value="feedback">Feedback</option>
+        <option class="performance-type-only" value="council">Council</option>
+        <option class="performance-type-only" value="squad">Squad</option>
+        <option class="performance-type-only" value="quality">Quality</option>
+        <option class="performance-type-only" value="other">Other</option>
+        <option class="continuous-type-only" value="team care" style="display: none">Team Care</option>
+        <option class="continuous-type-only" value="1:1" style="display: none">1:1</option>
+        <option class="continuous-type-only" value="PRP" style="display: none">PRP</option>
+        <option class="continuous-type-only" value="TL/PM feedback" style="display: none">TL/PM Feedback</option>
+        <option class="continuous-type-only" value="radar" style="display: none">Radar</option>
       </select>
       <div class="form-field form-icon">
         <i class="fa fa-info-circle" id="context-icon" aria-hidden="true"></i>
@@ -134,7 +134,7 @@
       </div>
     </div>
     <!--Actions-->
-    <div class="split-hor">
+    <div class="split-hor continuous-type-only" style="display: none">
       <div class="form-field form-label">
         <span><b>Actions:</b></span>
       </div>
@@ -145,7 +145,7 @@
       </div>
     </div>
     <!--Responsible-->
-    <div class="split-hor" style="position: relative">
+    <div class="split-hor continuous-type-only" style="position: relative; display: none">
       <div class="form-field form-label">
         <span><b>Responsible:</b></span>
       </div>
@@ -157,7 +157,7 @@
       </div>
     </div>
     <!--Status-->
-    <div class="split-hor">
+    <div class="split-hor continuous-type-only" style="display: none">
       <div class="form-field form-label">
         <span><b>Status:</b></span>
       </div>
@@ -173,7 +173,7 @@
       </div>
     </div>
     <!--Deadline-->
-    <div class="split-hor">
+    <div class="split-hor continuous-type-only" style="display: none">
       <div class="form-field form-label">
         <span><b>Deadline:</b></span>
       </div>
