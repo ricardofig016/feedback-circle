@@ -117,7 +117,7 @@ export async function getFeedbacks() {
 export async function getFeedbacksOfUser(id) {
   const [rows] = await pool.query(
     `
-    SELECT f.feedback_id, f.title, f.submission_date, f.category, f.appraiser_notes, f.privacy, f.visibility, u.name AS sender_name
+    SELECT f.feedback_id, f.title, f.submission_date, f.competency, f.appraiser_notes, f.privacy, f.visibility, u.name AS sender_name
     FROM feedbacks AS f
     JOIN users AS u ON f.sender_id = u.user_id
     WHERE f.receiver_id = ?
@@ -131,7 +131,7 @@ export async function getFeedbacksOfUser(id) {
 export async function getSavedAndSharedFeedbacks(id) {
   const [rows] = await pool.query(
     `
-    SELECT f.feedback_id, f.title, f.submission_date, f.category, f.visibility, u.name AS receiver_name
+    SELECT f.feedback_id, f.title, f.submission_date, f.competency, f.visibility, u.name AS receiver_name
     FROM feedbacks AS f
     JOIN users AS u ON f.receiver_id = u.user_id
     WHERE f.sender_id = ?
@@ -145,7 +145,7 @@ export async function getSavedAndSharedFeedbacks(id) {
 export async function getFeedbackById(id) {
   const [rows] = await pool.query(
     `
-    SELECT f.title, f.positive_message, f.positive_message_appraiser_edit, f.negative_message, f.negative_message_appraiser_edit,  f.submission_date, f.category, f.rating, f.visibility, f.privacy, f.is_read_receiver, f.is_read_appraiser, f.appraiser_notes, f.sender_id, f.receiver_id, sender.name AS sender_name, receiver.name AS receiver_name, receiver.appraiser_id
+    SELECT f.title, f.positive_message, f.positive_message_appraiser_edit, f.negative_message, f.negative_message_appraiser_edit,  f.submission_date, f.competency, f.rating, f.visibility, f.privacy, f.is_read_receiver, f.is_read_appraiser, f.appraiser_notes, f.sender_id, f.receiver_id, sender.name AS sender_name, receiver.name AS receiver_name, receiver.appraiser_id
     FROM feedbacks AS f
     JOIN users AS sender ON f.sender_id = sender.user_id
     JOIN users AS receiver ON f.receiver_id = receiver.user_id
@@ -172,13 +172,13 @@ export async function updateFeedback(columnName, value, id) {
 /**
  * @returns the feedback_id of the created feedback
  */
-export async function createFeedback(senderId, receiverId, title, positiveMessage, positiveMessageAppraiserEdit, negativeMessage, negativeMessageAppraiserEdit, submissionDate, category, visibility, privacy, rating) {
+export async function createFeedback(senderId, receiverId, title, positiveMessage, positiveMessageAppraiserEdit, negativeMessage, negativeMessageAppraiserEdit, submissionDate, competency, visibility, privacy, rating, type, context, actions, responsibleId, status, deadline) {
   const [data] = await pool.query(
     `
-    INSERT INTO feedbacks (sender_id, receiver_id, title, positive_message, positive_message_appraiser_edit, negative_message, negative_message_appraiser_edit, submission_date, category, visibility, privacy, rating)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    INSERT INTO feedbacks (sender_id, receiver_id, title, positive_message, positive_message_appraiser_edit, negative_message, negative_message_appraiser_edit, submission_date, competency, visibility, privacy, rating, type, context, actions, responsible_id, status, deadline)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     `,
-    [senderId, receiverId, title, positiveMessage, positiveMessageAppraiserEdit, negativeMessage, negativeMessageAppraiserEdit, submissionDate, category, visibility, privacy, rating]
+    [senderId, receiverId, title, positiveMessage, positiveMessageAppraiserEdit, negativeMessage, negativeMessageAppraiserEdit, submissionDate, competency, visibility, privacy, rating, type, context, actions, responsibleId, status, deadline]
   );
   // return the created object
   return data.insertId;

@@ -56,7 +56,7 @@ export default class FeedbackComponent extends BaseComponent {
     }
     this.resetMessage("positive");
     this.resetMessage("negative");
-    // category
+    // competency
     const categories = {
       general: "General",
       "execution-and-delivery": "Execution and Delivery",
@@ -66,7 +66,7 @@ export default class FeedbackComponent extends BaseComponent {
       communication: "Communication",
       "customer-orientation": "Customer Orientation",
     };
-    this.getElementById("category").innerText = categories[this.feedback.category];
+    this.getElementById("competency").innerText = categories[this.feedback.competency];
     // rating
     for (let i = 1; i <= this.feedback.rating; i++) this.getElementById("star" + i).classList.add("blue-star");
 

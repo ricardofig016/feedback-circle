@@ -14,6 +14,7 @@ export default class WriteFeedbackComponent extends BaseComponent {
   users; // all users NAME, ID and IS_PINNED (in alphabetical order)
   suggestions = [];
   receiverId;
+  responsibleId;
 
   async onInit(isRefresh = false) {
     super.onInit();
@@ -186,10 +187,16 @@ export default class WriteFeedbackComponent extends BaseComponent {
       positiveMessageAppraiserEdit: formData.positive,
       negativeMessage: formData.negative,
       negativeMessageAppraiserEdit: formData.negative,
-      category: formData.category,
+      competency: formData.competency,
       visibility,
       privacy: formData.privacy,
       rating: formData.rating,
+      type: formData.type || "performance",
+      context: formData.context || "squad",
+      actions: formData.actions,
+      responsibleId: this.responsibleId,
+      status: formData.status,
+      deadline: formData.deadline,
     };
     const res = await RequestManager.request("POST", "feedbacks", data);
     //console.table(res);
@@ -265,9 +272,9 @@ export default class WriteFeedbackComponent extends BaseComponent {
   }
 
   /**
-   * Sends a validation message for a specific field.
+   * Sends a validation message to a specific field.
    *
-   * @param {string} field - The field to which the validation message applies. Can be "name", "category", "type", "privacy" or "body".
+   * @param {string} field - The form field to which the validation message applies.
    * @param {string} icon - The type of validation message. Can be "check", "error", "warning", or "info".
    * @param {string} message - The validation message to display or "none" to keep the previous message.
    * @param {string} border - The color of the border of the correspondend input element. Can be  "icon" for the same color as the icon or "default" for default.

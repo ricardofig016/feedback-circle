@@ -74,16 +74,21 @@ router.get("/users/appraiserid/:appraiserid", async (req, res) => {
   res.send(users);
 });
 
+// get all feedbacks
 router.get("/feedbacks", async (req, res) => {
   const feedbacks = await getFeedbacks();
   if (!feedbacks) return res.status(404).send({ error: "No feedbacks found" });
   res.send(feedbacks);
 });
 
+// create new feedback
 router.post("/feedbacks", async (req, res) => {
-  const { senderId, receiverId, title, positiveMessage, positiveMessageAppraiserEdit, negativeMessage, negativeMessageAppraiserEdit, category, visibility, privacy, rating } = req.body;
+  let { senderId, receiverId, title, positiveMessage, positiveMessageAppraiserEdit, negativeMessage, negativeMessageAppraiserEdit, competency, visibility, privacy, rating, type, context, actions, responsibleId, status, deadline } = req.body;
+
   const submissionDate = formatDate(new Date());
-  const feedbackId = await createFeedback(senderId, receiverId, title, positiveMessage, positiveMessageAppraiserEdit, negativeMessage, negativeMessageAppraiserEdit, submissionDate, category, visibility, privacy, rating);
+  if (type !== "continuous") actions = responsibleId = status = deadline = null;
+
+  const feedbackId = await createFeedback(senderId, receiverId, title, positiveMessage, positiveMessageAppraiserEdit, negativeMessage, negativeMessageAppraiserEdit, submissionDate, competency, visibility, privacy, rating, type, context, actions, responsibleId, status, deadline);
 
   if (!feedbackId) return res.status(400).send({ error: "Feedback creation failed" });
 

@@ -44,8 +44,8 @@ export default class SharedFeedbacksComponent extends BaseComponent {
       // Submitted On Column
       const submssionDate = formatDate(new Date(feedback.submission_date));
       row.set("submitted on", submssionDate);
-      // Category Column
-      row.set("category", formatText(feedback.category));
+      // Competency Column
+      row.set("competency", formatText(feedback.competency));
 
       // Add Row to Grid
       feedbacksGrid.addRow(row);
