@@ -12,9 +12,10 @@ export default class WriteFeedbackComponent extends BaseComponent {
   pageIcon = "fa-pencil";
   access = ["user", "appraiser", "admin"];
   users; // all users NAME, ID and IS_PINNED (in alphabetical order)
-  suggestions = [];
-  receiverId;
-  responsibleId;
+  receiver;
+  responsible;
+  receiverSuggestions = [];
+  responsibleSuggestions = [];
 
   async onInit(isRefresh = false) {
     super.onInit();
@@ -23,21 +24,39 @@ export default class WriteFeedbackComponent extends BaseComponent {
   }
 
   addEventListeners() {
-    // Name field
-    const nameInput = this.getElementById("name-input");
-    nameInput.addEventListener("click", (e) => {
-      const dropdown = this.getElementById("suggestions-dropdown");
+    // Receiver field
+    const receiverInput = this.getElementById("receiver-input");
+    receiverInput.addEventListener("click", (e) => {
+      const dropdown = this.getElementById("receiver-dropdown");
       if (dropdown.hidden) {
         const query = e.target.value.trim();
-        this.updateSuggestions(query);
+        this.updateSuggestions(query, "receiver");
       } else dropdown.hidden = true; // hide dropdown on click if the dropdown is not hidden
     });
-    nameInput.addEventListener(
+    receiverInput.addEventListener(
       "input",
       debounce((e) => {
-        this.receiverId = null;
+        this.receiver = null;
         const query = e.target.value.trim();
-        this.updateSuggestions(query);
+        this.updateSuggestions(query, "receiver");
+      }, 300)
+    );
+
+    // Responsible field
+    const responsibleInput = this.getElementById("responsible-input");
+    responsibleInput.addEventListener("click", (e) => {
+      const dropdown = this.getElementById("responsible-dropdown");
+      if (dropdown.hidden) {
+        const query = e.target.value.trim();
+        this.updateSuggestions(query, "responsible");
+      } else dropdown.hidden = true; // hide dropdown on click if the dropdown is not hidden
+    });
+    responsibleInput.addEventListener(
+      "input",
+      debounce((e) => {
+        this.responsible = null;
+        const query = e.target.value.trim();
+        this.updateSuggestions(query, "responsible");
       }, 300)
     );
 
@@ -86,14 +105,19 @@ export default class WriteFeedbackComponent extends BaseComponent {
     });
   }
 
-  // update name suggestions
-  updateSuggestions(query) {
-    this.calcSuggestions(query);
-    const suggestionsContainer = this.getElementById("suggestions-dropdown");
+  /**
+   * update name suggestions
+   *
+   * @param {string} query value inserted to the input
+   * @param {string} field a text field that supports name search (receiver or responsible)
+   */
+  updateSuggestions(query, field) {
+    this.calcSuggestions(query, field);
+    const suggestionsContainer = this.getElementById(field + "-dropdown");
     suggestionsContainer.innerHTML = ""; // Clear previous suggestions
     suggestionsContainer.hidden = false;
 
-    this.suggestions.forEach((suggestion) => {
+    this[field + "Suggestions"].forEach((suggestion) => {
       // create suggestion
       const suggContainer = document.createElement("div");
       suggContainer.className = "suggestion-container";
@@ -114,9 +138,9 @@ export default class WriteFeedbackComponent extends BaseComponent {
 
       // clicking a suggestion
       suggItem.addEventListener("click", () => {
-        this.receiverId = suggestion.user_id;
-        this.getElementById("name-input").value = suggestion.name;
-        suggestionsContainer.innerHTML = ""; // Clear suggestions
+        this[field] = suggestion;
+        this.getElementById(field + "-input").value = suggestion.name;
+        suggestionsContainer.innerHTML = ""; // clear suggestions
         suggestionsContainer.hidden = true;
       });
 
@@ -131,18 +155,18 @@ export default class WriteFeedbackComponent extends BaseComponent {
             // update client, database and suggestions
             user.is_pinned = newIsPinned;
             await RequestManager.request("PUT", "users/updatepin/" + this.session.user.user_id + "/" + user.user_id, { newIsPinned });
-            this.updateSuggestions(this.getElementById("name-input").value.trim());
+            this.updateSuggestions(this.getElementById(field + "-input").value.trim(), field);
           }
         });
       });
     });
   }
 
-  // filter name suggestions
-  calcSuggestions(query) {
+  // filter suggestions
+  calcSuggestions(query, field) {
     if (!query) {
-      this.suggestions = this.users;
-      this.sortSuggestions();
+      this[field + "Suggestions"] = this.users;
+      this.sortSuggestions(field);
       return;
     }
     query = query.toLowerCase();
@@ -162,15 +186,15 @@ export default class WriteFeedbackComponent extends BaseComponent {
         containsQuery.push(user);
       }
 
-      if (query === lowerCaseName) this.receiverId = user.user_id;
+      if (query === lowerCaseName) this[field] = user;
     });
 
-    this.suggestions = [...firstNameStartsWithQuery, ...otherNameStartsWithQuery, ...containsQuery];
-    this.sortSuggestions();
+    this[field + "Suggestions"] = [...firstNameStartsWithQuery, ...otherNameStartsWithQuery, ...containsQuery];
+    this.sortSuggestions(field);
   }
 
-  sortSuggestions() {
-    this.suggestions.sort((a, b) => {
+  sortSuggestions(field) {
+    this[field + "Suggestions"].sort((a, b) => {
       if (a.is_pinned === b.is_pinned) {
         return 0; // preserve order
       }
@@ -181,8 +205,8 @@ export default class WriteFeedbackComponent extends BaseComponent {
   async postFeedback(formData, visibility) {
     const data = {
       senderId: this.session.user.user_id,
-      receiverId: this.receiverId,
-      title: formData.title,
+      receiverId: this.receiver.user_id,
+      title: this.receiver.name + " - " + "squad",
       positiveMessage: formData.positive,
       positiveMessageAppraiserEdit: formData.positive,
       negativeMessage: formData.negative,
@@ -191,15 +215,16 @@ export default class WriteFeedbackComponent extends BaseComponent {
       visibility,
       privacy: formData.privacy,
       rating: formData.rating,
-      type: formData.type || "performance",
-      context: formData.context || "squad",
+      type: formData.type,
+      context: formData.context,
       actions: formData.actions,
-      responsibleId: this.responsibleId,
+      responsibleId: formData.type === "continuous" ? this.responsible.user_id : null,
       status: formData.status,
       deadline: formData.deadline,
     };
-    const res = await RequestManager.request("POST", "feedbacks", data);
-    //console.table(res);
+    console.table(data);
+    await RequestManager.request("POST", "feedbacks", data);
+    console.table(res);
     new ToastManager().showToast("Success", "Feedback submited", "success", 5000);
   }
 
@@ -227,46 +252,41 @@ export default class WriteFeedbackComponent extends BaseComponent {
   }
 
   validateFormData(formData) {
+    const unvalidate = (field, message) => {
+      // tooltip
+      const icon = messages[field][message]["icon"];
+      const text = messages[field][message]["text"];
+      this.sendTooltipMessage(field, icon, text, "icon");
+      // unvalidate form data
+      validation = false;
+    };
+
     let validation = true;
 
-    // missing receiverId
-    if (!this.receiverId) {
-      const message = "Invalid name";
-      this.sendTooltipMessage("name", "warning", message, "icon");
-      new ToastManager().showToast("Warning", message, "warning", 5000);
-    }
-
-    // the user cant make a feedback about himself
-    if (this.session.user.user_id === this.receiverId) {
-      const message = "You can't make a feedback about yourself";
-      this.sendTooltipMessage("name", "warning", message, "icon");
-      new ToastManager().showToast("Warning", message, "warning", 5000);
-    }
-
-    const fields = Object.keys(messages);
-    fields.forEach((field) => {
-      // Missing value
-      if (!formData[field]) {
-        if (!["positive", "negative"].includes(field) || (!formData["positive"] && !formData["negative"])) {
-          // Tooltip
-          const icon = messages[field]["missingValue"]["icon"];
-          const message = messages[field]["missingValue"]["text"];
-          this.sendTooltipMessage(field, icon, message, "icon");
-          // Toast
-          if (field !== "negative") new ToastManager().showToast("Warning", message, "warning", 5000);
-          // Unvalidate form data
-          validation = false;
-        }
-      }
+    // normal fields ( type, context, competency, privacy, rating )
+    ["type", "context", "competency", "privacy", "rating"].forEach((field) => {
+      if (!formData[field]) unvalidate(field, "missing");
     });
 
-    // Title too long
-    if (formData.title && formData.title.length > 120) {
-      const icon = "warning";
-      const message = "<p>The title is too long (" + formData["title"].length + "/120)</p>";
-      this.sendTooltipMessage("title", icon, message, "icon");
-      new ToastManager().showToast("Warning", message, "warning", 5000);
+    // positive, negative
+    if (!formData.positive && !formData.negative) unvalidate("positive", "missing"); // at least one field between positive and negative is required
+
+    // receiver
+    if (!formData.receiver) unvalidate("receiver", "missing"); // missing value
+    else if (!this.receiver) unvalidate("receiver", "invalid"); // invalid receiver
+    else if (this.session.user.user_id === this.receiver.user_id) unvalidate("receiver", "selfFeedback"); // the user cant make a feedback about themselves
+
+    // responsible
+    if (formData.type === "continuous") {
+      if (!formData.responsible) unvalidate("responsible", "missing"); // missing value
+      else if (!this.responsible) unvalidate("responsible", "invalid"); // invalid responsible
     }
+
+    // status
+    if (formData.type === "continuous" && !formData.status) unvalidate("status", "missing"); // missing value
+
+    // failed form submission toast
+    if (!validation) new ToastManager().showToast("Warning", "Please correct the highlighted fields before submitting", "warning", 5000);
 
     return validation;
   }

@@ -1,15 +1,58 @@
-<form class="form" onsubmit="return false;" style="width: 90%">
+<form class="form" onsubmit="return false;" style="width: 90%; padding-bottom: 100px">
   <div class="split-vert">
-    <!--Name-->
+    <!--Receiver-->
     <div class="split-hor" style="position: relative">
       <div class="form-field form-label">
-        <span><b>Name:</b></span>
+        <span><b>Receiver:</b></span>
       </div>
-      <input type="text" class="form-field form-input" id="name-input" placeholder="Search name..." autocomplete="off" />
-      <div id="suggestions-dropdown" class="form-field" hidden></div>
+      <input type="text" class="form-field form-text" id="receiver-input" placeholder="Search receiver..." autocomplete="off" />
+      <div id="receiver-dropdown" class="form-field suggestions-dropdown" hidden></div>
       <div class="form-field form-icon">
-        <i class="fa fa-info-circle" id="name-icon" aria-hidden="true"></i>
-        <div class="tooltip" id="name-tooltip"></div>
+        <i class="fa fa-info-circle" id="receiver-icon" aria-hidden="true"></i>
+        <div class="tooltip" id="receiver-tooltip"></div>
+      </div>
+    </div>
+    <!--Type-->
+    <div class="split-hor">
+      <div class="form-field form-label">
+        <span><b>Type:</b></span>
+      </div>
+      <div class="form-field form-radio" id="type-input">
+        <div class="radio-container">
+          <input type="radio" class="radio-input" id="performance-radio" name="type" value="performance" checked />
+          <label for="performance-radio" class="radio-label">performance</label>
+        </div>
+        <div class="radio-container">
+          <input type="radio" class="radio-input" id="continuous-radio" name="type" value="continuous" />
+          <label for="continuous-radio" class="radio-label">continuous</label>
+        </div>
+      </div>
+      <div class="form-field form-icon">
+        <i class="fa fa-info-circle" id="type-icon" aria-hidden="true"></i>
+        <div class="tooltip" id="type-tooltip"></div>
+      </div>
+    </div>
+    <!--Context-->
+    <div class="split-hor">
+      <div class="form-field form-label">
+        <span><b>Context:</b></span>
+      </div>
+      <select class="form-field form-select" id="context-input">
+        <option value="" disabled selected>Select a context</option>
+        <option value="feedback">Feedback</option>
+        <option value="council">Council</option>
+        <option value="squad">Squad</option>
+        <option value="quality">Quality</option>
+        <option value="other">Other</option>
+        <option value="team care">Team Care</option>
+        <option value="1:1">1:1</option>
+        <option value="PRP">PRP</option>
+        <option value="TL/PM feedback">TL/PM Feedback</option>
+        <option value="radar">Radar</option>
+      </select>
+      <div class="form-field form-icon">
+        <i class="fa fa-info-circle" id="context-icon" aria-hidden="true"></i>
+        <div class="tooltip" id="context-tooltip"></div>
       </div>
     </div>
     <!--Competency-->
@@ -68,17 +111,6 @@
         <div class="tooltip" id="rating-tooltip"></div>
       </div>
     </div>
-    <!--Title-->
-    <div class="split-hor">
-      <div class="form-field form-label">
-        <span><b>Title:</b></span>
-      </div>
-      <input type="text" class="form-field form-input" id="title-input" placeholder="Enter title..." />
-      <div class="form-field form-icon">
-        <i class="fa fa-info-circle" id="title-icon" aria-hidden="true"></i>
-        <div class="tooltip" id="title-tooltip"></div>
-      </div>
-    </div>
     <!--Positive Message-->
     <div class="split-hor">
       <div class="form-field form-label">
@@ -99,6 +131,56 @@
       <div class="form-field form-icon">
         <i class="fa fa-info-circle" id="negative-icon" aria-hidden="true"></i>
         <div class="tooltip" id="negative-tooltip"></div>
+      </div>
+    </div>
+    <!--Actions-->
+    <div class="split-hor">
+      <div class="form-field form-label">
+        <span><b>Actions:</b></span>
+      </div>
+      <textarea class="form-field form-textarea" id="actions-input" placeholder="Write actions..."></textarea>
+      <div class="form-field form-icon">
+        <i class="fa fa-info-circle" id="actions-icon" aria-hidden="true"></i>
+        <div class="tooltip" id="actions-tooltip"></div>
+      </div>
+    </div>
+    <!--Responsible-->
+    <div class="split-hor" style="position: relative">
+      <div class="form-field form-label">
+        <span><b>Responsible:</b></span>
+      </div>
+      <input type="text" class="form-field form-text" id="responsible-input" placeholder="Search responsible..." autocomplete="off" />
+      <div id="responsible-dropdown" class="form-field suggestions-dropdown" hidden></div>
+      <div class="form-field form-icon">
+        <i class="fa fa-info-circle" id="responsible-icon" aria-hidden="true"></i>
+        <div class="tooltip" id="responsible-tooltip"></div>
+      </div>
+    </div>
+    <!--Status-->
+    <div class="split-hor">
+      <div class="form-field form-label">
+        <span><b>Status:</b></span>
+      </div>
+      <select class="form-field form-select" id="status-input">
+        <option value="" disabled selected>Select a status</option>
+        <option value="new">New</option>
+        <option value="active">Active</option>
+        <option value="closed">Closed</option>
+      </select>
+      <div class="form-field form-icon">
+        <i class="fa fa-info-circle" id="status-icon" aria-hidden="true"></i>
+        <div class="tooltip" id="status-tooltip"></div>
+      </div>
+    </div>
+    <!--Deadline-->
+    <div class="split-hor">
+      <div class="form-field form-label">
+        <span><b>Deadline:</b></span>
+      </div>
+      <input type="date" class="form-field form-date" id="deadline-input" />
+      <div class="form-field form-icon">
+        <i class="fa fa-info-circle" id="deadline-icon" aria-hidden="true"></i>
+        <div class="tooltip" id="deadline-tooltip"></div>
       </div>
     </div>
     <!--Buttons-->

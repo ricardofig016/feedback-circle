@@ -33,15 +33,7 @@ CREATE TABLE IF NOT EXISTS feedbacks(
     negative_message TEXT DEFAULT NULL,
     negative_message_appraiser_edit TEXT DEFAULT NULL,
     submission_date DATETIME NOT NULL,
-    competency ENUM(
-        'general',
-        'execution-and-delivery',
-        'innovation',
-        'agility',
-        'commitment',
-        'communication',
-        'customer-orientation'
-    ) NOT NULL,
+    competency ENUM('general', 'execution-and-delivery', 'innovation', 'agility', 'commitment', 'communication', 'customer-orientation') NOT NULL,
     privacy ENUM('anonymous', 'private', 'public') NOT NULL,
     visibility ENUM('sender', 'appraiser', 'receiver') NOT NULL,
     rating INT UNSIGNED NOT NULL,

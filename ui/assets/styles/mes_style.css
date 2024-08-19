@@ -135,7 +135,7 @@ a {
 }
 
 .form-label {
-  min-width: 100px;
+  min-width: 120px;
   display: flex;
   justify-content: flex-end;
 }
@@ -146,9 +146,9 @@ a {
 }
 
 .form-select,
-.form-input,
-.form-radio,
-.form-textarea {
+.form-text,
+.form-textarea,
+.form-date {
   flex-grow: 1;
   background-color: #f5f5f5;
   border: 0;
@@ -162,6 +162,20 @@ a {
 .form-select {
   cursor: pointer;
   box-sizing: content-box;
+}
+
+.form-radio {
+  flex-grow: 1;
+}
+
+.radio-container {
+  display: flex;
+  align-items: center;
+  column-gap: 8px;
+}
+
+.radio-input {
+  margin: 0;
 }
 
 .form-rating {
@@ -204,9 +218,9 @@ a {
   resize: none;
 }
 
-#suggestions-dropdown {
+.suggestions-dropdown {
   padding: 0;
-  margin: 0 46px 0 115px;
+  margin: 0 46px 0 135px;
   position: absolute;
   top: 47px;
   left: 0;
@@ -215,7 +229,7 @@ a {
   box-sizing: border-box;
   max-height: 200px;
   overflow-y: auto;
-  width: calc(100% - 160px);
+  width: calc(100% - 180px);
 }
 
 .suggestion-container {
