@@ -141,7 +141,7 @@ function getAccessibleComponents() {
   const keys = Object.keys(Routes);
   keys.forEach((key) => {
     let component = new Routes[key]();
-    if (component.access.includes(new Session().user.role)) {
+    if (component.access.includes(new Session().user.access)) {
       accessibleComponents.push({ title: component.pageTitle, href: key });
     }
     component = null;

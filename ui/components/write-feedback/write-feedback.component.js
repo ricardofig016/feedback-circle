@@ -156,7 +156,7 @@ export default class WriteFeedbackComponent extends BaseComponent {
 
       const suggIcon = document.createElement("div");
       suggIcon.className = "suggestion-icon";
-      const heartMode = suggestion.is_pinned ? "fa-heart" : "fa-heart-o";
+      const heartMode = suggestion.is_pinned ? "fa-bookmark" : "fa-bookmark-o";
       suggIcon.innerHTML = "<i class='fa fa-2x " + heartMode + "'></i>";
       suggContainer.appendChild(suggIcon);
 

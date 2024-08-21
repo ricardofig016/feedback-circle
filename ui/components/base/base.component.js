@@ -68,7 +68,7 @@ export default class BaseComponent {
   }
 
   hasAccess() {
-    if (this.access.includes(this.session.user.role)) return true;
+    if (this.access.includes(this.session.user.access)) return true;
     else return false;
   }
 

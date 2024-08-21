@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS users(
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     encrypted_password TEXT NOT NULL,
-    role ENUM('user', 'appraiser', 'admin') NOT NULL,
+    access ENUM('user', 'appraiser', 'admin') NOT NULL,
     appraiser_id INT UNSIGNED DEFAULT NULL,
     appraiser_notes TEXT DEFAULT NULL,
     UNIQUE(name),
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS pinned_users (
 );
 --@block
 -- insert dummy data
-INSERT INTO users (name, email, role, encrypted_password, appraiser_id, appraiser_notes)
+INSERT INTO users (name, email, access, encrypted_password, appraiser_id, appraiser_notes)
 VALUES  ("Ricardo Castro", "ricardocastro@criticalmanufacturing.com", "admin", "-", null, ""),
         ("Sónia Araújo", "soniaaraujo@criticalmanufacturing.com", "appraiser", "-", null, ""),
         ("Duarte Pereira", "duartepereira@criticalmanufacturing.com", "user", "-", 2, "notes about duarte"),
