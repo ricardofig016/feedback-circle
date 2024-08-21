@@ -703,6 +703,11 @@ input {
   min-height: 18px;
 }
 
+.new-feedback-icon {
+  color: #20d120;
+  margin-right: 10px;
+}
+
 .data-grid-pagination {
   font-size: 13px;
 }

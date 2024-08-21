@@ -206,6 +206,8 @@ router.get("/feedbacks/receiverid/:id/role/:role", async (req, res) => {
       delete feedback.appraiser_visibility;
       delete feedback.receiver_visibility;
       delete feedback.team_manager_visibility;
+      delete feedback.is_read_receiver;
+      delete feedback.is_read_appraiser;
     });
     return res.send(feedbacks);
   }
@@ -220,6 +222,7 @@ router.get("/feedbacks/receiverid/:id/role/:role", async (req, res) => {
       delete feedback.appraiser_visibility;
       delete feedback.receiver_visibility;
       delete feedback.team_manager_visibility;
+      delete feedback.is_read_appraiser;
     });
     return res.send(sharedWithReceiver);
   }
@@ -233,6 +236,7 @@ router.get("/feedbacks/receiverid/:id/role/:role", async (req, res) => {
       delete feedback.appraiser_visibility;
       delete feedback.receiver_visibility;
       delete feedback.team_manager_visibility;
+      delete feedback.is_read_receiver;
     });
     return res.send(sharedWithAppraiser);
   }

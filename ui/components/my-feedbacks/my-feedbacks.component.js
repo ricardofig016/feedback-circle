@@ -35,9 +35,10 @@ export default class MyFeedbacksComponent extends BaseComponent {
       const row = new Map();
 
       // Title Column
+      const newFeedbackIcon = feedback.is_read_receiver ? "" : "<i class='new-feedback-icon fa fa-circle'></i>";
       const feedbackUrl = buildURL("Feedback", { id: feedback.feedback_id });
       const titleLink = "<a href=" + feedbackUrl + ">" + formatText(feedback.title) + "</a>";
-      row.set("title", titleLink);
+      row.set("title", newFeedbackIcon + titleLink);
       // From Column
       const from = feedback.sender_name === "anonymous" ? "<i>" + feedback.sender_name + "</i>" : formatText(feedback.sender_name);
       row.set("from", from);

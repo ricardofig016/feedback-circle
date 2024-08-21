@@ -118,7 +118,7 @@ export async function getFeedbacks() {
 export async function getFeedbacksOfUser(id) {
   const [rows] = await pool.query(
     `
-    SELECT f.feedback_id, f.title, f.submission_date, f.competency, f.appraiser_notes, f.privacy, fv.sender AS sender_visibility, fv.appraiser AS appraiser_visibility, fv.receiver AS receiver_visibility, fv.team_manager AS team_manager_visibility, u.name AS sender_name
+    SELECT f.feedback_id, f.title, f.submission_date, f.competency, f.appraiser_notes, f.privacy, f.is_read_receiver, f.is_read_appraiser,  fv.sender AS sender_visibility, fv.appraiser AS appraiser_visibility, fv.receiver AS receiver_visibility, fv.team_manager AS team_manager_visibility, u.name AS sender_name
     FROM feedbacks AS f
     JOIN users AS u ON f.sender_id = u.user_id
     JOIN feedback_visibility AS fv ON f.feedback_id = fv.feedback_id

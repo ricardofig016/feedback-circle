@@ -26,7 +26,7 @@ export default class FeedbackComponent extends BaseComponent {
     }
 
     // mark the feedback as read every time this tab is opened/refreshed, if user is not sender
-    if (!this.feedback.user_roles.includes("sender")) await this.updateIsRead(true);
+    if (this.feedback.user_roles.includes("appraiser") || this.feedback.user_roles.includes("receiver") || this.feedback.user_roles.includes("team_manager")) await this.updateIsRead(true);
 
     // sender and receiver
     this.getElementById("sender").innerHTML = this.feedback.sender_name === "anonymous" ? "<i>" + this.feedback.sender_name + "</i>" : formatText(this.feedback.sender_name, 1000);
@@ -72,17 +72,17 @@ export default class FeedbackComponent extends BaseComponent {
 
     // unread checkbox
     const unreadCheckbox = this.getElementById("unread-checkbox");
-    if (this.feedback.user_roles.includes("sender")) {
-      // sender has no option read/unread
-      unreadCheckbox.parentElement.hidden = true;
-    } else {
+    if (this.feedback.user_roles.includes("appraiser") || this.feedback.user_roles.includes("receiver") || this.feedback.user_roles.includes("team_manager")) {
       let role;
       if (this.feedback.user_roles.includes("receiver")) role = "receiver";
       else if (this.feedback.user_roles.includes("appraiser")) role = "appraiser";
       unreadCheckbox.checked = !Boolean(this.feedback["is_read_" + role]);
+    } else {
+      // sender has no option read/unread
+      unreadCheckbox.parentElement.hidden = true;
     }
 
-    // if the user is not the appraiser, they will have the option to switch between original message and appraiser edit
+    // if the user is not the appraiser, they dont have the option to switch between original message and appraiser edit
     if (!this.feedback.user_roles.includes("appraiser")) {
       this.getElementById("positive-anchor").hidden = true;
       this.getElementById("negative-anchor").hidden = true;
@@ -102,8 +102,8 @@ export default class FeedbackComponent extends BaseComponent {
   }
 
   addEventListeners() {
-    // not for sender
-    if (!this.feedback.user_roles.includes("sender")) {
+    // unread checkbox
+    if (this.feedback.user_roles.includes("appraiser") || this.feedback.user_roles.includes("receiver") || this.feedback.user_roles.includes("team_manager")) {
       // mark as read/unread
       const unreadCheckbox = this.getElementById("unread-checkbox");
       unreadCheckbox.addEventListener("change", async (e) => {
@@ -113,7 +113,7 @@ export default class FeedbackComponent extends BaseComponent {
 
     // appraiser only
     if (this.feedback.user_roles.includes("appraiser")) {
-      // share/unshare with apraisee
+      // share with apraisee
       const shareCheckbox = this.getElementById("share-checkbox");
       shareCheckbox.addEventListener("change", async (e) => {
         this.feedback.receiver_visibility = e.target.checked;
