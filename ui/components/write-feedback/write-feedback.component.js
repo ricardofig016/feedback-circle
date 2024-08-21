@@ -119,7 +119,7 @@ export default class WriteFeedbackComponent extends BaseComponent {
     saveButton.addEventListener("click", async () => {
       const formData = this.getFormData();
       if (!this.validateFormData(formData)) return false;
-      await this.postFeedback(formData, "sender");
+      await this.postFeedback(formData, false);
     });
 
     // Share button
@@ -127,7 +127,7 @@ export default class WriteFeedbackComponent extends BaseComponent {
     shareButton.addEventListener("click", async () => {
       const formData = this.getFormData();
       if (!this.validateFormData(formData)) return false;
-      await this.postFeedback(formData, "appraiser");
+      await this.postFeedback(formData, true);
     });
   }
 
@@ -228,7 +228,7 @@ export default class WriteFeedbackComponent extends BaseComponent {
     });
   }
 
-  async postFeedback(formData, visibility) {
+  async postFeedback(formData, isShare) {
     const data = {
       senderId: this.session.user.user_id,
       receiverId: this.receiver.user_id,
@@ -238,7 +238,6 @@ export default class WriteFeedbackComponent extends BaseComponent {
       negativeMessage: formData.negative,
       negativeMessageAppraiserEdit: formData.negative,
       competency: formData.competency,
-      visibility,
       privacy: formData.privacy,
       rating: formData.rating,
       type: formData.type,
@@ -247,6 +246,10 @@ export default class WriteFeedbackComponent extends BaseComponent {
       responsibleId: formData.type === "continuous" ? this.responsible.user_id : null,
       status: formData.status,
       deadline: formData.deadline,
+      senderVis: true,
+      appraiserVis: isShare,
+      receiverVis: false,
+      teamManagerVis: false,
     };
     console.table(data);
     await RequestManager.request("POST", "feedbacks", data);

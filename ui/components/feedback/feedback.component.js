@@ -20,13 +20,13 @@ export default class FeedbackComponent extends BaseComponent {
     console.table(this.feedback);
 
     // hide all appraiser only elements if user is not the appraiser
-    if (this.feedback.user_role !== "appraiser") {
+    if (!this.feedback.user_roles.includes("appraiser")) {
       const appraiserOnlyElems = this.getElementsByClassName("appraiser-only");
       appraiserOnlyElems.forEach((element) => (element.classList = "do-not-display"));
     }
 
     // mark the feedback as read every time this tab is opened/refreshed, if user is not sender
-    if (this.feedback.user_role !== "sender") await this.updateIsRead(true);
+    if (!this.feedback.user_roles.includes("sender")) await this.updateIsRead(true);
 
     // sender and receiver
     this.getElementById("sender").innerHTML = this.feedback.sender_name === "anonymous" ? "<i>" + this.feedback.sender_name + "</i>" : formatText(this.feedback.sender_name, 1000);
@@ -36,7 +36,7 @@ export default class FeedbackComponent extends BaseComponent {
     this.getElementById("date").innerText = fullDate.substring(0, fullDate.indexOf(" "));
     this.getElementById("time").innerText = fullDate.substring(fullDate.indexOf(" "));
     // messages
-    if (this.feedback.user_role === "appraiser") {
+    if (!this.feedback.user_roles.includes("appraiser")) {
       if (this.feedback.positive_message === this.feedback.positive_message_appraiser_edit) {
         this.switchAppraiserMessage("positive", "original");
         // hide anchor
@@ -49,8 +49,8 @@ export default class FeedbackComponent extends BaseComponent {
       } else this.switchAppraiserMessage("negative", "appraiser");
     } else {
       let message;
-      if (this.feedback.user_role === "sender") message = "original";
-      if (this.feedback.user_role === "receiver") message = "appraiser";
+      if (this.feedback.user_roles.includes("sender")) message = "original";
+      if (this.feedback.user_roles.includes("receiver")) message = "appraiser";
       this.switchAppraiserMessage("positive", message);
       this.switchAppraiserMessage("negative", message);
     }
@@ -72,24 +72,27 @@ export default class FeedbackComponent extends BaseComponent {
 
     // unread checkbox
     const unreadCheckbox = this.getElementById("unread-checkbox");
-    if (this.feedback.user_role === "sender") {
+    if (this.feedback.user_roles.includes("sender")) {
       // sender has no option read/unread
       unreadCheckbox.parentElement.hidden = true;
     } else {
-      unreadCheckbox.checked = !Boolean(this.feedback["is_read_" + this.feedback.user_role]);
+      let role;
+      if (this.feedback.user_roles.includes("receiver")) role = "receiver";
+      else if (this.feedback.user_roles.includes("appraiser")) role = "appraiser";
+      unreadCheckbox.checked = !Boolean(this.feedback["is_read_" + role]);
     }
 
     // if the user is not the appraiser, they will have the option to switch between original message and appraiser edit
-    if (this.feedback.user_role !== "appraiser") {
+    if (!this.feedback.user_roles.includes("appraiser")) {
       this.getElementById("positive-anchor").hidden = true;
       this.getElementById("negative-anchor").hidden = true;
     }
 
     // appraiser only
-    if (this.feedback.user_role === "appraiser") {
+    if (this.feedback.user_roles.includes("appraiser")) {
       // share checkbox
       this.getElementById("share-span").innerText = this.feedback.receiver_name.substring(0, this.feedback.receiver_name.indexOf(" "));
-      this.getElementById("share-checkbox").checked = this.feedback.visibility === "receiver";
+      this.getElementById("share-checkbox").checked = this.feedback.receiver_visibility;
       // appraiser notes
       if (this.feedback.appraiser_notes) this.getElementById("appraiser-notes").innerText = this.feedback.appraiser_notes;
       this.getElementById("appraiser-notes-textarea").value = this.feedback.appraiser_notes;
@@ -100,7 +103,7 @@ export default class FeedbackComponent extends BaseComponent {
 
   addEventListeners() {
     // not for sender
-    if (this.feedback.user_role !== "sender") {
+    if (!this.feedback.user_roles.includes("sender")) {
       // mark as read/unread
       const unreadCheckbox = this.getElementById("unread-checkbox");
       unreadCheckbox.addEventListener("change", async (e) => {
@@ -109,12 +112,13 @@ export default class FeedbackComponent extends BaseComponent {
     }
 
     // appraiser only
-    if (this.feedback.user_role === "appraiser") {
+    if (this.feedback.user_roles.includes("appraiser")) {
       // share/unshare with apraisee
       const shareCheckbox = this.getElementById("share-checkbox");
       shareCheckbox.addEventListener("change", async (e) => {
-        this.feedback.visibility = e.target.checked ? "receiver" : "appraiser";
-        await RequestManager.request("PUT", "feedbacks/" + this.queryParams.id + "/visibility", { visibility: this.feedback.visibility });
+        this.feedback.receiver_visibility = e.target.checked;
+        const url = "feedbacks/" + this.queryParams.id + "/visibility/receiver";
+        await RequestManager.request("PUT", url, { value: this.feedback.receiver_visibility });
       });
 
       const codes = ["negative-message", "positive-message", "appraiser-notes"];
@@ -230,9 +234,13 @@ export default class FeedbackComponent extends BaseComponent {
   }
 
   async updateIsRead(isRead) {
-    const url = "feedbacks/" + this.queryParams.id + "/isread/" + this.feedback.user_role;
+    let role;
+    if (this.feedback.user_roles.includes("receiver")) role = "receiver";
+    else if (this.feedback.user_roles.includes("appraiser")) role = "appraiser";
+    else return false;
+    const url = "feedbacks/" + this.queryParams.id + "/isread/" + role;
     await RequestManager.request("PUT", url, { isRead: isRead });
-    this.feedback["is_read_" + this.feedback.user_role] = isRead;
+    this.feedback["is_read_" + role] = isRead;
   }
 
   async getFeedback() {
@@ -247,11 +255,12 @@ export default class FeedbackComponent extends BaseComponent {
 
   async hasAccess() {
     await this.getFeedback();
+    console.table(this.feedback);
     const access = super.hasAccess();
     if (access) return true; // user is admin
-    if (this.feedback.user_role === "appraiser" && this.feedback.visibility !== "sender") return true; // user is the appraiser and has visibility
-    if (this.feedback.user_role === "sender") return true; // user is the sender
-    if (this.feedback.user_role === "receiver" && this.feedback.visibility === "receiver") return true; // user is the receiver and has visibility
+    if (this.feedback.user_roles.includes("appraiser") && this.feedback.appraiser_visibility) return true; // user is the appraiser and has visibility
+    if (this.feedback.user_roles.includes("sender")) return true; // user is the sender
+    if (this.feedback.user_roles.includes("receiver") && this.feedback.receiver_visibility) return true; // user is the receiver and has visibility
     return false;
   }
 }
