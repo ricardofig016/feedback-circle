@@ -38,10 +38,10 @@ export class RequestManager {
       let errorToDisplay = "";
       if (res.status >= 400 && res.status < 500) {
         // Client error
-        errorToDisplay = ` (${LocalizedMessages.client_error}: ${res.status} - ${res.statusText})`;
+        errorToDisplay = `${LocalizedMessages.client_error}: ${res.status} - ${res.statusText}`;
       } else if (res.status >= 500 && res.status < 600) {
         // Server error
-        errorToDisplay = ` (${LocalizedMessages.server_error}: ${res.status} - ${res.statusText})`;
+        errorToDisplay = `${LocalizedMessages.server_error}: ${res.status} - ${res.statusText}`;
       } else {
         // Other errors
         errorToDisplay = LocalizedMessages.server_request_failed;

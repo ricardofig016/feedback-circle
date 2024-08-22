@@ -4,6 +4,7 @@ import BaseComponent from "../base/base.component.js";
 import { RequestManager } from "../../modules/requests/requests.js";
 import formatText from "../../utilities/format-text.js";
 import formatDate from "../../utilities/format-date.js";
+import Tabs from "../../modules/tabs/tabs.js";
 
 export default class FeedbackComponent extends BaseComponent {
   selector = "feedback";
@@ -98,6 +99,11 @@ export default class FeedbackComponent extends BaseComponent {
       this.getElementById("appraiser-notes-textarea").value = this.feedback.appraiser_notes;
     }
 
+    // delete button
+    if (this.feedback.can_delete) {
+      this.getElementById("delete-button").hidden = false;
+    }
+
     if (!isRefresh) this.addEventListeners();
   }
 
@@ -153,6 +159,18 @@ export default class FeedbackComponent extends BaseComponent {
         this.switchAppraiserMessage("negative", message);
       });
     }
+
+    // delete button
+    const deleteButton = this.getElementById("delete-button");
+    deleteButton.addEventListener("click", async () => {
+      if (this.feedback.can_delete) {
+        await RequestManager.request("DELETE", "feedbacks/" + this.queryParams.id);
+        // close tab
+        const routePath = window.location.hash.substring(2);
+        const tab = new Tabs().getTab(routePath);
+        tab.close();
+      }
+    });
   }
 
   goToEditMode(code) {
@@ -244,7 +262,7 @@ export default class FeedbackComponent extends BaseComponent {
   }
 
   async getFeedback() {
-    if (!this.feedback) this.feedback = await RequestManager.request("GET", "feedbacks/" + this.queryParams.id + "/user/" + this.session.user.user_id);
+    this.feedback = await RequestManager.request("GET", "feedbacks/" + this.queryParams.id + "/user/" + this.session.user.user_id);
   }
 
   async render() {

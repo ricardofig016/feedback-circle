@@ -207,3 +207,14 @@ export async function createFeedback(senderId, receiverId, title, positiveMessag
   // return the id of the created object
   return data.insertId;
 }
+
+export async function deleteFeedback(id) {
+  const [data] = await pool.query(
+    `
+    DELETE FROM feedbacks
+    WHERE feedback_id = ?
+    `,
+    [id]
+  );
+  return data;
+}

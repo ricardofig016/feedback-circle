@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 
-import { getFeedbacks, getUsers, getUserById, createFeedback, getUserByEmail, getFeedbackById, getUsersByAppraiserId, getFeedbacksOfUser, updateFeedback, getSavedAndSharedFeedbacks, getPinnedUsers, createUserPin, deleteUserPin, updateFeedbackVisibility } from "./database/database.js";
+import { getFeedbacks, getUsers, getUserById, createFeedback, getUserByEmail, getFeedbackById, getUsersByAppraiserId, getFeedbacksOfUser, updateFeedback, getSavedAndSharedFeedbacks, getPinnedUsers, createUserPin, deleteUserPin, updateFeedbackVisibility, deleteFeedback } from "./database/database.js";
 import { securityPortalAuth } from "./auth.js";
 
 const app = express();
@@ -101,21 +101,28 @@ router.get("/feedbacks/:id/user/:userid", async (req, res) => {
   const userId = req.params.userid;
   const feedback = await getFeedbackById(id);
 
+  if (!feedback) return res.status(404).send({ error: "No feedback found with id " + id });
+
   // find all user roles in relation to the feedback
   feedback.user_roles = [];
   if (userId == feedback.appraiser_id) feedback.user_roles.push("appraiser");
   if (userId == feedback.sender_id) feedback.user_roles.push("sender");
   if (userId == feedback.receiver_id) feedback.user_roles.push("receiver");
 
+  // by default, the feedback cannot be deleted
+  feedback.can_delete = false;
+
   // filtering for appraiser
   if (feedback.user_roles.includes("appraiser")) {
     if (feedback.privacy == "anonymous") feedback.sender_name = "anonymous";
+    feedback.can_delete = feedback.user_roles.includes("sender") && !feedback.receiver_visibility && !feedback.team_manager_visibility;
     delete feedback.is_read_receiver;
   }
   // filtering for team manager
   // TODO: team manager logic
   // filtering for sender
   else if (feedback.user_roles.includes("sender")) {
+    feedback.can_delete = !feedback.appraiser_visibility && !feedback.receiver_visibility && !feedback.team_manager_visibility;
     delete feedback.positive_message_appraiser_edit;
     delete feedback.negative_message_appraiser_edit;
     delete feedback.is_read_receiver;
@@ -143,7 +150,6 @@ router.get("/feedbacks/:id/user/:userid", async (req, res) => {
   delete feedback.privacy;
   delete feedback.sender_visibility;
 
-  if (!feedback) return res.status(404).send({ error: "No feedback found with id " + id });
   res.send(feedback);
 });
 
@@ -274,6 +280,22 @@ router.get("/feedbacks/senderid/:id/scope/:scope", async (req, res) => {
     });
     res.status(200).send(SharedFeedbacks);
   } else res.status(400).send({ error: 'Invalid scope, should be  "saved" or "shared"' });
+});
+
+// Delete feedback by ID
+router.delete("/feedbacks/:id", async (req, res) => {
+  const feedbackId = req.params.id;
+  try {
+    const result = await deleteFeedback(feedbackId);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).send({ error: "Feedback not found" });
+    }
+
+    res.status(204).send({});
+  } catch (error) {
+    res.status(500).send({ error: "An error occurred while deleting the feedback: " + error.message });
+  }
 });
 
 app.listen(5000, () => {

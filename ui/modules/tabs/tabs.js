@@ -171,6 +171,12 @@ export default class Tabs {
     return Tabs.#instance;
   }
 
+  getTab(_routePath) {
+    const tabIndex = Tabs.#tabs.findIndex((tab) => tab.routePath == _routePath);
+    if (tabIndex != -1) return Tabs.#tabs[tabIndex];
+    else return null;
+  }
+
   /**
    * Closes the tab identified by the provided route path (URL), if any.
    * @param {*} _routePath
