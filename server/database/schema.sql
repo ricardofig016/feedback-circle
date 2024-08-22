@@ -14,7 +14,6 @@ CREATE TABLE IF NOT EXISTS users(
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     encrypted_password TEXT NOT NULL,
-    access ENUM('user', 'appraiser', 'admin') NOT NULL,
     appraiser_id INT UNSIGNED DEFAULT NULL,
     appraiser_notes TEXT DEFAULT NULL,
     UNIQUE(name),
@@ -68,20 +67,30 @@ CREATE TABLE IF NOT EXISTS pinned_users (
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (pinned_user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
+--
+CREATE TABLE IF NOT EXISTS user_access (
+    user_id INT UNSIGNED NOT NULL,
+    user BOOLEAN DEFAULT false,
+    appraiser BOOLEAN DEFAULT false,
+    team_manager BOOLEAN DEFAULT false,
+    admin BOOLEAN DEFAULT false,
+    PRIMARY KEY (user_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
 --@block
 -- insert dummy data
-INSERT INTO users (name, email, access, encrypted_password, appraiser_id, appraiser_notes)
-VALUES  ("Ricardo Castro", "ricardocastro@criticalmanufacturing.com", "admin", "-", null, ""),
-        ("Sónia Araújo", "soniaaraujo@criticalmanufacturing.com", "appraiser", "-", null, ""),
-        ("Duarte Pereira", "duartepereira@criticalmanufacturing.com", "user", "-", 2, "notes about duarte"),
-        ("Vasco Cruz", "vascocruz@criticalmanufacturing.com", "user", "-", 2, "notes about vasco"),
-        ("Bernardete Carecho", "BernardeteCarecho@criticalmanufacturing.com", "user", "-", null, "");
+INSERT INTO users (name, email, encrypted_password, appraiser_id, appraiser_notes)
+VALUES  ("Ricardo Castro", "ricardocastro@criticalmanufacturing.com", "-", null, ""),
+        ("Sónia Araújo", "soniaaraujo@criticalmanufacturing.com", "-", null, ""),
+        ("Bernardete Carecho", "BernardeteCarecho@criticalmanufacturing.com", "-", null, ""),
+        ("Duarte Pereira", "duartepereira@criticalmanufacturing.com", "-", 2, "notes about duarte"),
+        ("Vasco Cruz", "vascocruz@criticalmanufacturing.com", "-", 2, "notes about vasco");
 --
 INSERT INTO feedbacks (sender_id, receiver_id, title, positive_message, positive_message_appraiser_edit, negative_message, negative_message_appraiser_edit, submission_date, competency, privacy, rating, appraiser_notes, type, context, actions, responsible_id, status, deadline)
-VALUES  (1, 3, "Feedback 1 - sender", "This is the positive_message for feedback 1", "This is the positive_message for feedback 1", "This is the negative_message for feedback 1", "This is the negative_message for feedback 1", "2003-01-01 00:58:00", "general", "anonymous", 1, "Appraiser notes for feedback 1", "performance", "council", null, null, null, null),
-        (1, 3, "Feedback 2 - sender appraiser", "This is the positive_message for feedback 2", "This is the positive_message for feedback 2", "This is the negative_message for feedback 2", "This is the negative_message for feedback 2", "2006-03-10 05:50:03", "execution-and-delivery", "private", 2, "Appraiser notes for feedback 2", "continuous", "1:1", "actions for feedback 2", 2, "active", "2024-12-31 23:59:59"),
-        (1, 3, "Feedback 3 - sender appraiser receiver", "This is the positive_message for feedback 3", "This is the positive_message for feedback 3", "This is the negative_message for feedback 3", "This is the negative_message for feedback 3", "2012-05-20 09:40:14", "innovation", "public", 3, "Appraiser notes for feedback 3", "continuous", "TL/PM feedback", "actions for feedback 3", 2, "new", "2024-12-31 23:59:59"),
-        (1, 3, "Feedback 4 - sender appraiser team_manager", "This is the positive_message for feedback 4", "This is the positive_message for feedback 4", "This is the negative_message for feedback 4", "This is the negative_message for feedback 4", "2017-12-25 23:42:04", "agility", "anonymous", 4, "Appraiser notes for feedback 4", "continuous", "TL/PM feedback", "actions for feedback 4", 2, "closed", "2025-12-31 23:59:59");
+VALUES  (1, 4, "Feedback 1 - sender", "This is the positive_message for feedback 1", "This is the positive_message for feedback 1", "This is the negative_message for feedback 1", "This is the negative_message for feedback 1", "2003-01-01 00:58:00", "general", "anonymous", 1, "Appraiser notes for feedback 1", "performance", "council", null, null, null, null),
+        (1, 4, "Feedback 2 - sender appraiser", "This is the positive_message for feedback 2", "This is the positive_message for feedback 2", "This is the negative_message for feedback 2", "This is the negative_message for feedback 2", "2006-03-10 05:50:03", "execution-and-delivery", "private", 2, "Appraiser notes for feedback 2", "continuous", "1:1", "actions for feedback 2", 2, "active", "2024-12-31 23:59:59"),
+        (1, 4, "Feedback 3 - sender appraiser receiver", "This is the positive_message for feedback 3", "This is the positive_message for feedback 3", "This is the negative_message for feedback 3", "This is the negative_message for feedback 3", "2012-05-20 09:40:14", "innovation", "public", 3, "Appraiser notes for feedback 3", "continuous", "TL/PM feedback", "actions for feedback 3", 2, "new", "2024-12-31 23:59:59"),
+        (1, 4, "Feedback 4 - sender appraiser team_manager", "This is the positive_message for feedback 4", "This is the positive_message for feedback 4", "This is the negative_message for feedback 4", "This is the negative_message for feedback 4", "2017-12-25 23:42:04", "agility", "anonymous", 4, "Appraiser notes for feedback 4", "continuous", "TL/PM feedback", "actions for feedback 4", 2, "closed", "2025-12-31 23:59:59");
 --
 INSERT INTO feedback_visibility (feedback_id, sender, appraiser, receiver, team_manager)
 VALUES  (1, true, false, false, false),
@@ -92,6 +101,13 @@ VALUES  (1, true, false, false, false),
 INSERT INTO pinned_users (user_id, pinned_user_id)
 VALUES  (1, 2), 
         (1, 3);
+--
+INSERT INTO user_access (user_id, user, appraiser, team_manager, admin)
+VALUES  (1, true, false, false, true),
+        (2, true, true, false, false),
+        (3, true, false, true, false),
+        (4, true, false, false, false),
+        (5, true, false, false, false);
 --@block
 -- show tables
 SELECT *
@@ -102,3 +118,5 @@ SELECT *
 FROM feedback_visibility;
 SELECT *
 FROM pinned_users;
+SELECT *
+FROM user_access;

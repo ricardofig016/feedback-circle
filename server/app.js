@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 
-import { getFeedbacks, getUsers, getUserById, createFeedback, getUserByEmail, getFeedbackById, getUsersByAppraiserId, getFeedbacksOfUser, updateFeedback, getSavedAndSharedFeedbacks, getPinnedUsers, createUserPin, deleteUserPin, updateFeedbackVisibility, deleteFeedback } from "./database/database.js";
+import { getFeedbacks, getUsers, getUserById, createFeedback, getUserByEmail, getFeedbackById, getUsersByAppraiserId, getFeedbacksOfUser, updateFeedback, getSavedAndSharedFeedbacks, getPinnedUsers, createUserPin, deleteUserPin, updateFeedbackVisibility, deleteFeedback, getUserAccess } from "./database/database.js";
 import { securityPortalAuth } from "./auth.js";
 
 const app = express();
@@ -57,6 +57,10 @@ router.get("/users/id/:id", async (req, res) => {
   const id = req.params.id;
   const user = await getUserById(id);
   if (!user) return res.status(404).send({ error: "No user found with id " + id });
+  const user_access = await getUserAccess(id);
+  const keys = Object.keys(user_access);
+  keys.shift(); //remove the first key (user_id)
+  user.access = keys.filter((key) => user_access[key]);
   res.send(user);
 });
 
@@ -64,6 +68,10 @@ router.get("/users/email/:email", async (req, res) => {
   const email = req.params.email;
   const user = await getUserByEmail(email);
   if (!user) return res.status(404).send({ error: "No user found with email " + email });
+  const user_access = await getUserAccess(user.user_id);
+  const keys = Object.keys(user_access);
+  keys.shift(); //remove the first key (user_id)
+  user.access = keys.filter((key) => user_access[key]);
   res.send(user);
 });
 

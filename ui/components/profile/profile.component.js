@@ -17,7 +17,7 @@ export default class ProfileComponent extends BaseComponent {
     this.getElementById("name").innerText = this.session.user.name;
 
     if (this.session.user.appraiser_id) {
-      if (!this.appraiser) this.appraiser = await RequestManager.request("GET", "users/id/" + this.session.user.appraiser_id);
+      this.appraiser = await RequestManager.request("GET", "users/id/" + this.session.user.appraiser_id);
       const appraiserLink = this.getElementById("appraiser-link");
       appraiserLink.hidden = false;
       appraiserLink.href = "mailto:" + this.appraiser.email;

@@ -68,8 +68,8 @@ export default class BaseComponent {
   }
 
   hasAccess() {
-    if (this.access.includes(this.session.user.access)) return true;
-    else return false;
+    // return true if there is at least one common element between user.access and this.access
+    return this.access.some((compAccess) => this.session.user.access.includes(compAccess));
   }
 
   refresh() {

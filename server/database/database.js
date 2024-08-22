@@ -79,7 +79,19 @@ export async function getUserByEmail(email) {
     `,
     [email]
   );
-  return rows[0] ? rows[0] : null;
+  return rows[0];
+}
+
+export async function getUserAccess(id) {
+  const [rows] = await pool.query(
+    `
+    SELECT *
+    FROM user_access
+    WHERE user_id = ?
+    `,
+    [id]
+  );
+  return rows[0];
 }
 
 export async function getUsersByAppraiserId(appraiserId) {

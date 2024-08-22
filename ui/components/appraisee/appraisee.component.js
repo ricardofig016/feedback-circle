@@ -60,7 +60,7 @@ export default class AppraiseeComponent extends BaseComponent {
   }
 
   async getAppraisee() {
-    if (!this.appraisee) this.appraisee = await RequestManager.request("GET", "users/id/" + this.queryParams.id);
+    this.appraisee = await RequestManager.request("GET", "users/id/" + this.queryParams.id);
   }
 
   async render() {
