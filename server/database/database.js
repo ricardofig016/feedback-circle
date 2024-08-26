@@ -19,6 +19,7 @@ export async function getUsers() {
     `
     SELECT u.user_id, u.name, u.appraiser_id, u.team_manager_id
     FROM users AS u
+    ORDER BY u.name ASC
     `
   );
   return rows;

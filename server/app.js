@@ -29,9 +29,9 @@ router.post("/login", async (req, res) => {
 router.get("/users/withpins/userid/:id", async (req, res) => {
   const userId = req.params.id;
   const users = await getUsers();
+  if (!users) return res.status(404).send({ error: "No users found" });
   const pinnedUsers = await getPinnedUsers(userId);
   const pinnedUsersIds = pinnedUsers.map((pinned_user) => pinned_user.pinned_user_id);
-  if (!users) return res.status(404).send({ error: "No users found" });
   users.forEach((user) => (user.is_pinned = pinnedUsersIds.includes(user.user_id)));
   res.send(users);
 });
