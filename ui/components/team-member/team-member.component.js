@@ -20,10 +20,11 @@ export default class TeamMemberComponent extends BaseComponent {
     const url = "feedbacks/receiverid/" + this.queryParams.id + "/role/team_manager";
     this.feedbacks = await RequestManager.request("GET", url);
 
-    const noFeedbacksSection = this.getElementById("no-feedbacks-section");
-    noFeedbacksSection.hidden = true;
+    const noFeedbacksContainer = this.getElementById("no-feedbacks");
+    noFeedbacksContainer.hidden = true;
     if (!this.feedbacks || this.feedbacks.length === 0) {
-      noFeedbacksSection.hidden = false;
+      noFeedbacksContainer.hidden = false;
+      this.getElementById("type-filter-toggle-container").style.display = "none";
       return;
     }
 
@@ -82,7 +83,6 @@ export default class TeamMemberComponent extends BaseComponent {
       // Competency Column
       row.set("competency", formatText(feedback.competency));
       // Actions Column
-      console.log(feedback.actions);
       row.set("actions", feedback.actions);
       // My Notes Column
       row.set("my notes", formatText(feedback.team_manager_notes));

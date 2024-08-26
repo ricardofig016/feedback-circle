@@ -22,10 +22,10 @@ export default class MyTeamComponent extends BaseComponent {
     const url = "users/teammanagerid/" + this.session.user.user_id;
     this.teamMembers = await RequestManager.request("GET", url);
 
-    const noTeamMembersSection = this.getElementById("no-team-members-section");
-    noTeamMembersSection.hidden = true;
+    const noTeamMembersContainer = this.getElementById("no-team-members");
+    noTeamMembersContainer.hidden = true;
     if (!this.teamMembers || this.teamMembers.length === 0) {
-      noTeamMembersSection.hidden = false;
+      noTeamMembersContainer.hidden = false;
       return;
     }
 

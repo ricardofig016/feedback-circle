@@ -19,10 +19,10 @@ export default class MyFeedbacksComponent extends BaseComponent {
     const url = "feedbacks/receiverid/" + this.session.user.user_id + "/role/receiver";
     this.feedbacks = await RequestManager.request("GET", url);
 
-    const noFeedbacksSection = this.getElementById("no-feedbacks-section");
-    noFeedbacksSection.hidden = true;
+    const noFeedbacksContainer = this.getElementById("no-feedbacks");
+    noFeedbacksContainer.hidden = true;
     if (!this.feedbacks || this.feedbacks.length === 0) {
-      noFeedbacksSection.hidden = false;
+      noFeedbacksContainer.hidden = false;
       return;
     }
 

@@ -22,10 +22,10 @@ export default class MyAppraiseesComponent extends BaseComponent {
     const url = "users/appraiserid/" + this.session.user.user_id;
     this.appraisees = await RequestManager.request("GET", url);
 
-    const noAppraiseesSection = this.getElementById("no-appraisees-section");
-    noAppraiseesSection.hidden = true;
+    const noAppraiseesContainer = this.getElementById("no-appraisees");
+    noAppraiseesContainer.hidden = true;
     if (!this.appraisees || this.appraisees.length === 0) {
-      noAppraiseesSection.hidden = false;
+      noAppraiseesContainer.hidden = false;
       return;
     }
 
