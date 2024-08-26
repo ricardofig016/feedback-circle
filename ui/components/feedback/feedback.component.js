@@ -38,12 +38,12 @@ export default class FeedbackComponent extends BaseComponent {
     this.getElementById("time").innerText = fullDate.substring(fullDate.indexOf(" "));
     // messages
     if (!this.feedback.user_roles.includes("appraiser")) {
-      if (this.feedback.positive_message === this.feedback.positive_message_appraiser_edit) {
+      if (!this.feedback.positive_message_appraiser_edit || this.feedback.positive_message === this.feedback.positive_message_appraiser_edit) {
         this.switchAppraiserMessage("positive", "original");
         // hide anchor
         this.getElementById("positive-anchor").hidden = true;
       } else this.switchAppraiserMessage("positive", "appraiser");
-      if (this.feedback.negative_message === this.feedback.negative_message_appraiser_edit) {
+      if (!this.feedback.negative_message_appraiser_edit || this.feedback.negative_message === this.feedback.negative_message_appraiser_edit) {
         this.switchAppraiserMessage("negative", "original");
         // hide anchor
         this.getElementById("negative-anchor").hidden = true;
@@ -276,9 +276,10 @@ export default class FeedbackComponent extends BaseComponent {
     console.table(this.feedback);
     const access = super.hasAccess();
     if (access) return true; // user is admin
-    if (this.feedback.user_roles.includes("appraiser") && this.feedback.appraiser_visibility) return true; // user is the appraiser and has visibility
     if (this.feedback.user_roles.includes("sender")) return true; // user is the sender
     if (this.feedback.user_roles.includes("receiver") && this.feedback.receiver_visibility) return true; // user is the receiver and has visibility
+    if (this.feedback.user_roles.includes("appraiser") && this.feedback.appraiser_visibility) return true; // user is the appraiser and has visibility
+    if (this.feedback.user_roles.includes("team_manager") && this.feedback.team_manager_visibility) return true; // user is the team manager and has visibility
     return false;
   }
 }

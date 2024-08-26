@@ -9,7 +9,7 @@ export default class SavedFeedbacksComponent extends BaseComponent {
   selector = "saved-feedbacks";
   pageTitle = "Saved Feedbacks";
   pageIcon = "fa-folder-open";
-  access = ["user", "appraiser", "admin"];
+  access = ["user", "appraiser", "team_manager", "admin"];
   feedbacks;
 
   async onInit() {

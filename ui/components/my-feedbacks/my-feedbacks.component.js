@@ -9,7 +9,7 @@ export default class MyFeedbacksComponent extends BaseComponent {
   selector = "my-feedbacks";
   pageTitle = "My Feedbacks";
   pageIcon = "fa-list-ul";
-  access = ["user", "appraiser", "admin"];
+  access = ["user", "appraiser", "team_manager", "admin"];
   feedbacks;
 
   async onInit() {

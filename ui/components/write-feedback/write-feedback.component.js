@@ -10,7 +10,7 @@ export default class WriteFeedbackComponent extends BaseComponent {
   selector = "write-feedback";
   pageTitle = "Write Feedback";
   pageIcon = "fa-pencil";
-  access = ["user", "appraiser", "admin"];
+  access = ["user", "appraiser", "team_manager", "admin"];
   users; // all users NAME, ID and IS_PINNED (in alphabetical order)
   receiver;
   responsible;
@@ -20,6 +20,7 @@ export default class WriteFeedbackComponent extends BaseComponent {
   async onInit(isRefresh = false) {
     super.onInit();
     this.users = await RequestManager.request("GET", "users/withpins/userid/" + this.session.user.user_id);
+    console.log(this.users);
     if (!isRefresh) this.addEventListeners();
   }
 
@@ -247,9 +248,9 @@ export default class WriteFeedbackComponent extends BaseComponent {
       status: formData.status,
       deadline: formData.deadline,
       senderVis: true,
-      appraiserVis: isShare,
+      appraiserVis: isShare || this.session.user.user_id === this.receiver.appraiser_id,
       receiverVis: false,
-      teamManagerVis: false,
+      teamManagerVis: this.session.user.user_id === this.receiver.team_manager_id,
     };
     console.table(data);
     await RequestManager.request("POST", "feedbacks", data);
