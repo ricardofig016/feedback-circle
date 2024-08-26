@@ -100,7 +100,6 @@ a {
   justify-content: center;
   column-gap: 0px;
   align-items: start;
-  max-width: 960px;
 }
 
 .split-hor-short {
@@ -112,11 +111,9 @@ a {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  max-width: 960px;
 }
 
 .form {
-  max-width: 960px;
   display: table;
 }
 
@@ -649,20 +646,20 @@ input {
 }
 
 .data-grid-container {
-  width: fit-content;
+  width: 98%;
   overflow: auto;
   overflow-y: auto;
   margin-bottom: 16px;
 }
 
 .data-grid {
-  width: 100%;
+  width: fit-content;
   border-top: 1px solid #d5d5d5;
   border-bottom: 1px solid #d5d5d5;
   border-collapse: collapse;
   color: rgba(0, 0, 0, 0.8);
-  text-wrap: nowrap;
   font-size: 13px;
+  table-layout: auto;
 }
 
 .data-grid th {
@@ -683,7 +680,6 @@ input {
   border-top: 1px solid #d5d5d5;
   border-bottom: 1px solid #d5d5d5;
   padding: 12px;
-  margin: -5.5px -6.6px -4.4px 0;
   text-align: left;
   vertical-align: middle;
   min-height: 18px;
@@ -697,10 +693,12 @@ input {
   background-color: #fafafa;
   border: 1px solid #d5d5d5;
   padding: 12px;
-  margin: -5.5px -6.6px -4.4px 0;
-  text-align: left;
+  text-align: justify;
   vertical-align: middle;
   min-height: 18px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
 }
 
 .new-feedback-icon {
@@ -1170,4 +1168,12 @@ input:checked + .slider:before {
 
 .do-not-display {
   display: none;
+}
+
+#type-filter-toggle-container {
+  display: flex;
+  align-items: center;
+}
+#type-filter-toggle-container span {
+  margin-right: 10px;
 }

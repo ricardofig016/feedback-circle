@@ -12,6 +12,8 @@ import SavedFeedbacksComponent from "../components/saved-feedbacks/saved-feedbac
 import SharedFeedbacksComponent from "../components/shared-feedbacks/shared-feedbacks.component.js";
 import MyAppraiseesComponent from "../components/my-appraisees/my-appraisees.component.js";
 import AppraiseeComponent from "../components/appraisee/appraisee.component.js";
+import MyTeamComponent from "../components/my-team/my-team.component.js";
+import TeamMemberComponent from "../components/team-member/team-member.component.js";
 import FeedbackComponent from "../components/feedback/feedback.component.js";
 import WriteFeedbackComponent from "../components/write-feedback/write-feedback.component.js";
 import NotFoundComponent from "../components/not-found/not-found.component.js";
@@ -37,6 +39,8 @@ const Routes = {
   SharedFeedbacks: SharedFeedbacksComponent,
   MyAppraisees: MyAppraiseesComponent,
   Appraisee: AppraiseeComponent,
+  MyTeam: MyTeamComponent,
+  TeamMember: TeamMemberComponent,
   Feedback: FeedbackComponent,
   WriteFeedback: WriteFeedbackComponent,
   Administration: ShellLandingPageAdministrationComponent,
