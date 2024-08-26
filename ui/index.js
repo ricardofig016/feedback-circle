@@ -88,7 +88,7 @@ async function start() {
 
   // Open deafult tabs
   // TODO: remove everything except Home and Profile
-  const basicTabs = ["Home", "Profile", "MyTeam", "TeamMember?id=4"];
+  const basicTabs = ["Home", "Profile", "MyTeam", "TeamMember?id=10639", "TeamMember?id=10001"];
   await openBasicTabs(basicTabs);
 
   // Event listener for hashchange events to dynamically render components.

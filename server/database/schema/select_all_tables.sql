@@ -1,0 +1,10 @@
+SELECT *
+FROM users;
+SELECT *
+FROM feedbacks;
+SELECT *
+FROM feedback_visibility;
+SELECT *
+FROM pinned_users;
+SELECT *
+FROM user_access;
