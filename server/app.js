@@ -137,6 +137,7 @@ router.get("/feedbacks/:id/user/:userid", async (req, res) => {
   }
   // filtering for team manager
   else if (feedback.user_roles.includes("team_manager")) {
+    if (feedback.privacy == "anonymous") feedback.sender_name = "anonymous";
     feedback.can_delete = feedback.user_roles.includes("sender") && !feedback.appraiser_visibility && !feedback.receiver_visibility;
     delete feedback.positive_message_appraiser_edit;
     delete feedback.negative_message_appraiser_edit;
