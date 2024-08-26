@@ -5,6 +5,7 @@ import { RequestManager } from "../../modules/requests/requests.js";
 import { ToastManager } from "../../modules/toasts/toasts.js";
 import messages from "../../utilities/write-feedback-messages.js";
 import debounce from "../../utilities/debounce.js";
+import removeDiacritics from "../../utilities/removeDiacritics.js";
 
 export default class WriteFeedbackComponent extends BaseComponent {
   selector = "write-feedback";
@@ -196,13 +197,13 @@ export default class WriteFeedbackComponent extends BaseComponent {
       this.sortSuggestions(field);
       return;
     }
-    query = query.toLowerCase();
+    query = removeDiacritics(query.toLowerCase());
     const firstNameStartsWithQuery = [];
     const otherNameStartsWithQuery = [];
     const containsQuery = [];
 
     this.users.forEach((user) => {
-      const lowerCaseName = user.name.toLowerCase();
+      const lowerCaseName = removeDiacritics(user.name.toLowerCase());
       const names = lowerCaseName.split(" ");
 
       if (lowerCaseName.startsWith(query)) {
