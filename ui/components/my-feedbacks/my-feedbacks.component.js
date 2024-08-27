@@ -2,7 +2,6 @@ import BaseComponent from "../base/base.component.js";
 import { RequestManager } from "../../modules/requests/requests.js";
 import DataGrid from "../../utilities/data-grid.js";
 import formatDate from "../../utilities/format-date.js";
-import formatText from "../../utilities/format-text.js";
 import { buildURL } from "../../routes/routes.js";
 
 export default class MyFeedbacksComponent extends BaseComponent {
@@ -37,16 +36,16 @@ export default class MyFeedbacksComponent extends BaseComponent {
       // Title Column
       const newFeedbackIcon = feedback.is_read_target ? "" : "<i class='new-feedback-icon fa fa-circle'></i>";
       const feedbackUrl = buildURL("Feedback", { id: feedback.feedback_id });
-      const titleLink = "<a href=" + feedbackUrl + ">" + formatText(feedback.title) + "</a>";
+      const titleLink = "<a href=" + feedbackUrl + ">" + feedback.title + "</a>";
       row.set("title", newFeedbackIcon + titleLink);
       // From Column
-      const from = feedback.sender_name === "anonymous" ? "<i>" + feedback.sender_name + "</i>" : formatText(feedback.sender_name);
+      const from = feedback.sender_name === "anonymous" ? "<i>" + feedback.sender_name + "</i>" : feedback.sender_name;
       row.set("from", from);
       // Submitted On Column
       const submssionDate = formatDate(new Date(feedback.submission_date));
       row.set("submitted on", submssionDate);
       // Competency Column
-      row.set("competency", formatText(feedback.competency));
+      row.set("competency", feedback.competency);
 
       // Add Row to Grid
       feedbacksGrid.addRow(row);

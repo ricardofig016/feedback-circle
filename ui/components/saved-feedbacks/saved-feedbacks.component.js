@@ -2,7 +2,6 @@ import BaseComponent from "../base/base.component.js";
 import { RequestManager } from "../../modules/requests/requests.js";
 import DataGrid from "../../utilities/data-grid.js";
 import formatDate from "../../utilities/format-date.js";
-import formatText from "../../utilities/format-text.js";
 import { buildURL } from "../../routes/routes.js";
 
 export default class SavedFeedbacksComponent extends BaseComponent {
@@ -36,16 +35,16 @@ export default class SavedFeedbacksComponent extends BaseComponent {
 
       // Title Column
       const feedbackUrl = buildURL("Feedback", { id: feedback.feedback_id });
-      const titleLink = "<a href=" + feedbackUrl + ">" + formatText(feedback.title) + "</a>";
+      const titleLink = "<a href=" + feedbackUrl + ">" + feedback.title + "</a>";
       row.set("title", titleLink);
       // To Column
-      const to = formatText(feedback.target_name);
+      const to = feedback.target_name;
       row.set("to", to);
       // Submitted On Column
       const submssionDate = formatDate(new Date(feedback.submission_date));
       row.set("submitted on", submssionDate);
       // Competency Column
-      row.set("competency", formatText(feedback.competency));
+      row.set("competency", feedback.competency);
 
       // Add Row to Grid
       feedbacksGrid.addRow(row);

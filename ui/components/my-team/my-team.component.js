@@ -4,9 +4,6 @@ import BaseComponent from "../base/base.component.js";
 import DataGrid from "../../utilities/data-grid.js";
 import { RequestManager } from "../../modules/requests/requests.js";
 import { buildURL } from "../../routes/routes.js";
-import Session from "../../modules/session/session.js";
-import { throwError } from "../../modules/errors/errors.js";
-import formatText from "../../utilities/format-text.js";
 
 export default class MyTeamComponent extends BaseComponent {
   selector = "my-team";
@@ -38,13 +35,13 @@ export default class MyTeamComponent extends BaseComponent {
       const row = new Map();
       // Name Column
       const teamMemberUrl = buildURL("TeamMember", { id: teamMember.user_id });
-      const nameLink = "<a href=" + teamMemberUrl + ">" + formatText(teamMember.name) + "</a>";
+      const nameLink = "<a href=" + teamMemberUrl + ">" + teamMember.name + "</a>";
       row.set("name", nameLink);
       // Notes Column
-      const note = teamMember.team_manager_notes ? formatText(teamMember.team_manager_notes) : "---";
+      const note = teamMember.team_manager_notes ? teamMember.team_manager_notes : "---";
       row.set("notes", note);
       // Most recent feedback Column
-      const feedbackTitle = teamMember.feedback_title ? formatText(teamMember.feedback_title) : "---";
+      const feedbackTitle = teamMember.feedback_title ? teamMember.feedback_title : "---";
       row.set("most recent feedback", feedbackTitle);
 
       // Add Row to Grid

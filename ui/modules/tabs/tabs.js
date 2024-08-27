@@ -2,10 +2,8 @@
 
 import NoAccessComponent from "../../components/no-access/no-access.component.js";
 import NotFoundComponent from "../../components/not-found/not-found.component.js";
-import { buildURLMap, renderRoute } from "../../routes/routes.js";
+import { buildURLMap } from "../../routes/routes.js";
 import formatText from "../../utilities/format-text.js";
-import { throwError } from "../errors/errors.js";
-import Session from "../session/session.js";
 
 class Tab {
   routePath; // Route path (URL) of the tab, serving as a unique identifier for the tab

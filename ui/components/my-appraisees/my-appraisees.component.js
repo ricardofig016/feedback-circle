@@ -4,9 +4,6 @@ import BaseComponent from "../base/base.component.js";
 import DataGrid from "../../utilities/data-grid.js";
 import { RequestManager } from "../../modules/requests/requests.js";
 import { buildURL } from "../../routes/routes.js";
-import Session from "../../modules/session/session.js";
-import { throwError } from "../../modules/errors/errors.js";
-import formatText from "../../utilities/format-text.js";
 
 export default class MyAppraiseesComponent extends BaseComponent {
   selector = "my-appraisees";
@@ -38,13 +35,13 @@ export default class MyAppraiseesComponent extends BaseComponent {
       const row = new Map();
       // Name Column
       const appraiseeUrl = buildURL("Appraisee", { id: appraisee.user_id });
-      const nameLink = "<a href=" + appraiseeUrl + ">" + formatText(appraisee.name) + "</a>";
+      const nameLink = "<a href=" + appraiseeUrl + ">" + appraisee.name + "</a>";
       row.set("name", nameLink);
       // Notes Column
-      const note = appraisee.appraiser_notes ? formatText(appraisee.appraiser_notes) : "---";
+      const note = appraisee.appraiser_notes ? appraisee.appraiser_notes : "---";
       row.set("notes", note);
       // Most recent feedback Column
-      const feedbackTitle = appraisee.feedback_title ? formatText(appraisee.feedback_title) : "---";
+      const feedbackTitle = appraisee.feedback_title ? appraisee.feedback_title : "---";
       row.set("most recent feedback", feedbackTitle);
       // Notification Column
       const unreadFeedbacks = appraisee.unread_count ? appraisee.unread_count : 0;

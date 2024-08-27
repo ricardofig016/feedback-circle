@@ -2,7 +2,6 @@
 
 import BaseComponent from "../base/base.component.js";
 import { RequestManager } from "../../modules/requests/requests.js";
-import formatText from "../../utilities/format-text.js";
 import formatDate from "../../utilities/format-date.js";
 import Tabs from "../../modules/tabs/tabs.js";
 
@@ -30,7 +29,7 @@ export default class FeedbackComponent extends BaseComponent {
     if (this.feedback.user_roles.includes("appraiser") || this.feedback.user_roles.includes("target") || this.feedback.user_roles.includes("team_manager")) await this.updateIsRead(true);
 
     // sender and target
-    this.getElementById("sender").innerHTML = this.feedback.sender_name === "anonymous" ? "<i>" + this.feedback.sender_name + "</i>" : formatText(this.feedback.sender_name, 1000);
+    this.getElementById("sender").innerHTML = this.feedback.sender_name === "anonymous" ? "<i>" + this.feedback.sender_name + "</i>" : this.feedback.sender_name;
     this.getElementById("target").innerText = this.feedback.target_name;
     // date and time
     const fullDate = formatDate(new Date(this.feedback.submission_date));
