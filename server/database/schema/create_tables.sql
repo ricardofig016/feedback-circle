@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS feedbacks(
     rating INT UNSIGNED NOT NULL,
     is_read_target BOOLEAN DEFAULT false,
     is_read_appraiser BOOLEAN DEFAULT false,
+    is_read_team_manager BOOLEAN DEFAULT false,
     appraiser_notes TEXT DEFAULT NULL,
     team_manager_notes TEXT DEFAULT NULL,
     type ENUM('performance','continuous') NOT NULL,

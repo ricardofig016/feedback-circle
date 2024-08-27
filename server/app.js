@@ -133,6 +133,7 @@ router.get("/feedbacks/:id/user/:userid", async (req, res) => {
     if (feedback.privacy == "anonymous") feedback.sender_name = "anonymous";
     feedback.can_delete = feedback.user_roles.includes("sender") && !feedback.target_visibility && !feedback.team_manager_visibility;
     delete feedback.is_read_target;
+    delete feedback.is_read_team_manager;
     delete feedback.team_manager_notes;
   }
   // filtering for team manager
@@ -153,6 +154,7 @@ router.get("/feedbacks/:id/user/:userid", async (req, res) => {
     delete feedback.negative_message_appraiser_edit;
     delete feedback.is_read_target;
     delete feedback.is_read_appraiser;
+    delete feedback.is_read_team_manager;
     delete feedback.appraiser_notes;
     delete feedback.team_manager_notes;
     delete feedback.appraiser_visibility;
@@ -165,6 +167,7 @@ router.get("/feedbacks/:id/user/:userid", async (req, res) => {
     delete feedback.positive_message;
     delete feedback.negative_message;
     delete feedback.is_read_appraiser;
+    delete feedback.is_read_team_manager;
     delete feedback.appraiser_notes;
     delete feedback.team_manager_notes;
     delete feedback.appraiser_visibility;
@@ -186,7 +189,7 @@ router.get("/feedbacks/:id/user/:userid", async (req, res) => {
   res.send(feedback);
 });
 
-// update is_read (target and appraiser) on feedbacks table
+// update is_read (target, appraiser and team manager) on feedbacks table
 router.put("/feedbacks/:id/isread/:role", async (req, res) => {
   const id = req.params.id;
   const role = req.params.role;
@@ -194,7 +197,8 @@ router.put("/feedbacks/:id/isread/:role", async (req, res) => {
   let columnName;
   if (role === "target") columnName = "is_read_target";
   else if (role === "appraiser") columnName = "is_read_appraiser";
-  else return res.status(400).send({ error: 'Invalid role, should be "target" or "appraiser"' });
+  else if (role === "team_manager") columnName = "is_read_team_manager";
+  else return res.status(400).send({ error: 'Invalid role, should be "target", "appraiser" or "team_manager"' });
   await updateFeedback(columnName, isRead, id);
   res.status(204).send({});
 });
@@ -248,6 +252,7 @@ router.get("/feedbacks/targetid/:id/role/:role", async (req, res) => {
       delete feedback.team_manager_visibility;
       delete feedback.is_read_target;
       delete feedback.is_read_appraiser;
+      delete feedback.is_read_team_manager;
     });
     return res.send(feedbacks);
   }
@@ -264,6 +269,7 @@ router.get("/feedbacks/targetid/:id/role/:role", async (req, res) => {
       delete feedback.appraiser_visibility;
       delete feedback.team_manager_visibility;
       delete feedback.is_read_appraiser;
+      delete feedback.is_read_team_manager;
     });
     return res.send(sharedWithTarget);
   }
@@ -279,6 +285,7 @@ router.get("/feedbacks/targetid/:id/role/:role", async (req, res) => {
       delete feedback.appraiser_visibility;
       delete feedback.team_manager_visibility;
       delete feedback.is_read_target;
+      delete feedback.is_read_team_manager;
     });
     return res.send(sharedWithAppraiser);
   } // filtering for team manager role
@@ -293,6 +300,7 @@ router.get("/feedbacks/targetid/:id/role/:role", async (req, res) => {
       delete feedback.appraiser_visibility;
       delete feedback.team_manager_visibility;
       delete feedback.is_read_target;
+      delete feedback.is_read_appraiser;
     });
     return res.send(teamManagerHasAccess);
   } else return res.status(400).send({ error: 'Invalid role, should be  "sender", "target", "appraiser" or "team_manager"' });

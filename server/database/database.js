@@ -126,7 +126,7 @@ export async function getUsersByAppraiserId(id) {
 export async function getUsersByTeamManagerId(id) {
   const [rows] = await pool.query(
     `
-    SELECT u.user_id, u.name, u.team_manager_notes, f.title AS feedback_title
+    SELECT u.user_id, u.name, u.team_manager_notes, f.title AS feedback_title, unread_count.count AS unread_count
     FROM users AS u
     LEFT JOIN feedbacks as f 
       ON f.target_id = u.user_id
@@ -135,9 +135,18 @@ export async function getUsersByTeamManagerId(id) {
         FROM feedbacks AS f
         WHERE f.target_id = u.user_id
       )
+    LEFT JOIN
+      (
+        SELECT f.target_id, COUNT(*) AS count
+        FROM feedbacks AS f
+        JOIN users AS u ON u.team_manager_id = ?
+        JOIN feedback_visibility AS fv ON f.feedback_id = fv.feedback_id
+        WHERE f.target_id = u.user_id AND f.is_read_team_manager = false AND fv.team_manager = true 
+        GROUP BY f.target_id
+      ) AS unread_count ON unread_count.target_id = u.user_id
     WHERE u.team_manager_id = ?
     `,
-    [id]
+    [id, id]
   );
   return rows;
 }
@@ -150,7 +159,7 @@ export async function getFeedbacks() {
 export async function getFeedbacksOfUser(id) {
   const [rows] = await pool.query(
     `
-    SELECT f.feedback_id, f.title, f.submission_date, f.competency, f.appraiser_notes, f.team_manager_notes, f.privacy, f.type, f.actions, f.is_read_target, f.is_read_appraiser,  fv.sender AS sender_visibility, fv.appraiser AS appraiser_visibility, fv.target AS target_visibility, fv.team_manager AS team_manager_visibility, u.name AS sender_name
+    SELECT f.feedback_id, f.title, f.submission_date, f.competency, f.appraiser_notes, f.team_manager_notes, f.privacy, f.type, f.actions, f.is_read_target, f.is_read_appraiser, f.is_read_team_manager, fv.sender AS sender_visibility, fv.appraiser AS appraiser_visibility, fv.target AS target_visibility, fv.team_manager AS team_manager_visibility, u.name AS sender_name
     FROM feedbacks AS f
     JOIN users AS u ON f.sender_id = u.user_id
     JOIN feedback_visibility AS fv ON f.feedback_id = fv.feedback_id
@@ -180,7 +189,7 @@ export async function getSavedAndSharedFeedbacks(id) {
 export async function getFeedbackById(id) {
   const [rows] = await pool.query(
     `
-    SELECT f.title, f.positive_message, f.positive_message_appraiser_edit, f.negative_message, f.negative_message_appraiser_edit, f.submission_date, f.competency, f.rating, fv.sender AS sender_visibility, fv.appraiser AS appraiser_visibility, fv.target AS target_visibility, fv.team_manager AS team_manager_visibility, f.privacy, f.is_read_target, f.is_read_appraiser, f.appraiser_notes, f.team_manager_notes, f.sender_id, f.target_id, sender.name AS sender_name, target.name AS target_name, target.appraiser_id, target.team_manager_id
+    SELECT f.title, f.positive_message, f.positive_message_appraiser_edit, f.negative_message, f.negative_message_appraiser_edit, f.submission_date, f.competency, f.rating, fv.sender AS sender_visibility, fv.appraiser AS appraiser_visibility, fv.target AS target_visibility, fv.team_manager AS team_manager_visibility, f.privacy, f.is_read_target, f.is_read_appraiser, f.is_read_team_manager, f.appraiser_notes, f.team_manager_notes, f.sender_id, f.target_id, sender.name AS sender_name, target.name AS target_name, target.appraiser_id, target.team_manager_id
     FROM feedbacks AS f
     JOIN users AS sender ON f.sender_id = sender.user_id
     JOIN users AS target ON f.target_id = target.user_id

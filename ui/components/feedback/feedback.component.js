@@ -26,15 +26,19 @@ export default class FeedbackComponent extends BaseComponent {
     }
 
     // mark the feedback as read every time this tab is opened/refreshed, if user is not sender
-    if (this.feedback.user_roles.includes("appraiser") || this.feedback.user_roles.includes("target") || this.feedback.user_roles.includes("team_manager")) await this.updateIsRead(true);
+    if (this.feedback.user_roles.includes("target")) await this.updateIsRead("target", true);
+    if (this.feedback.user_roles.includes("appraiser")) await this.updateIsRead("appraiser", true);
+    if (this.feedback.user_roles.includes("team_manager")) await this.updateIsRead("team_manager", true);
 
     // sender and target
     this.getElementById("sender").innerHTML = this.feedback.sender_name === "anonymous" ? "<i>" + this.feedback.sender_name + "</i>" : this.feedback.sender_name;
     this.getElementById("target").innerText = this.feedback.target_name;
+
     // date and time
     const fullDate = formatDate(new Date(this.feedback.submission_date));
     this.getElementById("date").innerText = fullDate.substring(0, fullDate.indexOf(" "));
     this.getElementById("time").innerText = fullDate.substring(fullDate.indexOf(" "));
+
     // messages
     if (!this.feedback.user_roles.includes("appraiser")) {
       if (!this.feedback.positive_message_appraiser_edit || this.feedback.positive_message === this.feedback.positive_message_appraiser_edit) {
@@ -56,6 +60,7 @@ export default class FeedbackComponent extends BaseComponent {
     }
     this.resetMessage("positive");
     this.resetMessage("negative");
+
     // competency
     const categories = {
       general: "General",
@@ -67,20 +72,16 @@ export default class FeedbackComponent extends BaseComponent {
       "customer-orientation": "Customer Orientation",
     };
     this.getElementById("competency").innerText = categories[this.feedback.competency];
+
     // rating
     for (let i = 1; i <= this.feedback.rating; i++) this.getElementById("star" + i).classList.add("blue-star");
 
     // unread checkbox
     const unreadCheckbox = this.getElementById("unread-checkbox");
-    if (this.feedback.user_roles.includes("appraiser") || this.feedback.user_roles.includes("target") || this.feedback.user_roles.includes("team_manager")) {
-      let role;
-      if (this.feedback.user_roles.includes("target")) role = "target";
-      else if (this.feedback.user_roles.includes("appraiser")) role = "appraiser";
-      unreadCheckbox.checked = !Boolean(this.feedback["is_read_" + role]);
-    } else {
-      // sender has no option read/unread
-      unreadCheckbox.parentElement.hidden = true;
-    }
+    if (this.feedback.user_roles.includes("target")) unreadCheckbox.checked = !Boolean(this.feedback.is_read_target);
+    else if (this.feedback.user_roles.includes("appraiser")) unreadCheckbox.checked = !Boolean(this.feedback.is_read_appraiser);
+    else if (this.feedback.user_roles.includes("team_manager")) unreadCheckbox.checked = !Boolean(this.feedback.is_read_team_manager);
+    else unreadCheckbox.parentElement.hidden = true; // sender has no option read/unread
 
     // if the user is not the appraiser, they dont have the option to switch between original message and appraiser edit
     if (!this.feedback.user_roles.includes("appraiser")) {
@@ -108,13 +109,12 @@ export default class FeedbackComponent extends BaseComponent {
 
   addEventListeners() {
     // unread checkbox
-    if (this.feedback.user_roles.includes("appraiser") || this.feedback.user_roles.includes("target") || this.feedback.user_roles.includes("team_manager")) {
-      // mark as read/unread
-      const unreadCheckbox = this.getElementById("unread-checkbox");
-      unreadCheckbox.addEventListener("change", async (e) => {
-        this.updateIsRead(!e.target.checked);
-      });
-    }
+    const unreadCheckbox = this.getElementById("unread-checkbox");
+    unreadCheckbox.addEventListener("change", async (e) => {
+      if (this.feedback.user_roles.includes("target")) this.updateIsRead("target", !e.target.checked);
+      if (this.feedback.user_roles.includes("appraiser")) this.updateIsRead("appraiser", !e.target.checked);
+      if (this.feedback.user_roles.includes("team_manager")) this.updateIsRead("team_manager", !e.target.checked);
+    });
 
     // appraiser only
     if (this.feedback.user_roles.includes("appraiser")) {
@@ -250,11 +250,7 @@ export default class FeedbackComponent extends BaseComponent {
     this.getElementById(type + "-anchor").innerText = text;
   }
 
-  async updateIsRead(isRead) {
-    let role;
-    if (this.feedback.user_roles.includes("target")) role = "target";
-    else if (this.feedback.user_roles.includes("appraiser")) role = "appraiser";
-    else return false;
+  async updateIsRead(role, isRead) {
     const url = "feedbacks/" + this.queryParams.id + "/isread/" + role;
     await RequestManager.request("PUT", url, { isRead: isRead });
     this.feedback["is_read_" + role] = isRead;

@@ -68,9 +68,10 @@ export default class TeamMemberComponent extends BaseComponent {
       const row = new Map();
 
       // Title Column
+      const newFeedbackIcon = feedback.is_read_team_manager ? "" : "<i class='new-feedback-icon fa fa-circle'></i>";
       const feedbackUrl = buildURL("Feedback", { id: feedback.feedback_id });
       const titleLink = "<a href=" + feedbackUrl + ">" + feedback.title + "</a>";
-      row.set("title", titleLink);
+      row.set("title", newFeedbackIcon + titleLink);
       // Type column
       row.set("type", feedback.type);
       // From Column
