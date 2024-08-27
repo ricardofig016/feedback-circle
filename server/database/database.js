@@ -101,21 +101,21 @@ export async function getUsersByAppraiserId(id) {
     SELECT u.user_id, u.name, u.appraiser_notes, f.title AS feedback_title, unread_count.count AS unread_count
     FROM users AS u
     LEFT JOIN feedbacks as f 
-      ON f.receiver_id = u.user_id
+      ON f.target_id = u.user_id
       AND f.submission_date = (
         SELECT MAX(f.submission_date)
         FROM feedbacks AS f
-        WHERE f.receiver_id = u.user_id
+        WHERE f.target_id = u.user_id
       )
     LEFT JOIN
       (
-        SELECT f.receiver_id, COUNT(*) AS count
+        SELECT f.target_id, COUNT(*) AS count
         FROM feedbacks AS f
         JOIN users AS u ON u.appraiser_id = ?
         JOIN feedback_visibility AS fv ON f.feedback_id = fv.feedback_id
-        WHERE f.receiver_id = u.user_id AND f.is_read_appraiser = false AND fv.appraiser = true 
-        GROUP BY f.receiver_id
-      ) AS unread_count ON unread_count.receiver_id = u.user_id
+        WHERE f.target_id = u.user_id AND f.is_read_appraiser = false AND fv.appraiser = true 
+        GROUP BY f.target_id
+      ) AS unread_count ON unread_count.target_id = u.user_id
     WHERE u.appraiser_id = ?
     `,
     [id, id]
@@ -129,11 +129,11 @@ export async function getUsersByTeamManagerId(id) {
     SELECT u.user_id, u.name, u.team_manager_notes, f.title AS feedback_title
     FROM users AS u
     LEFT JOIN feedbacks as f 
-      ON f.receiver_id = u.user_id
+      ON f.target_id = u.user_id
       AND f.submission_date = (
         SELECT MAX(f.submission_date)
         FROM feedbacks AS f
-        WHERE f.receiver_id = u.user_id
+        WHERE f.target_id = u.user_id
       )
     WHERE u.team_manager_id = ?
     `,
@@ -150,11 +150,11 @@ export async function getFeedbacks() {
 export async function getFeedbacksOfUser(id) {
   const [rows] = await pool.query(
     `
-    SELECT f.feedback_id, f.title, f.submission_date, f.competency, f.appraiser_notes, f.team_manager_notes, f.privacy, f.type, f.actions, f.is_read_receiver, f.is_read_appraiser,  fv.sender AS sender_visibility, fv.appraiser AS appraiser_visibility, fv.receiver AS receiver_visibility, fv.team_manager AS team_manager_visibility, u.name AS sender_name
+    SELECT f.feedback_id, f.title, f.submission_date, f.competency, f.appraiser_notes, f.team_manager_notes, f.privacy, f.type, f.actions, f.is_read_target, f.is_read_appraiser,  fv.sender AS sender_visibility, fv.appraiser AS appraiser_visibility, fv.target AS target_visibility, fv.team_manager AS team_manager_visibility, u.name AS sender_name
     FROM feedbacks AS f
     JOIN users AS u ON f.sender_id = u.user_id
     JOIN feedback_visibility AS fv ON f.feedback_id = fv.feedback_id
-    WHERE f.receiver_id = ?
+    WHERE f.target_id = ?
     ORDER BY f.submission_date DESC
     `,
     [id]
@@ -165,9 +165,9 @@ export async function getFeedbacksOfUser(id) {
 export async function getSavedAndSharedFeedbacks(id) {
   const [rows] = await pool.query(
     `
-    SELECT f.feedback_id, f.title, f.submission_date, f.competency, fv.sender AS sender_visibility, fv.appraiser AS appraiser_visibility, fv.receiver AS receiver_visibility, fv.team_manager AS team_manager_visibility, u.name AS receiver_name
+    SELECT f.feedback_id, f.title, f.submission_date, f.competency, fv.sender AS sender_visibility, fv.appraiser AS appraiser_visibility, fv.target AS target_visibility, fv.team_manager AS team_manager_visibility, u.name AS target_name
     FROM feedbacks AS f
-    JOIN users AS u ON f.receiver_id = u.user_id
+    JOIN users AS u ON f.target_id = u.user_id
     JOIN feedback_visibility AS fv ON f.feedback_id = fv.feedback_id
     WHERE f.sender_id = ?
     ORDER BY f.submission_date DESC
@@ -180,10 +180,10 @@ export async function getSavedAndSharedFeedbacks(id) {
 export async function getFeedbackById(id) {
   const [rows] = await pool.query(
     `
-    SELECT f.title, f.positive_message, f.positive_message_appraiser_edit, f.negative_message, f.negative_message_appraiser_edit, f.submission_date, f.competency, f.rating, fv.sender AS sender_visibility, fv.appraiser AS appraiser_visibility, fv.receiver AS receiver_visibility, fv.team_manager AS team_manager_visibility, f.privacy, f.is_read_receiver, f.is_read_appraiser, f.appraiser_notes, f.team_manager_notes, f.sender_id, f.receiver_id, sender.name AS sender_name, receiver.name AS receiver_name, receiver.appraiser_id, receiver.team_manager_id
+    SELECT f.title, f.positive_message, f.positive_message_appraiser_edit, f.negative_message, f.negative_message_appraiser_edit, f.submission_date, f.competency, f.rating, fv.sender AS sender_visibility, fv.appraiser AS appraiser_visibility, fv.target AS target_visibility, fv.team_manager AS team_manager_visibility, f.privacy, f.is_read_target, f.is_read_appraiser, f.appraiser_notes, f.team_manager_notes, f.sender_id, f.target_id, sender.name AS sender_name, target.name AS target_name, target.appraiser_id, target.team_manager_id
     FROM feedbacks AS f
     JOIN users AS sender ON f.sender_id = sender.user_id
-    JOIN users AS receiver ON f.receiver_id = receiver.user_id
+    JOIN users AS target ON f.target_id = target.user_id
     JOIN feedback_visibility AS fv ON f.feedback_id = fv.feedback_id
     WHERE f.feedback_id = ?
     `,
@@ -221,20 +221,20 @@ export async function updateFeedbackVisibility(role, value, id) {
 /**
  * @returns the feedback_id of the created feedback
  */
-export async function createFeedback(senderId, receiverId, title, positiveMessage, positiveMessageAppraiserEdit, negativeMessage, negativeMessageAppraiserEdit, submissionDate, competency, privacy, rating, type, context, actions, responsibleId, status, deadline, senderVis, appraiserVis, receiverVis, teamManagerVis) {
+export async function createFeedback(senderId, targetId, title, positiveMessage, positiveMessageAppraiserEdit, negativeMessage, negativeMessageAppraiserEdit, submissionDate, competency, privacy, rating, type, context, actions, responsibleId, status, deadline, senderVis, appraiserVis, targetVis, teamManagerVis) {
   const [data] = await pool.query(
     `
-    INSERT INTO feedbacks (sender_id, receiver_id, title, positive_message, positive_message_appraiser_edit, negative_message, negative_message_appraiser_edit, submission_date, competency, privacy, rating, type, context, actions, responsible_id, status, deadline)
+    INSERT INTO feedbacks (sender_id, target_id, title, positive_message, positive_message_appraiser_edit, negative_message, negative_message_appraiser_edit, submission_date, competency, privacy, rating, type, context, actions, responsible_id, status, deadline)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     `,
-    [senderId, receiverId, title, positiveMessage, positiveMessageAppraiserEdit, negativeMessage, negativeMessageAppraiserEdit, submissionDate, competency, privacy, rating, type, context, actions, responsibleId, status, deadline]
+    [senderId, targetId, title, positiveMessage, positiveMessageAppraiserEdit, negativeMessage, negativeMessageAppraiserEdit, submissionDate, competency, privacy, rating, type, context, actions, responsibleId, status, deadline]
   );
   await pool.query(
     `
-    INSERT INTO feedback_visibility (feedback_id, sender, appraiser, receiver, team_manager)
+    INSERT INTO feedback_visibility (feedback_id, sender, appraiser, target, team_manager)
     VALUES (?, ?, ?, ?, ?);
     `,
-    [data.insertId, senderVis, appraiserVis, receiverVis, teamManagerVis]
+    [data.insertId, senderVis, appraiserVis, targetVis, teamManagerVis]
   );
   // return the id of the created object
   return data.insertId;

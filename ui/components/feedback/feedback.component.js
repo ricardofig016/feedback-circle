@@ -27,11 +27,11 @@ export default class FeedbackComponent extends BaseComponent {
     }
 
     // mark the feedback as read every time this tab is opened/refreshed, if user is not sender
-    if (this.feedback.user_roles.includes("appraiser") || this.feedback.user_roles.includes("receiver") || this.feedback.user_roles.includes("team_manager")) await this.updateIsRead(true);
+    if (this.feedback.user_roles.includes("appraiser") || this.feedback.user_roles.includes("target") || this.feedback.user_roles.includes("team_manager")) await this.updateIsRead(true);
 
-    // sender and receiver
+    // sender and target
     this.getElementById("sender").innerHTML = this.feedback.sender_name === "anonymous" ? "<i>" + this.feedback.sender_name + "</i>" : formatText(this.feedback.sender_name, 1000);
-    this.getElementById("receiver").innerText = this.feedback.receiver_name;
+    this.getElementById("target").innerText = this.feedback.target_name;
     // date and time
     const fullDate = formatDate(new Date(this.feedback.submission_date));
     this.getElementById("date").innerText = fullDate.substring(0, fullDate.indexOf(" "));
@@ -51,7 +51,7 @@ export default class FeedbackComponent extends BaseComponent {
     } else {
       let message;
       if (this.feedback.user_roles.includes("sender")) message = "original";
-      if (this.feedback.user_roles.includes("receiver")) message = "appraiser";
+      if (this.feedback.user_roles.includes("target")) message = "appraiser";
       this.switchAppraiserMessage("positive", message);
       this.switchAppraiserMessage("negative", message);
     }
@@ -73,9 +73,9 @@ export default class FeedbackComponent extends BaseComponent {
 
     // unread checkbox
     const unreadCheckbox = this.getElementById("unread-checkbox");
-    if (this.feedback.user_roles.includes("appraiser") || this.feedback.user_roles.includes("receiver") || this.feedback.user_roles.includes("team_manager")) {
+    if (this.feedback.user_roles.includes("appraiser") || this.feedback.user_roles.includes("target") || this.feedback.user_roles.includes("team_manager")) {
       let role;
-      if (this.feedback.user_roles.includes("receiver")) role = "receiver";
+      if (this.feedback.user_roles.includes("target")) role = "target";
       else if (this.feedback.user_roles.includes("appraiser")) role = "appraiser";
       unreadCheckbox.checked = !Boolean(this.feedback["is_read_" + role]);
     } else {
@@ -92,8 +92,8 @@ export default class FeedbackComponent extends BaseComponent {
     // appraiser only
     if (this.feedback.user_roles.includes("appraiser")) {
       // share checkbox
-      this.getElementById("share-span").innerText = this.feedback.receiver_name.substring(0, this.feedback.receiver_name.indexOf(" "));
-      this.getElementById("share-checkbox").checked = this.feedback.receiver_visibility;
+      this.getElementById("share-span").innerText = this.feedback.target_name.substring(0, this.feedback.target_name.indexOf(" "));
+      this.getElementById("share-checkbox").checked = this.feedback.target_visibility;
       // appraiser notes
       if (this.feedback.appraiser_notes) this.getElementById("appraiser-notes").innerText = this.feedback.appraiser_notes;
       this.getElementById("appraiser-notes-textarea").value = this.feedback.appraiser_notes;
@@ -109,7 +109,7 @@ export default class FeedbackComponent extends BaseComponent {
 
   addEventListeners() {
     // unread checkbox
-    if (this.feedback.user_roles.includes("appraiser") || this.feedback.user_roles.includes("receiver") || this.feedback.user_roles.includes("team_manager")) {
+    if (this.feedback.user_roles.includes("appraiser") || this.feedback.user_roles.includes("target") || this.feedback.user_roles.includes("team_manager")) {
       // mark as read/unread
       const unreadCheckbox = this.getElementById("unread-checkbox");
       unreadCheckbox.addEventListener("change", async (e) => {
@@ -122,9 +122,9 @@ export default class FeedbackComponent extends BaseComponent {
       // share with apraisee
       const shareCheckbox = this.getElementById("share-checkbox");
       shareCheckbox.addEventListener("change", async (e) => {
-        this.feedback.receiver_visibility = e.target.checked;
-        const url = "feedbacks/" + this.queryParams.id + "/visibility/receiver";
-        await RequestManager.request("PUT", url, { value: this.feedback.receiver_visibility });
+        this.feedback.target_visibility = e.target.checked;
+        const url = "feedbacks/" + this.queryParams.id + "/visibility/target";
+        await RequestManager.request("PUT", url, { value: this.feedback.target_visibility });
       });
 
       const codes = ["negative-message", "positive-message", "appraiser-notes"];
@@ -253,7 +253,7 @@ export default class FeedbackComponent extends BaseComponent {
 
   async updateIsRead(isRead) {
     let role;
-    if (this.feedback.user_roles.includes("receiver")) role = "receiver";
+    if (this.feedback.user_roles.includes("target")) role = "target";
     else if (this.feedback.user_roles.includes("appraiser")) role = "appraiser";
     else return false;
     const url = "feedbacks/" + this.queryParams.id + "/isread/" + role;
@@ -277,7 +277,7 @@ export default class FeedbackComponent extends BaseComponent {
     const access = super.hasAccess();
     if (access) return true; // user is admin
     if (this.feedback.user_roles.includes("sender")) return true; // user is the sender
-    if (this.feedback.user_roles.includes("receiver") && this.feedback.receiver_visibility) return true; // user is the receiver and has visibility
+    if (this.feedback.user_roles.includes("target") && this.feedback.target_visibility) return true; // user is the target and has visibility
     if (this.feedback.user_roles.includes("appraiser") && this.feedback.appraiser_visibility) return true; // user is the appraiser and has visibility
     if (this.feedback.user_roles.includes("team_manager") && this.feedback.team_manager_visibility) return true; // user is the team manager and has visibility
     return false;

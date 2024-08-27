@@ -98,12 +98,12 @@ router.get("/feedbacks", async (req, res) => {
 
 // create new feedback
 router.post("/feedbacks", async (req, res) => {
-  let { senderId, receiverId, title, positiveMessage, positiveMessageAppraiserEdit, negativeMessage, negativeMessageAppraiserEdit, competency, privacy, rating, type, context, actions, responsibleId, status, deadline, senderVis, appraiserVis, receiverVis, teamManagerVis } = req.body;
+  let { senderId, targetId, title, positiveMessage, positiveMessageAppraiserEdit, negativeMessage, negativeMessageAppraiserEdit, competency, privacy, rating, type, context, actions, responsibleId, status, deadline, senderVis, appraiserVis, targetVis, teamManagerVis } = req.body;
 
   const submissionDate = formatDate(new Date());
   if (type !== "continuous") actions = responsibleId = status = deadline = null;
 
-  const feedbackId = await createFeedback(senderId, receiverId, title, positiveMessage, positiveMessageAppraiserEdit, negativeMessage, negativeMessageAppraiserEdit, submissionDate, competency, privacy, rating, type, context, actions, responsibleId, status, deadline, senderVis, appraiserVis, receiverVis, teamManagerVis);
+  const feedbackId = await createFeedback(senderId, targetId, title, positiveMessage, positiveMessageAppraiserEdit, negativeMessage, negativeMessageAppraiserEdit, submissionDate, competency, privacy, rating, type, context, actions, responsibleId, status, deadline, senderVis, appraiserVis, targetVis, teamManagerVis);
 
   if (!feedbackId) return res.status(400).send({ error: "Feedback creation failed" });
 
@@ -123,7 +123,7 @@ router.get("/feedbacks/:id/user/:userid", async (req, res) => {
   if (userId == feedback.sender_id) feedback.user_roles.push("sender");
   if (userId == feedback.appraiser_id) feedback.user_roles.push("appraiser");
   if (userId == feedback.team_manager_id) feedback.user_roles.push("team_manager");
-  if (userId == feedback.receiver_id) feedback.user_roles.push("receiver");
+  if (userId == feedback.target_id) feedback.user_roles.push("target");
 
   // by default, the feedback cannot be deleted
   feedback.can_delete = false;
@@ -131,36 +131,36 @@ router.get("/feedbacks/:id/user/:userid", async (req, res) => {
   // filtering for appraiser
   if (feedback.user_roles.includes("appraiser")) {
     if (feedback.privacy == "anonymous") feedback.sender_name = "anonymous";
-    feedback.can_delete = feedback.user_roles.includes("sender") && !feedback.receiver_visibility && !feedback.team_manager_visibility;
-    delete feedback.is_read_receiver;
+    feedback.can_delete = feedback.user_roles.includes("sender") && !feedback.target_visibility && !feedback.team_manager_visibility;
+    delete feedback.is_read_target;
     delete feedback.team_manager_notes;
   }
   // filtering for team manager
   else if (feedback.user_roles.includes("team_manager")) {
     if (feedback.privacy == "anonymous") feedback.sender_name = "anonymous";
-    feedback.can_delete = feedback.user_roles.includes("sender") && !feedback.appraiser_visibility && !feedback.receiver_visibility;
+    feedback.can_delete = feedback.user_roles.includes("sender") && !feedback.appraiser_visibility && !feedback.target_visibility;
     delete feedback.positive_message_appraiser_edit;
     delete feedback.negative_message_appraiser_edit;
-    delete feedback.is_read_receiver;
+    delete feedback.is_read_target;
     delete feedback.is_read_appraiser;
     delete feedback.appraiser_notes;
-    delete feedback.receiver_visibility;
+    delete feedback.target_visibility;
   }
   // filtering for sender
   else if (feedback.user_roles.includes("sender")) {
-    feedback.can_delete = !feedback.appraiser_visibility && !feedback.receiver_visibility && !feedback.team_manager_visibility;
+    feedback.can_delete = !feedback.appraiser_visibility && !feedback.target_visibility && !feedback.team_manager_visibility;
     delete feedback.positive_message_appraiser_edit;
     delete feedback.negative_message_appraiser_edit;
-    delete feedback.is_read_receiver;
+    delete feedback.is_read_target;
     delete feedback.is_read_appraiser;
     delete feedback.appraiser_notes;
     delete feedback.team_manager_notes;
     delete feedback.appraiser_visibility;
-    delete feedback.receiver_visibility;
+    delete feedback.target_visibility;
     delete feedback.team_manager_visibility;
   }
-  // filtering for receiver
-  else if (feedback.user_roles.includes("receiver")) {
+  // filtering for target
+  else if (feedback.user_roles.includes("target")) {
     if (["anonymous", "private"].includes(feedback.privacy)) feedback.sender_name = "anonymous";
     delete feedback.positive_message;
     delete feedback.negative_message;
@@ -179,22 +179,22 @@ router.get("/feedbacks/:id/user/:userid", async (req, res) => {
   delete feedback.appraiser_id;
   delete feedback.team_manager_id;
   delete feedback.sender_id;
-  delete feedback.receiver_id;
+  delete feedback.target_id;
   delete feedback.privacy;
   delete feedback.sender_visibility;
 
   res.send(feedback);
 });
 
-// update is_read (receiver and appraiser) on feedbacks table
+// update is_read (target and appraiser) on feedbacks table
 router.put("/feedbacks/:id/isread/:role", async (req, res) => {
   const id = req.params.id;
   const role = req.params.role;
   const { isRead } = req.body;
   let columnName;
-  if (role === "receiver") columnName = "is_read_receiver";
+  if (role === "target") columnName = "is_read_target";
   else if (role === "appraiser") columnName = "is_read_appraiser";
-  else return res.status(400).send({ error: 'Invalid role, should be "receiver" or "appraiser"' });
+  else return res.status(400).send({ error: 'Invalid role, should be "target" or "appraiser"' });
   await updateFeedback(columnName, isRead, id);
   res.status(204).send({});
 });
@@ -203,8 +203,8 @@ router.put("/feedbacks/:id/isread/:role", async (req, res) => {
 router.put("/feedbacks/:id/visibility/:role", async (req, res) => {
   const id = req.params.id;
   const role = req.params.role;
-  if (!["sender", "appraiser", "receiver", "team_manager"].includes(role)) {
-    return res.status(400).send({ error: 'Invalid role, should be "sender", "appraiser", "receiver" or "team_manager"' });
+  if (!["sender", "appraiser", "target", "team_manager"].includes(role)) {
+    return res.status(400).send({ error: 'Invalid role, should be "sender", "appraiser", "target" or "team_manager"' });
   }
   const { value } = req.body;
   await updateFeedbackVisibility(role, value, id);
@@ -231,7 +231,7 @@ router.put("/feedbacks/:id/appraisermessage/:type", async (req, res) => {
 });
 
 // get feedbacks given to the user with user_id = _id_, joined with the name of the sender, ordered from most recent to oldest
-router.get("/feedbacks/receiverid/:id/role/:role", async (req, res) => {
+router.get("/feedbacks/targetid/:id/role/:role", async (req, res) => {
   const user_id = req.params.id;
   const role = req.params.role;
   const feedbacks = await getFeedbacksOfUser(user_id);
@@ -243,29 +243,29 @@ router.get("/feedbacks/receiverid/:id/role/:role", async (req, res) => {
       delete feedback.team_manager_notes;
       delete feedback.privacy;
       delete feedback.sender_visibility;
-      delete feedback.receiver_visibility;
+      delete feedback.target_visibility;
       delete feedback.appraiser_visibility;
       delete feedback.team_manager_visibility;
-      delete feedback.is_read_receiver;
+      delete feedback.is_read_target;
       delete feedback.is_read_appraiser;
     });
     return res.send(feedbacks);
   }
-  // filtering for receiver role
-  else if (role === "receiver") {
-    const sharedWithReceiver = feedbacks.filter((feedback) => feedback.receiver_visibility);
-    sharedWithReceiver.forEach((feedback) => {
+  // filtering for target role
+  else if (role === "target") {
+    const sharedWithTarget = feedbacks.filter((feedback) => feedback.target_visibility);
+    sharedWithTarget.forEach((feedback) => {
       if (["anonymous", "private"].includes(feedback.privacy)) feedback.sender_name = "anonymous";
       delete feedback.appraiser_notes;
       delete feedback.team_manager_notes;
       delete feedback.privacy;
       delete feedback.sender_visibility;
-      delete feedback.receiver_visibility;
+      delete feedback.target_visibility;
       delete feedback.appraiser_visibility;
       delete feedback.team_manager_visibility;
       delete feedback.is_read_appraiser;
     });
-    return res.send(sharedWithReceiver);
+    return res.send(sharedWithTarget);
   }
   // filtering for appraiser role
   else if (role === "appraiser") {
@@ -275,10 +275,10 @@ router.get("/feedbacks/receiverid/:id/role/:role", async (req, res) => {
       delete feedback.team_manager_notes;
       delete feedback.privacy;
       delete feedback.sender_visibility;
-      delete feedback.receiver_visibility;
+      delete feedback.target_visibility;
       delete feedback.appraiser_visibility;
       delete feedback.team_manager_visibility;
-      delete feedback.is_read_receiver;
+      delete feedback.is_read_target;
     });
     return res.send(sharedWithAppraiser);
   } // filtering for team manager role
@@ -289,13 +289,13 @@ router.get("/feedbacks/receiverid/:id/role/:role", async (req, res) => {
       delete feedback.appraiser_notes;
       delete feedback.privacy;
       delete feedback.sender_visibility;
-      delete feedback.receiver_visibility;
+      delete feedback.target_visibility;
       delete feedback.appraiser_visibility;
       delete feedback.team_manager_visibility;
-      delete feedback.is_read_receiver;
+      delete feedback.is_read_target;
     });
     return res.send(teamManagerHasAccess);
-  } else return res.status(400).send({ error: 'Invalid role, should be  "sender", "receiver", "appraiser" or "team_manager"' });
+  } else return res.status(400).send({ error: 'Invalid role, should be  "sender", "target", "appraiser" or "team_manager"' });
 });
 
 // get feedbacks with sender_id = _id_, with scope "saved" or "shared", ordered from most recent to oldest
@@ -308,24 +308,24 @@ router.get("/feedbacks/senderid/:id/scope/:scope", async (req, res) => {
   if (scope === "saved") {
     const SavedFeedbacks = feedbacks.filter((feedback) => {
       // only the sender has visibility
-      return feedback.sender_visibility && !feedback.appraiser_visibility && !feedback.receiver_visibility && !feedback.team_manager_visibility;
+      return feedback.sender_visibility && !feedback.appraiser_visibility && !feedback.target_visibility && !feedback.team_manager_visibility;
     });
     SavedFeedbacks.forEach((feedback) => {
       delete feedback.sender_visibility;
       delete feedback.appraiser_visibility;
-      delete feedback.receiver_visibility;
+      delete feedback.target_visibility;
       delete feedback.team_manager_visibility;
     });
     res.status(200).send(SavedFeedbacks);
   } else if (scope === "shared") {
     const SharedFeedbacks = feedbacks.filter((feedback) => {
       // at least one role besides the sender has visibility
-      return feedback.appraiser_visibility || feedback.receiver_visibility || feedback.team_manager_visibility;
+      return feedback.appraiser_visibility || feedback.target_visibility || feedback.team_manager_visibility;
     });
     SharedFeedbacks.forEach((feedback) => {
       delete feedback.sender_visibility;
       delete feedback.appraiser_visibility;
-      delete feedback.receiver_visibility;
+      delete feedback.target_visibility;
       delete feedback.team_manager_visibility;
     });
     res.status(200).send(SharedFeedbacks);

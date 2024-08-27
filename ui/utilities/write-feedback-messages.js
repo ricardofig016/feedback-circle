@@ -1,17 +1,17 @@
 "use strict";
 
 const writeFeedbackMessages = {
-  receiver: {
+  target: {
     defaultInfo: {
       text: "<p>The name of the person you want to give feedback</p>",
       icon: "info",
     },
     missing: {
-      text: "<p>Receiver is a required field</p>",
+      text: "<p>Target is a required field</p>",
       icon: "warning",
     },
     invalid: {
-      text: "<p>Invalid receiver</p>",
+      text: "<p>Invalid target</p>",
       icon: "warning",
     },
     selfFeedback: {

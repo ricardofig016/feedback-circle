@@ -39,7 +39,7 @@ export default class SavedFeedbacksComponent extends BaseComponent {
       const titleLink = "<a href=" + feedbackUrl + ">" + formatText(feedback.title) + "</a>";
       row.set("title", titleLink);
       // To Column
-      const to = formatText(feedback.receiver_name);
+      const to = formatText(feedback.target_name);
       row.set("to", to);
       // Submitted On Column
       const submssionDate = formatDate(new Date(feedback.submission_date));

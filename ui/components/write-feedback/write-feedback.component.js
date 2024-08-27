@@ -13,9 +13,9 @@ export default class WriteFeedbackComponent extends BaseComponent {
   pageIcon = "fa-pencil";
   access = ["user", "appraiser", "team_manager", "admin"];
   users; // all users NAME, ID and IS_PINNED (in alphabetical order)
-  receiver;
+  target;
   responsible;
-  receiverSuggestions = [];
+  targetSuggestions = [];
   responsibleSuggestions = [];
 
   async onInit(isRefresh = false) {
@@ -26,21 +26,21 @@ export default class WriteFeedbackComponent extends BaseComponent {
   }
 
   addEventListeners() {
-    // Receiver field
-    const receiverInput = this.getElementById("receiver-input");
-    receiverInput.addEventListener("click", (e) => {
-      const dropdown = this.getElementById("receiver-dropdown");
+    // Target field
+    const targetInput = this.getElementById("target-input");
+    targetInput.addEventListener("click", (e) => {
+      const dropdown = this.getElementById("target-dropdown");
       if (dropdown.hidden) {
         const query = e.target.value.trim();
-        this.updateSuggestions(query, "receiver");
+        this.updateSuggestions(query, "target");
       } else dropdown.hidden = true; // hide dropdown on click if the dropdown is not hidden
     });
-    receiverInput.addEventListener(
+    targetInput.addEventListener(
       "input",
       debounce((e) => {
-        this.receiver = null;
+        this.target = null;
         const query = e.target.value.trim();
-        this.updateSuggestions(query, "receiver");
+        this.updateSuggestions(query, "target");
       }, 300)
     );
 
@@ -137,7 +137,7 @@ export default class WriteFeedbackComponent extends BaseComponent {
    * update name suggestions
    *
    * @param {string} query value inserted to the input
-   * @param {string} field a text field that supports name search (receiver or responsible)
+   * @param {string} field a text field that supports name search (target or responsible)
    */
   updateSuggestions(query, field) {
     this.calcSuggestions(query, field);
@@ -233,8 +233,8 @@ export default class WriteFeedbackComponent extends BaseComponent {
   async postFeedback(formData, isShare) {
     const data = {
       senderId: this.session.user.user_id,
-      receiverId: this.receiver.user_id,
-      title: this.receiver.name + " - " + formData.context,
+      targetId: this.target.user_id,
+      title: this.target.name + " - " + formData.context,
       positiveMessage: formData.positive,
       positiveMessageAppraiserEdit: formData.positive,
       negativeMessage: formData.negative,
@@ -249,9 +249,9 @@ export default class WriteFeedbackComponent extends BaseComponent {
       status: formData.status,
       deadline: formData.deadline,
       senderVis: true,
-      appraiserVis: isShare || this.session.user.user_id === this.receiver.appraiser_id,
-      receiverVis: false,
-      teamManagerVis: this.session.user.user_id === this.receiver.team_manager_id,
+      appraiserVis: isShare || this.session.user.user_id === this.target.appraiser_id,
+      targetVis: false,
+      teamManagerVis: this.session.user.user_id === this.target.team_manager_id,
     };
     console.table(data);
     await RequestManager.request("POST", "feedbacks", data);
@@ -301,10 +301,10 @@ export default class WriteFeedbackComponent extends BaseComponent {
     // positive, negative
     if (!formData.positive && !formData.negative) unvalidate("positive", "missing"); // at least one field between positive and negative is required
 
-    // receiver
-    if (!formData.receiver) unvalidate("receiver", "missing"); // missing value
-    else if (!this.receiver) unvalidate("receiver", "invalid"); // invalid receiver
-    else if (this.session.user.user_id === this.receiver.user_id) unvalidate("receiver", "selfFeedback"); // the user cant make a feedback about themselves
+    // target
+    if (!formData.target) unvalidate("target", "missing"); // missing value
+    else if (!this.target) unvalidate("target", "invalid"); // invalid target
+    else if (this.session.user.user_id === this.target.user_id) unvalidate("target", "selfFeedback"); // the user cant make a feedback about themselves
 
     // responsible
     if (formData.type === "continuous") {

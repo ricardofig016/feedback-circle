@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS users(
 CREATE TABLE IF NOT EXISTS feedbacks(
     feedback_id BIGINT UNSIGNED AUTO_INCREMENT NOT NULL,
     sender_id INT UNSIGNED DEFAULT NULL,
-    receiver_id INT UNSIGNED NOT NULL,
+    target_id INT UNSIGNED NOT NULL,
     title TEXT NOT NULL,
     positive_message TEXT DEFAULT NULL,
     positive_message_appraiser_edit TEXT DEFAULT NULL,
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS feedbacks(
     competency ENUM('general', 'execution-and-delivery', 'innovation', 'agility', 'commitment', 'communication', 'customer-orientation') NOT NULL,
     privacy ENUM('anonymous', 'private', 'public') NOT NULL,
     rating INT UNSIGNED NOT NULL,
-    is_read_receiver BOOLEAN DEFAULT false,
+    is_read_target BOOLEAN DEFAULT false,
     is_read_appraiser BOOLEAN DEFAULT false,
     appraiser_notes TEXT DEFAULT NULL,
     team_manager_notes TEXT DEFAULT NULL,
@@ -43,14 +43,14 @@ CREATE TABLE IF NOT EXISTS feedbacks(
     deadline DATETIME DEFAULT NULL,
     PRIMARY KEY (feedback_id),
     FOREIGN KEY (sender_id) REFERENCES users(user_id) ON DELETE SET NULL,
-    FOREIGN KEY (receiver_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (target_id) REFERENCES users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (responsible_id) REFERENCES users(user_id) ON DELETE SET NULL
 );
 CREATE TABLE IF NOT EXISTS feedback_visibility (
     feedback_id BIGINT UNSIGNED NOT NULL,
     sender BOOLEAN DEFAULT false,
     appraiser BOOLEAN DEFAULT false,
-    receiver BOOLEAN DEFAULT false,
+    target BOOLEAN DEFAULT false,
     team_manager BOOLEAN DEFAULT false,
     PRIMARY KEY (feedback_id),
     FOREIGN KEY (feedback_id) REFERENCES feedbacks(feedback_id) ON DELETE CASCADE

@@ -16,7 +16,7 @@ export default class MyFeedbacksComponent extends BaseComponent {
     super.onInit();
 
     // Feedbacks request
-    const url = "feedbacks/receiverid/" + this.session.user.user_id + "/role/receiver";
+    const url = "feedbacks/targetid/" + this.session.user.user_id + "/role/target";
     this.feedbacks = await RequestManager.request("GET", url);
 
     const noFeedbacksContainer = this.getElementById("no-feedbacks");
@@ -35,7 +35,7 @@ export default class MyFeedbacksComponent extends BaseComponent {
       const row = new Map();
 
       // Title Column
-      const newFeedbackIcon = feedback.is_read_receiver ? "" : "<i class='new-feedback-icon fa fa-circle'></i>";
+      const newFeedbackIcon = feedback.is_read_target ? "" : "<i class='new-feedback-icon fa fa-circle'></i>";
       const feedbackUrl = buildURL("Feedback", { id: feedback.feedback_id });
       const titleLink = "<a href=" + feedbackUrl + ">" + formatText(feedback.title) + "</a>";
       row.set("title", newFeedbackIcon + titleLink);
