@@ -9,14 +9,14 @@ export default class MyTeamComponent extends BaseComponent {
   selector = "my-team";
   pageTitle = "My Team";
   pageIcon = "fa-users";
-  access = ["team_manager", "admin"];
+  access = ["manager", "admin"];
   teamMembers;
 
   async onInit() {
     super.onInit();
 
     // Team Members request
-    const url = "users/teammanagerid/" + this.session.user.user_id;
+    const url = "users/managerid/" + this.session.user.user_id;
     this.teamMembers = await RequestManager.request("GET", url);
 
     const noTeamMembersContainer = this.getElementById("no-team-members");
@@ -38,7 +38,7 @@ export default class MyTeamComponent extends BaseComponent {
       const nameLink = "<a href=" + teamMemberUrl + ">" + teamMember.name + "</a>";
       row.set("name", nameLink);
       // Notes Column
-      const note = teamMember.team_manager_notes ? teamMember.team_manager_notes : "---";
+      const note = teamMember.manager_notes ? teamMember.manager_notes : "---";
       row.set("notes", note);
       // Most recent feedback Column
       const feedbackTitle = teamMember.feedback_title ? teamMember.feedback_title : "---";

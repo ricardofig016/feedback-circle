@@ -8,7 +8,7 @@ export default class SharedFeedbacksComponent extends BaseComponent {
   selector = "shared-feedbacks";
   pageTitle = "Shared Feedbacks";
   pageIcon = "fa-share";
-  access = ["user", "appraiser", "team_manager", "admin"];
+  access = ["user", "appraiser", "manager", "admin"];
   feedbacks;
 
   async onInit() {

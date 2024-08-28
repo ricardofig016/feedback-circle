@@ -16,7 +16,7 @@ export default class TeamMemberComponent extends BaseComponent {
     super.onInit();
 
     // Feedbacks request
-    const url = "feedbacks/targetid/" + this.queryParams.id + "/role/team_manager";
+    const url = "feedbacks/targetid/" + this.queryParams.id + "/role/manager";
     this.feedbacks = await RequestManager.request("GET", url);
 
     const noFeedbacksContainer = this.getElementById("no-feedbacks");
@@ -68,7 +68,7 @@ export default class TeamMemberComponent extends BaseComponent {
       const row = new Map();
 
       // Title Column
-      const newFeedbackIcon = feedback.is_read_team_manager ? "" : "<i class='new-feedback-icon fa fa-circle'></i>";
+      const newFeedbackIcon = feedback.is_read_manager ? "" : "<i class='new-feedback-icon fa fa-circle'></i>";
       const feedbackUrl = buildURL("Feedback", { id: feedback.feedback_id });
       const titleLink = "<a href=" + feedbackUrl + ">" + feedback.title + "</a>";
       row.set("title", newFeedbackIcon + titleLink);
@@ -85,7 +85,7 @@ export default class TeamMemberComponent extends BaseComponent {
       // Actions Column
       row.set("actions", feedback.actions);
       // My Notes Column
-      row.set("my notes", feedback.team_manager_notes);
+      row.set("my notes", feedback.manager_notes);
 
       // Add Row to Grid
       feedbacksGrid.addRow(row);
@@ -108,7 +108,7 @@ export default class TeamMemberComponent extends BaseComponent {
     await this.getTeamMember();
     const access = super.hasAccess();
     if (access) return true; // user is admin
-    if (this.teamMember.team_manager_id === this.session.user.user_id) return true; // user is the team manager
+    if (this.teamMember.manager_id === this.session.user.user_id) return true; // user is the manager
     return false;
   }
 }

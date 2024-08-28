@@ -6,5 +6,5 @@ export default class NoAccessComponent extends BaseComponent {
   selector = "no-access";
   pageTitle = "403";
   pageIcon = "";
-  access = ["user", "appraiser", "team_manager", "admin"];
+  access = ["user", "appraiser", "manager", "admin"];
 }

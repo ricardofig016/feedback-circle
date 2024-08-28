@@ -41,7 +41,7 @@ def read_user_data():
                     encrypted_password,
                     appraiser_id,
                     10228,
-                )  # TODO: add real team managers, 10228 is Bernardete's employee number
+                )  # TODO: add real managers, 10228 is Bernardete's employee number
             )
 
     return user_data
@@ -98,7 +98,7 @@ def insertUsers(cursor, user_data):
         email,
         encrypted_password,
         appraiser_id,
-        team_manager_id,
+        manager_id,
     ) in user_data:
         try:
             cursor.execute(
@@ -107,10 +107,10 @@ def insertUsers(cursor, user_data):
         except Error as e:
             print(f"Error inserting user {name}: {e}")
 
-    update_appraiser_and_team_manager_query = """
+    update_appraiser_and_manager_query = """
         UPDATE users
         SET appraiser_id = %s, 
-            team_manager_id = %s
+            manager_id = %s
         WHERE user_id = %s;
     """
     for (
@@ -119,12 +119,12 @@ def insertUsers(cursor, user_data):
         email,
         encrypted_password,
         appraiser_id,
-        team_manager_id,
+        manager_id,
     ) in user_data:
         try:
             cursor.execute(
-                update_appraiser_and_team_manager_query,
-                (appraiser_id, team_manager_id, user_id),
+                update_appraiser_and_manager_query,
+                (appraiser_id, manager_id, user_id),
             )
         except Error as e:
             print(f"Error updating user {name}: {e}")
@@ -134,12 +134,12 @@ def insertUsers(cursor, user_data):
 
 def insertUserAccess(cursor, user_data):
     insert_user_access_query = """
-        INSERT INTO user_access (user_id, user, appraiser, team_manager, admin)
+        INSERT INTO user_access (user_id, user, appraiser, manager, admin)
         VALUES (%s, %s, %s, %s, %s)
     """
 
-    # get appraisers and team managers
-    team_managers = set()
+    # get appraisers and managers
+    managers = set()
     appraisers = set()
     for (
         user_id,
@@ -147,9 +147,9 @@ def insertUserAccess(cursor, user_data):
         email,
         encrypted_password,
         appraiser_id,
-        team_manager_id,
+        manager_id,
     ) in user_data:
-        team_managers.add(team_manager_id)
+        managers.add(manager_id)
         appraisers.add(appraiser_id)
 
     for (
@@ -158,17 +158,17 @@ def insertUserAccess(cursor, user_data):
         email,
         encrypted_password,
         appraiser_id,
-        team_manager_id,
+        manager_id,
     ) in user_data:
         try:
             is_user = True
             is_appraiser = user_id in appraisers
-            is_team_manager = user_id in team_managers
+            is_manager = user_id in managers
             # TODO: add real admins, duarte pereira is the only admin for now
             is_admin = user_id == 10639
             cursor.execute(
                 insert_user_access_query,
-                (user_id, is_user, is_appraiser, is_team_manager, is_admin),
+                (user_id, is_user, is_appraiser, is_manager, is_admin),
             )
         except Error as e:
             print(f"Error inserting user_access for user {name}: {e}")

@@ -6,5 +6,5 @@ export default class NotFoundComponent extends BaseComponent {
   selector = "not-found";
   pageTitle = "404";
   pageIcon = "";
-  access = ["user", "appraiser", "team_manager", "admin"];
+  access = ["user", "appraiser", "manager", "admin"];
 }

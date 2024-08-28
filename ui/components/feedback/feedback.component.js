@@ -28,7 +28,7 @@ export default class FeedbackComponent extends BaseComponent {
     // mark the feedback as read every time this tab is opened/refreshed, if user is not sender
     if (this.feedback.user_roles.includes("target")) await this.updateIsRead("target", true);
     if (this.feedback.user_roles.includes("appraiser")) await this.updateIsRead("appraiser", true);
-    if (this.feedback.user_roles.includes("team_manager")) await this.updateIsRead("team_manager", true);
+    if (this.feedback.user_roles.includes("manager")) await this.updateIsRead("manager", true);
 
     // sender and target
     this.getElementById("sender").innerHTML = this.feedback.sender_name === "anonymous" ? "<i>" + this.feedback.sender_name + "</i>" : this.feedback.sender_name;
@@ -80,7 +80,7 @@ export default class FeedbackComponent extends BaseComponent {
     const unreadCheckbox = this.getElementById("unread-checkbox");
     if (this.feedback.user_roles.includes("target")) unreadCheckbox.checked = !Boolean(this.feedback.is_read_target);
     else if (this.feedback.user_roles.includes("appraiser")) unreadCheckbox.checked = !Boolean(this.feedback.is_read_appraiser);
-    else if (this.feedback.user_roles.includes("team_manager")) unreadCheckbox.checked = !Boolean(this.feedback.is_read_team_manager);
+    else if (this.feedback.user_roles.includes("manager")) unreadCheckbox.checked = !Boolean(this.feedback.is_read_manager);
     else unreadCheckbox.parentElement.hidden = true; // sender has no option read/unread
 
     // if the user is not the appraiser, they dont have the option to switch between original message and appraiser edit
@@ -113,7 +113,7 @@ export default class FeedbackComponent extends BaseComponent {
     unreadCheckbox.addEventListener("change", async (e) => {
       if (this.feedback.user_roles.includes("target")) this.updateIsRead("target", !e.target.checked);
       if (this.feedback.user_roles.includes("appraiser")) this.updateIsRead("appraiser", !e.target.checked);
-      if (this.feedback.user_roles.includes("team_manager")) this.updateIsRead("team_manager", !e.target.checked);
+      if (this.feedback.user_roles.includes("manager")) this.updateIsRead("manager", !e.target.checked);
     });
 
     // appraiser only
@@ -274,7 +274,7 @@ export default class FeedbackComponent extends BaseComponent {
     if (this.feedback.user_roles.includes("sender")) return true; // user is the sender
     if (this.feedback.user_roles.includes("target") && this.feedback.target_visibility) return true; // user is the target and has visibility
     if (this.feedback.user_roles.includes("appraiser") && this.feedback.appraiser_visibility) return true; // user is the appraiser and has visibility
-    if (this.feedback.user_roles.includes("team_manager") && this.feedback.team_manager_visibility) return true; // user is the team manager and has visibility
+    if (this.feedback.user_roles.includes("manager") && this.feedback.manager_visibility) return true; // user is the manager and has visibility
     return false;
   }
 }

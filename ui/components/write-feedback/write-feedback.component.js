@@ -11,7 +11,7 @@ export default class WriteFeedbackComponent extends BaseComponent {
   selector = "write-feedback";
   pageTitle = "Write Feedback";
   pageIcon = "fa-pencil";
-  access = ["user", "appraiser", "team_manager", "admin"];
+  access = ["user", "appraiser", "manager", "admin"];
   users; // all users NAME, ID and IS_PINNED (in alphabetical order)
   target;
   responsible;
@@ -251,7 +251,7 @@ export default class WriteFeedbackComponent extends BaseComponent {
       senderVis: true,
       appraiserVis: isShare || this.session.user.user_id === this.target.appraiser_id,
       targetVis: false,
-      teamManagerVis: this.session.user.user_id === this.target.team_manager_id,
+      ManagerVis: this.session.user.user_id === this.target.manager_id,
     };
     console.table(data);
     await RequestManager.request("POST", "feedbacks", data);

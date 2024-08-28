@@ -10,13 +10,13 @@ CREATE TABLE IF NOT EXISTS users(
     encrypted_password TEXT NOT NULL,
     appraiser_id INT UNSIGNED DEFAULT NULL,
     appraiser_notes TEXT DEFAULT NULL,
-    team_manager_id INT UNSIGNED DEFAULT NULL,
-    team_manager_notes TEXT DEFAULT NULL,
+    manager_id INT UNSIGNED DEFAULT NULL,
+    manager_notes TEXT DEFAULT NULL,
     UNIQUE(name),
     UNIQUE(email),
     PRIMARY KEY (user_id),
     FOREIGN KEY (appraiser_id) REFERENCES users(user_id) ON DELETE SET NULL,
-    FOREIGN KEY (team_manager_id) REFERENCES users(user_id) ON DELETE SET NULL
+    FOREIGN KEY (manager_id) REFERENCES users(user_id) ON DELETE SET NULL
 );
 CREATE TABLE IF NOT EXISTS feedbacks(
     feedback_id BIGINT UNSIGNED AUTO_INCREMENT NOT NULL,
@@ -33,9 +33,9 @@ CREATE TABLE IF NOT EXISTS feedbacks(
     rating INT UNSIGNED NOT NULL,
     is_read_target BOOLEAN DEFAULT false,
     is_read_appraiser BOOLEAN DEFAULT false,
-    is_read_team_manager BOOLEAN DEFAULT false,
+    is_read_manager BOOLEAN DEFAULT false,
     appraiser_notes TEXT DEFAULT NULL,
-    team_manager_notes TEXT DEFAULT NULL,
+    manager_notes TEXT DEFAULT NULL,
     type ENUM('performance','continuous') NOT NULL,
     context ENUM('feedback','council','squad','quality','other','team care','1:1','PRP','TL/PM feedback','radar') NOT NULL,
     actions TEXT DEFAULT NULL,
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS feedback_visibility (
     sender BOOLEAN DEFAULT false,
     appraiser BOOLEAN DEFAULT false,
     target BOOLEAN DEFAULT false,
-    team_manager BOOLEAN DEFAULT false,
+    manager BOOLEAN DEFAULT false,
     PRIMARY KEY (feedback_id),
     FOREIGN KEY (feedback_id) REFERENCES feedbacks(feedback_id) ON DELETE CASCADE
 );
@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS user_access (
     user_id INT UNSIGNED NOT NULL,
     user BOOLEAN DEFAULT false,
     appraiser BOOLEAN DEFAULT false,
-    team_manager BOOLEAN DEFAULT false,
+    manager BOOLEAN DEFAULT false,
     admin BOOLEAN DEFAULT false,
     PRIMARY KEY (user_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE

@@ -8,7 +8,7 @@ export default class ProfileComponent extends BaseComponent {
   selector = "profile";
   pageTitle = "Profile";
   pageIcon = "fa-user";
-  access = ["user", "appraiser", "team_manager", "admin"];
+  access = ["user", "appraiser", "manager", "admin"];
   appraiser;
 
   async onInit(isRefresh = false) {

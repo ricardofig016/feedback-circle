@@ -21,7 +21,7 @@ const writeFeedbackMessages = {
   },
   type: {
     defaultInfo: {
-      text: "<p>Performance is the 'normal' type of feedback. Continuous feedback is reserved to team managers and alike</p>",
+      text: "<p>Performance is the 'normal' type of feedback. Continuous feedback is reserved to managers and alike</p>",
       icon: "info",
     },
     missing: {
@@ -51,7 +51,7 @@ const writeFeedbackMessages = {
   },
   privacy: {
     defaultInfo: {
-      text: "<h3>Privacy Options Description</h3><p><b>Anonymous:</b> Your identity will not be shared with anyone</p><p><b>Private:</b> Your identity will be shared with the appraiser and the team manager only, you will appear as anonymous to the person you are giving feedback to</p><p><b>Public:</b> Your identity will be shared with everyone with access to the feedback</p>",
+      text: "<h3>Privacy Options Description</h3><p><b>Anonymous:</b> Your identity will not be shared with anyone</p><p><b>Private:</b> Your identity will be shared with the appraiser and the manager only, you will appear as anonymous to the person you are giving feedback to</p><p><b>Public:</b> Your identity will be shared with everyone with access to the feedback</p>",
       icon: "info",
     },
     missing: {
