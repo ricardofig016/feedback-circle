@@ -29,72 +29,9 @@ export default class FeedbackComponent extends BaseComponent {
 
     this.fillValueFields();
 
+    this.hideAndDisableOptionsButtons();
+
     if (!isRefresh) this.addEventListeners();
-  }
-
-  addEventListeners() {
-    // unread checkbox
-    const unreadCheckbox = this.getElementById("unread-checkbox");
-    unreadCheckbox.addEventListener("change", async (e) => {
-      if (this.feedback.user_roles.includes("target")) this.updateIsRead("target", !e.target.checked);
-      if (this.feedback.user_roles.includes("appraiser")) this.updateIsRead("appraiser", !e.target.checked);
-      if (this.feedback.user_roles.includes("manager")) this.updateIsRead("manager", !e.target.checked);
-    });
-
-    // appraiser only
-    if (this.feedback.user_roles.includes("appraiser")) {
-      // share with apraisee
-      const shareCheckbox = this.getElementById("share-checkbox");
-      shareCheckbox.addEventListener("change", async (e) => {
-        this.feedback.target_visibility = e.target.checked;
-        const url = "feedbacks/" + this.queryParams.id + "/visibility/target";
-        await RequestManager.request("PUT", url, { value: this.feedback.target_visibility });
-      });
-
-      const codes = ["negative-message", "positive-message", "appraiser-notes"];
-      codes.forEach((code) => {
-        // edit
-        const editButton = this.getElementById("edit-" + code + "-button");
-        editButton.addEventListener("click", () => {
-          this.goToEditMode(code);
-        });
-        // exit
-        const textarea = this.getElementById(code + "-textarea");
-        textarea.addEventListener("keydown", async (e) => {
-          if (e.key === "Escape") this.exitEditMode(code);
-        });
-      });
-      // save buttons
-      const positiveSaveButton = this.getElementById("positive-message-save-button");
-      positiveSaveButton.addEventListener("click", async () => await this.submitAppraiserMessage("positive"));
-      const negativeSaveButton = this.getElementById("negative-message-save-button");
-      negativeSaveButton.addEventListener("click", async () => await this.submitAppraiserMessage("negative"));
-      const appraiserNotesSaveButton = this.getElementById("appraiser-notes-save-button");
-      appraiserNotesSaveButton.addEventListener("click", async () => await this.submitAppraiserNotes());
-      // message anchors
-      const positiveAnchor = this.getElementById("positive-anchor");
-      positiveAnchor.addEventListener("click", () => {
-        const message = positiveAnchor.innerText.includes("original") ? "original" : "appraiser";
-        this.switchAppraiserMessage("positive", message);
-      });
-      const negativeAnchor = this.getElementById("negative-anchor");
-      negativeAnchor.addEventListener("click", () => {
-        const message = negativeAnchor.innerText.includes("original") ? "original" : "appraiser";
-        this.switchAppraiserMessage("negative", message);
-      });
-    }
-
-    // delete button
-    const deleteButton = this.getElementById("delete-button");
-    deleteButton.addEventListener("click", async () => {
-      if (this.feedback.can_delete) {
-        await RequestManager.request("DELETE", "feedbacks/" + this.queryParams.id);
-        // close tab
-        const routePath = window.location.hash.substring(2);
-        const tab = new Tabs().getTab(routePath);
-        tab.close();
-      }
-    });
   }
 
   hideNoAccessSections() {
@@ -174,7 +111,6 @@ export default class FeedbackComponent extends BaseComponent {
 
     // deadline
     const deadline = formatDate(new Date(this.feedback.deadline));
-    console.log(deadline);
     this.getElementById("deadline-value").innerText = deadline.substring(0, deadline.indexOf(" "));
 
     // messages appraiser edit
@@ -183,106 +119,94 @@ export default class FeedbackComponent extends BaseComponent {
 
     // appraiser notes
     this.getElementById("appraiser-notes-value").innerHTML = this.feedback.appraiser_notes;
+  }
 
-    // unread checkbox
-    const unreadCheckbox = this.getElementById("unread-checkbox");
-    if (this.feedback.user_roles.includes("target")) unreadCheckbox.checked = !Boolean(this.feedback.is_read_target);
-    else if (this.feedback.user_roles.includes("appraiser")) unreadCheckbox.checked = !Boolean(this.feedback.is_read_appraiser);
-    else if (this.feedback.user_roles.includes("manager")) unreadCheckbox.checked = !Boolean(this.feedback.is_read_manager);
-    else unreadCheckbox.parentElement.hidden = true; // sender has no option read/unread
+  hideAndDisableOptionsButtons() {
+    // unread button
+    const unreadButton = this.getElementById("unread-button");
+    if (!this.feedback.user_roles.some((role) => ["target", "appraiser", "manager"].includes(role))) unreadButton.style.display = "none"; // the sender will not be shown this option
+    else if (!this.feedback.is_read_target && !this.feedback.is_read_appraiser && !this.feedback.is_read_manager) unreadButton.disabled = true; // the feedback was already marked as unread
+    else unreadButton.disabled = false;
 
-    // appraiser only
-    if (this.feedback.user_roles.includes("appraiser")) {
-      // share checkbox
-      this.getElementById("share-span").innerText = this.feedback.target_name.substring(0, this.feedback.target_name.indexOf(" "));
-      this.getElementById("share-checkbox").checked = this.feedback.target_visibility;
-      // appraiser notes
-      if (this.feedback.appraiser_notes) this.getElementById("appraiser-notes").innerText = this.feedback.appraiser_notes;
-      this.getElementById("appraiser-notes-textarea").value = this.feedback.appraiser_notes;
-    }
+    // share with appraiser button
+    const shareWithAppraiserButton = this.getElementById("share-with-appraiser-button");
+    if (!this.feedback.user_roles.includes("sender")) shareWithAppraiserButton.style.display = "none"; // only the sender will be shown this option
+    else if (this.feedback.appraiser_visibility) shareWithAppraiserButton.disabled = true; // already shared with appraiser
+
+    // share with manager button
+    const shareWithManagerButton = this.getElementById("share-with-manager-button");
+    if (!this.feedback.user_roles.includes("appraiser")) shareWithManagerButton.style.display = "none"; // only the appraiser will be shown this option
+    else if (this.feedback.manager_visibility) shareWithManagerButton.disabled = true; // already shared with manager
+
+    // share with target button
+    const shareWithTargetButton = this.getElementById("share-with-target-button");
+    if (!this.feedback.user_roles.includes("appraiser")) shareWithTargetButton.style.display = "none"; // only the appraiser will be shown this option
+    else if (this.feedback.target_visibility) shareWithTargetButton.disabled = true; // already shared with target
+
+    // edit button
+    const editButton = this.getElementById("edit-button");
+    if (!this.feedback.user_roles.some((role) => ["sender", "appraiser"].includes(role))) editButton.style.display = "none"; // only the sender and the appraiser will be shown this option
+    else if (this.feedback.user_roles.includes("appraiser") && (this.feedback.manager_visibility || this.feedback.target_visibility)) editButton.disabled = true; // the appraiser already shared with manager or target
+    else if (this.feedback.user_roles.includes("sender") && this.feedback.appraiser_visibility) editButton.disabled = true; // the sender already shared with appraiser
 
     // delete button
-    if (this.feedback.can_delete) {
-      this.getElementById("delete-button").hidden = false;
-    }
+    const deleteButton = this.getElementById("delete-button");
+    if (!this.feedback.user_roles.includes("sender")) deleteButton.style.display = "none"; // only the sender will be shown this option
+    else if (this.feedback.appraiser_visibility) deleteButton.disabled = true; // already shared with appraiser
   }
 
-  goToEditMode(code) {
-    // go to edit mode
-    this.getElementById(code + "-display-mode").hidden = true;
-    this.getElementById(code + "-edit-mode").hidden = false;
-    // make the textarea element active
-    this.getElementById(code + "-textarea").focus();
-  }
+  addEventListeners() {
+    // unread button
+    const unreadButton = this.getElementById("unread-button");
+    unreadButton.addEventListener("click", async () => {
+      if (this.feedback.user_roles.includes("target")) await this.updateIsRead("target", false);
+      if (this.feedback.user_roles.includes("appraiser")) await this.updateIsRead("appraiser", false);
+      if (this.feedback.user_roles.includes("manager")) await this.updateIsRead("manager", false);
+      this.hideAndDisableOptionsButtons();
+    });
 
-  async submitAppraiserMessage(type) {
-    const message = this.getElementById(type + "-message-textarea").value;
-    if (message != this.feedback[type + "_message_appraiser_edit"]) {
-      // update database
-      const url = "feedbacks/" + this.queryParams.id + "/appraisermessage/" + type;
-      await RequestManager.request("PUT", url, { message: message });
-      // update feedback oject
-      this.feedback[type + "_message_appraiser_edit"] = message;
-      // update message in display mode
-      this.switchAppraiserMessage(type, "appraiser");
-      //
-      if (this.feedback[type + "_message"] === this.feedback[type + "_message_appraiser_edit"]) {
-        this.getElementById(type + "-anchor").hidden = true;
-      } else this.getElementById(type + "-anchor").hidden = false;
-    }
-    // go to display mode
-    this.getElementById(type + "-message-display-mode").hidden = false;
-    this.getElementById(type + "-message-edit-mode").hidden = true;
-  }
+    // share with appraiser button
+    const shareWithAppraiserButton = this.getElementById("share-with-appraiser-button");
+    shareWithAppraiserButton.addEventListener("click", async () => {
+      this.feedback.appraiser_visibility = true;
+      const url = "feedbacks/" + this.queryParams.id + "/visibility/appraiser";
+      await RequestManager.request("PUT", url, { value: true });
+      this.hideAndDisableOptionsButtons();
+    });
 
-  async submitAppraiserNotes() {
-    // submit
-    const newNotes = this.getElementById("appraiser-notes-textarea").value;
-    if (newNotes != this.feedback.appraiser_notes) {
-      // update database
-      const url = "feedbacks/" + this.queryParams.id + "/appraisernotes";
-      await RequestManager.request("PUT", url, { notes: newNotes });
-      // update feedback oject
-      this.feedback.appraiser_notes = newNotes;
-      // update notes in display mode
-      const notesElem = this.getElementById("appraiser-notes");
-      if (newNotes) notesElem.innerText = newNotes;
-      else notesElem.innerHTML = "<i>your notes</i>";
-    }
-    // go to display mode
-    this.getElementById("appraiser-notes-display-mode").hidden = false;
-    this.getElementById("appraiser-notes-edit-mode").hidden = true;
-  }
+    // share with manager button
+    const shareWithManagerButton = this.getElementById("share-with-manager-button");
+    shareWithManagerButton.addEventListener("click", async () => {
+      this.feedback.manager_visibility = true;
+      const url = "feedbacks/" + this.queryParams.id + "/visibility/manager";
+      await RequestManager.request("PUT", url, { value: true });
+      this.hideAndDisableOptionsButtons();
+    });
 
-  exitEditMode(code) {
-    ["negative-message", "positive-message", "appraiser-notes"];
-    // reset notes
-    if (code === "negative-message") this.resetMessage("negative");
-    if (code === "positive-message") this.resetMessage("positive");
-    if (code === "appraiser-notes") this.resetNotes();
-    // go to display mode
-    this.getElementById(code + "-display-mode").hidden = false;
-    this.getElementById(code + "-edit-mode").hidden = true;
-  }
+    // share with target button
+    const shareWithTargetButton = this.getElementById("share-with-target-button");
+    shareWithTargetButton.addEventListener("click", async () => {
+      this.feedback.target_visibility = true;
+      const url = "feedbacks/" + this.queryParams.id + "/visibility/target";
+      await RequestManager.request("PUT", url, { value: true });
+      this.hideAndDisableOptionsButtons();
+    });
 
-  resetMessage(type) {
-    this.getElementById(type + "-message-textarea").value = this.feedback[type + "_message_appraiser_edit"];
-  }
+    // edit button
+    const editButton = this.getElementById("edit-button");
+    //TODO: edit button handler
 
-  resetNotes() {
-    this.getElementById("appraiser-notes-textarea").value = this.feedback.appraiser_notes;
-  }
-
-  /**
-   *
-   * @param {string} type positive or negative
-   * @param {string} message original or appraiser (which one to switch to)
-   */
-  switchAppraiserMessage(type, message) {
-    const column = message === "original" ? "" : "_appraiser_edit";
-    const text = message === "original" ? "show appraiser edit" : "show original";
-    this.getElementById(type).innerText = this.feedback[type + "_message" + column];
-    this.getElementById(type + "-anchor").innerText = text;
+    // delete button
+    const deleteButton = this.getElementById("delete-button");
+    deleteButton.addEventListener("click", async () => {
+      if (this.feedback.can_delete) {
+        await RequestManager.request("DELETE", "feedbacks/" + this.queryParams.id);
+        // close tab
+        const routePath = window.location.hash.substring(2);
+        const tab = new Tabs().getTab(routePath);
+        tab.close();
+      }
+    });
   }
 
   async updateIsRead(role, isRead) {
@@ -303,7 +227,6 @@ export default class FeedbackComponent extends BaseComponent {
 
   async hasAccess() {
     await this.getFeedback();
-    console.table(this.feedback);
     const access = super.hasAccess();
     if (access) return true; // user is admin
     if (this.feedback.user_roles.includes("sender")) return true; // user is the sender

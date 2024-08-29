@@ -122,4 +122,122 @@
       <button class="options-button cmf-button cmf-button-primary" id="delete-button">Delete</button>
     </div>
   </div>
+  <!--
+
+    BASIC INFO
+      from | sender name
+      to | target name
+      date | submission date
+      time | submission time
+      positive msg | text
+      negative msg | text
+      competency | competency
+      rating | stars
+
+    CONTINUOUS FIELDS
+      actions | text
+      responsible | responsible name
+      status | text
+      deadline | date and time
+
+    APPRAISER
+      positive msg appraiser edit | text
+      negative msg appraiser edit | text
+      appraiser notes | text
+
+    OPTIONS
+      mark as unread | button
+      share with appraiser | button
+      share with manager | button
+      share with target | button
+      edit | button
+      delete | button
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  -->
+  <p>
+    Sent from <b><span id="sender">sender</span></b> to <b><span id="target">target</span></b> on <b><span id="date">0000-00-00</span></b> at <b><span id="time">00:00:00</span></b>
+  </p>
+  <div id="positive-message-container">
+    <div id="positive-message-display-mode">
+      <p id="positive">positive message</p>
+      <button class="edit-button appraiser-only" id="edit-positive-message-button">
+        <i class="fa fa-edit"></i>
+        <span>edit</span>
+      </button>
+      <a id="positive-anchor">show appraiser edit</a>
+    </div>
+    <div id="positive-message-edit-mode" hidden>
+      <textarea id="positive-message-textarea" placeholder="Write your private notes here..."></textarea>
+      <div class="save-button-container">
+        <button id="positive-message-save-button" class="cmf-button cmf-button-primary">Save</button>
+      </div>
+    </div>
+  </div>
+  <div id="negative-message-container">
+    <div id="negative-message-display-mode">
+      <p id="negative">negative message</p>
+      <button class="edit-button appraiser-only" id="edit-negative-message-button">
+        <i class="fa fa-edit"></i>
+        <span>edit</span>
+      </button>
+      <a id="negative-anchor">show appraiser edit</a>
+    </div>
+    <div id="negative-message-edit-mode" hidden>
+      <textarea id="negative-message-textarea" placeholder="Write your private notes here..."></textarea>
+      <div class="save-button-container">
+        <button id="negative-message-save-button" class="cmf-button cmf-button-primary">Save</button>
+      </div>
+    </div>
+  </div>
+  <p>
+    Competency: <b><span id="competency">competency</span></b>
+  </p>
+  <div class="star-container">
+    Rating:
+    <span id="star1">&#9733;</span>
+    <span id="star2">&#9733;</span>
+    <span id="star3">&#9733;</span>
+    <span id="star4">&#9733;</span>
+  </div>
+  <p>
+    <label for="unread-checkbox">Mark as unread</label>
+    <input type="checkbox" id="unread-checkbox" name="unread-checkbox" />
+  </p>
+  <div class="split-vert appraiser-only">
+    <p>
+      <label for="share-checkbox">Share with <span id="share-span">target</span></label>
+      <input type="checkbox" id="share-checkbox" name="share-checkbox" />
+    </p>
+    <div id="appraiser-notes-container">
+      Your private notes:
+      <div id="appraiser-notes-display-mode">
+        <p id="appraiser-notes"><i>your notes</i></p>
+        <button class="edit-button" id="edit-appraiser-notes-button">
+          <i class="fa fa-edit"></i>
+          <span>edit</span>
+        </button>
+      </div>
+      <div id="appraiser-notes-edit-mode" hidden>
+        <textarea id="appraiser-notes-textarea" placeholder="Write your private notes here..."></textarea>
+        <div class="save-button-container">
+          <button id="appraiser-notes-save-button" class="cmf-button cmf-button-primary">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <button class="cmf-button cmf-button-primary" id="delete-button" hidden>Delete</button>
+  </div>
 </div>

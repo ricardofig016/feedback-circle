@@ -19,9 +19,12 @@ export default class SavedFeedbacksComponent extends BaseComponent {
     this.feedbacks = await RequestManager.request("GET", url);
 
     const noFeedbacksContainer = this.getElementById("no-feedbacks");
+    const grid = this.getElementById("feedbacks-data-grid");
     noFeedbacksContainer.hidden = true;
+    grid.hidden = false;
     if (!this.feedbacks || this.feedbacks.length === 0) {
       noFeedbacksContainer.hidden = false;
+      grid.hidden = true;
       return;
     }
 

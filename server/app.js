@@ -143,8 +143,12 @@ router.get("/feedbacks/:id/user/:userid", async (req, res) => {
   }
   // filtering for manager
   else if (feedback.user_roles.includes("manager")) {
-    if (feedback.privacy == "anonymous") feedback.sender_name = "anonymous";
-    feedback.can_delete = feedback.user_roles.includes("sender") && !feedback.appraiser_visibility && !feedback.target_visibility;
+    if (!feedback.user_roles.includes("sender")) {
+      if (feedback.privacy == "anonymous") feedback.sender_name = "anonymous";
+      delete feedback.appraiser_visibility;
+    } else {
+      feedback.can_delete = !feedback.appraiser_visibility && !feedback.target_visibility;
+    }
     delete feedback.positive_message_appraiser_edit;
     delete feedback.negative_message_appraiser_edit;
     delete feedback.is_read_target;
@@ -162,7 +166,6 @@ router.get("/feedbacks/:id/user/:userid", async (req, res) => {
     delete feedback.is_read_manager;
     delete feedback.appraiser_notes;
     delete feedback.manager_notes;
-    delete feedback.appraiser_visibility;
     delete feedback.target_visibility;
     delete feedback.manager_visibility;
   }
