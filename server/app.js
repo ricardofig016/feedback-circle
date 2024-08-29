@@ -118,6 +118,11 @@ router.get("/feedbacks/:id/user/:userid", async (req, res) => {
 
   if (!feedback) return res.status(404).send({ error: "No feedback found with id " + id });
 
+  if (feedback.type === "continuous" && feedback.responsible_id) {
+    const responsible = await getUserById(feedback.responsible_id);
+    if (responsible && responsible.name) feedback.responsible_name = responsible.name;
+  }
+
   // find all user roles in relation to the feedback
   feedback.user_roles = [];
   if (userId == feedback.sender_id) feedback.user_roles.push("sender");
@@ -183,6 +188,7 @@ router.get("/feedbacks/:id/user/:userid", async (req, res) => {
   delete feedback.manager_id;
   delete feedback.sender_id;
   delete feedback.target_id;
+  delete feedback.responsible_id;
   delete feedback.privacy;
   delete feedback.sender_visibility;
 

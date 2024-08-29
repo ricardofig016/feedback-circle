@@ -4,6 +4,7 @@ import BaseComponent from "../base/base.component.js";
 import { RequestManager } from "../../modules/requests/requests.js";
 import formatDate from "../../utilities/format-date.js";
 import Tabs from "../../modules/tabs/tabs.js";
+import DataGrid from "../../utilities/data-grid.js";
 
 export default class FeedbackComponent extends BaseComponent {
   selector = "feedback";
@@ -19,90 +20,14 @@ export default class FeedbackComponent extends BaseComponent {
     await this.getFeedback();
     console.table(this.feedback);
 
-    // hide all appraiser only elements if user is not the appraiser
-    if (!this.feedback.user_roles.includes("appraiser")) {
-      const appraiserOnlyElems = this.getElementsByClassName("appraiser-only");
-      appraiserOnlyElems.forEach((element) => (element.classList = "do-not-display"));
-    }
-
     // mark the feedback as read every time this tab is opened/refreshed, if user is not sender
     if (this.feedback.user_roles.includes("target")) await this.updateIsRead("target", true);
     if (this.feedback.user_roles.includes("appraiser")) await this.updateIsRead("appraiser", true);
     if (this.feedback.user_roles.includes("manager")) await this.updateIsRead("manager", true);
 
-    // sender and target
-    this.getElementById("sender").innerHTML = this.feedback.sender_name === "anonymous" ? "<i>" + this.feedback.sender_name + "</i>" : this.feedback.sender_name;
-    this.getElementById("target").innerText = this.feedback.target_name;
+    this.hideNoAccessSections();
 
-    // date and time
-    const fullDate = formatDate(new Date(this.feedback.submission_date));
-    this.getElementById("date").innerText = fullDate.substring(0, fullDate.indexOf(" "));
-    this.getElementById("time").innerText = fullDate.substring(fullDate.indexOf(" "));
-
-    // messages
-    if (!this.feedback.user_roles.includes("appraiser")) {
-      if (!this.feedback.positive_message_appraiser_edit || this.feedback.positive_message === this.feedback.positive_message_appraiser_edit) {
-        this.switchAppraiserMessage("positive", "original");
-        // hide anchor
-        this.getElementById("positive-anchor").hidden = true;
-      } else this.switchAppraiserMessage("positive", "appraiser");
-      if (!this.feedback.negative_message_appraiser_edit || this.feedback.negative_message === this.feedback.negative_message_appraiser_edit) {
-        this.switchAppraiserMessage("negative", "original");
-        // hide anchor
-        this.getElementById("negative-anchor").hidden = true;
-      } else this.switchAppraiserMessage("negative", "appraiser");
-    } else {
-      let message;
-      if (this.feedback.user_roles.includes("sender")) message = "original";
-      if (this.feedback.user_roles.includes("target")) message = "appraiser";
-      this.switchAppraiserMessage("positive", message);
-      this.switchAppraiserMessage("negative", message);
-    }
-    this.resetMessage("positive");
-    this.resetMessage("negative");
-
-    // competency
-    const categories = {
-      general: "General",
-      "execution-and-delivery": "Execution and Delivery",
-      innovation: "Innovation",
-      agility: "Agility",
-      commitment: "Commitment",
-      communication: "Communication",
-      "customer-orientation": "Customer Orientation",
-    };
-    this.getElementById("competency").innerText = categories[this.feedback.competency];
-
-    // rating
-    for (let i = 1; i <= this.feedback.rating; i++) this.getElementById("star" + i).classList.add("blue-star");
-
-    // unread checkbox
-    const unreadCheckbox = this.getElementById("unread-checkbox");
-    if (this.feedback.user_roles.includes("target")) unreadCheckbox.checked = !Boolean(this.feedback.is_read_target);
-    else if (this.feedback.user_roles.includes("appraiser")) unreadCheckbox.checked = !Boolean(this.feedback.is_read_appraiser);
-    else if (this.feedback.user_roles.includes("manager")) unreadCheckbox.checked = !Boolean(this.feedback.is_read_manager);
-    else unreadCheckbox.parentElement.hidden = true; // sender has no option read/unread
-
-    // if the user is not the appraiser, they dont have the option to switch between original message and appraiser edit
-    if (!this.feedback.user_roles.includes("appraiser")) {
-      this.getElementById("positive-anchor").hidden = true;
-      this.getElementById("negative-anchor").hidden = true;
-    }
-
-    // appraiser only
-    if (this.feedback.user_roles.includes("appraiser")) {
-      // share checkbox
-      this.getElementById("share-span").innerText = this.feedback.target_name.substring(0, this.feedback.target_name.indexOf(" "));
-      this.getElementById("share-checkbox").checked = this.feedback.target_visibility;
-      // appraiser notes
-      if (this.feedback.appraiser_notes) this.getElementById("appraiser-notes").innerText = this.feedback.appraiser_notes;
-      this.getElementById("appraiser-notes-textarea").value = this.feedback.appraiser_notes;
-    }
-
-    // delete button
-    if (this.feedback.can_delete) {
-      this.getElementById("delete-button").hidden = false;
-    }
+    this.fillValueFields();
 
     if (!isRefresh) this.addEventListeners();
   }
@@ -170,6 +95,116 @@ export default class FeedbackComponent extends BaseComponent {
         tab.close();
       }
     });
+  }
+
+  hideNoAccessSections() {
+    // hide appraiser section if user is not the appraiser
+    if (!this.feedback.user_roles.includes("appraiser")) {
+      const appraiserSection = this.getElementById("appraiser-section");
+      //appraiserSection.style.display = "none"; //TODO: remove this comment
+    }
+
+    // hide continuous section if feedback type is not continuous
+    if (this.feedback.type !== "continuous") {
+      const continuousSection = this.getElementById("continuous-section");
+      //continuousSection.style.display = "none"; //TODO: remove this comment
+    }
+  }
+
+  fillValueFields() {
+    // sender and target
+    this.getElementById("from-value").innerHTML = this.feedback.sender_name === "anonymous" ? "<i>" + this.feedback.sender_name + "</i>" : this.feedback.sender_name;
+    this.getElementById("to-value").innerText = this.feedback.target_name;
+
+    // date and time
+    const fullDate = formatDate(new Date(this.feedback.submission_date));
+    this.getElementById("date-value").innerText = fullDate.substring(0, fullDate.indexOf(" "));
+    //this.getElementById("time-value").innerText = fullDate.substring(fullDate.indexOf(" "));
+
+    // type
+    this.getElementById("type-value").innerText = this.feedback.type;
+
+    // context
+    this.getElementById("context-value").innerText = this.feedback.context;
+
+    // competency
+    const categories = {
+      general: "General",
+      "execution-and-delivery": "Execution and Delivery",
+      innovation: "Innovation",
+      agility: "Agility",
+      commitment: "Commitment",
+      communication: "Communication",
+      "customer-orientation": "Customer Orientation",
+    };
+    this.getElementById("competency-value").innerText = categories[this.feedback.competency];
+
+    // rating
+    for (let i = 1; i <= this.feedback.rating; i++) this.getElementById("star" + i).classList.add("blue-star");
+
+    // messages
+    const positiveValue = this.getElementById("positive-value");
+    const negativeValue = this.getElementById("negative-value");
+    if (this.feedback.user_roles.includes("appraiser")) {
+      positiveValue.innerHTML = this.feedback.positive_message;
+      negativeValue.innerHTML = this.feedback.negative_message;
+    } else {
+      // positive
+      if (!this.feedback.positive_message_appraiser_edit || this.feedback.positive_message === this.feedback.positive_message_appraiser_edit) {
+        positiveValue.innerHTML = this.feedback.positive_message;
+      } else {
+        positiveValue.innerHTML = this.feedback.positive_message_appraiser_edit;
+      }
+      // negative
+      if (!this.feedback.negative_message_appraiser_edit || this.feedback.negative_message === this.feedback.negative_message_appraiser_edit) {
+        negativeValue.innerHTML = this.feedback.negative_message;
+      } else {
+        negativeValue.innerHTML = this.feedback.negative_message_appraiser_edit;
+      }
+    }
+
+    // actions
+    this.getElementById("actions-value").innerText = this.feedback.actions;
+
+    // responsible
+    this.getElementById("responsible-value").innerText = this.feedback.responsible_name;
+
+    // status
+    this.getElementById("status-value").innerText = this.feedback.status;
+
+    // deadline
+    const deadline = formatDate(new Date(this.feedback.deadline));
+    console.log(deadline);
+    this.getElementById("deadline-value").innerText = deadline.substring(0, deadline.indexOf(" "));
+
+    // messages appraiser edit
+    this.getElementById("appraiser-positive-value").innerHTML = this.feedback.positive_message_appraiser_edit;
+    this.getElementById("appraiser-negative-value").innerHTML = this.feedback.negative_message_appraiser_edit;
+
+    // appraiser notes
+    this.getElementById("appraiser-notes-value").innerHTML = this.feedback.appraiser_notes;
+
+    // unread checkbox
+    const unreadCheckbox = this.getElementById("unread-checkbox");
+    if (this.feedback.user_roles.includes("target")) unreadCheckbox.checked = !Boolean(this.feedback.is_read_target);
+    else if (this.feedback.user_roles.includes("appraiser")) unreadCheckbox.checked = !Boolean(this.feedback.is_read_appraiser);
+    else if (this.feedback.user_roles.includes("manager")) unreadCheckbox.checked = !Boolean(this.feedback.is_read_manager);
+    else unreadCheckbox.parentElement.hidden = true; // sender has no option read/unread
+
+    // appraiser only
+    if (this.feedback.user_roles.includes("appraiser")) {
+      // share checkbox
+      this.getElementById("share-span").innerText = this.feedback.target_name.substring(0, this.feedback.target_name.indexOf(" "));
+      this.getElementById("share-checkbox").checked = this.feedback.target_visibility;
+      // appraiser notes
+      if (this.feedback.appraiser_notes) this.getElementById("appraiser-notes").innerText = this.feedback.appraiser_notes;
+      this.getElementById("appraiser-notes-textarea").value = this.feedback.appraiser_notes;
+    }
+
+    // delete button
+    if (this.feedback.can_delete) {
+      this.getElementById("delete-button").hidden = false;
+    }
   }
 
   goToEditMode(code) {

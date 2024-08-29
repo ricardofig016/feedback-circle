@@ -1073,6 +1073,7 @@ input:checked + .slider:before {
   margin-top: 40px;
 }
 
+/*
 #positive-message-container,
 #negative-message-container {
   position: relative;
@@ -1080,21 +1081,6 @@ input:checked + .slider:before {
 
 #positive-message-edit-mode {
   margin-bottom: 14px;
-}
-
-.star-container {
-  display: flex;
-  align-items: center;
-}
-
-.star-container span {
-  padding: 0 10px;
-  font-size: 26px;
-  color: lightgray;
-}
-
-.star-container .blue-star {
-  color: rgba(0, 102, 161, 0.95);
 }
 
 #appraiser-notes-container {
@@ -1169,11 +1155,68 @@ input:checked + .slider:before {
 .do-not-display {
   display: none;
 }
+*/
+
+.feedback-section {
+  margin: 0 0 24px 0;
+  max-width: 98%;
+}
+
+.feedback-section h3 {
+  margin: 0;
+}
+
+.feedback-section .key-value-container {
+  display: flex;
+  width: 100%;
+  margin: 6px 0 6px 10px;
+  font-size: 15px;
+}
+
+.feedback-section .key {
+  flex: 0 0 20%;
+  min-width: 200px;
+  display: flex;
+  align-items: center;
+}
+
+.feedback-section .value {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.feedback-section #rating-value {
+  display: flex;
+  align-items: center;
+}
+
+.feedback-section #rating-value span {
+  padding: 0 18px 0 0;
+  font-size: 26px;
+  color: lightgray;
+}
+
+.feedback-section #rating-value .blue-star {
+  color: rgba(0, 102, 161, 0.95);
+}
+
+.feedback-section #options-buttons-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: stretch;
+  column-gap: 10px;
+}
+
+.feedback-section .options-button {
+  height: auto;
+}
 
 #type-filter-toggle-container {
   display: flex;
   align-items: center;
 }
+
 #type-filter-toggle-container span {
   margin-right: 10px;
 }
