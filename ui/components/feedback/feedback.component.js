@@ -38,13 +38,13 @@ export default class FeedbackComponent extends BaseComponent {
     // hide appraiser section if user is not the appraiser
     if (!this.feedback.user_roles.includes("appraiser")) {
       const appraiserSection = this.getElementById("appraiser-section");
-      //appraiserSection.style.display = "none"; //TODO: remove this comment
+      appraiserSection.style.display = "none";
     }
 
     // hide continuous section if feedback type is not continuous
     if (this.feedback.type !== "continuous") {
       const continuousSection = this.getElementById("continuous-section");
-      //continuousSection.style.display = "none"; //TODO: remove this comment
+      continuousSection.style.display = "none";
     }
   }
 
