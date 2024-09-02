@@ -47,7 +47,7 @@ export default class AppraiseeComponent extends BaseComponent {
       const submssionDate = formatDate(new Date(feedback.submission_date));
       row.set("submitted on", submssionDate);
       // Competency Column
-      row.set("competency", feedback.competency);
+      row.set("competency / company value", feedback.competency);
       // My Notes Column
       row.set("my notes", feedback.appraiser_notes);
 

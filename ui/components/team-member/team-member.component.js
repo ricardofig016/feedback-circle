@@ -81,7 +81,7 @@ export default class TeamMemberComponent extends BaseComponent {
       const submssionDate = formatDate(new Date(feedback.submission_date));
       row.set("submitted on", submssionDate);
       // Competency Column
-      row.set("competency", feedback.competency);
+      row.set("competency / company value", feedback.competency);
       // Actions Column
       row.set("actions", feedback.actions);
       // My Notes Column
