@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS feedbacks(
     submission_date DATETIME NOT NULL,
     competency ENUM('general', 'execution-and-delivery', 'innovation', 'agility', 'commitment', 'communication', 'customer-orientation') NOT NULL,
     privacy ENUM('private', 'public') NOT NULL,
-    rating INT UNSIGNED NOT NULL,
+    rating INT UNSIGNED DEFAULT NULL,
     is_read_target BOOLEAN DEFAULT false,
     is_read_appraiser BOOLEAN DEFAULT false,
     is_read_manager BOOLEAN DEFAULT false,

@@ -77,15 +77,23 @@ export default class WriteFeedbackComponent extends BaseComponent {
       const contextInput = this.getElementById("context-input");
       contextInput.value = "";
     };
+    const clearRatingField = () => {
+      const starRadios = this.getElementsByClassName("star-input");
+      starRadios.forEach((radio) => {
+        radio.checked = false;
+      });
+    };
     const performanceRadio = this.getElementById("performance-radio");
     performanceRadio.addEventListener("change", () => {
       showAndHideTypeDependentElems("performance");
       clearContextField();
+      clearRatingField();
     });
     const continuousRadio = this.getElementById("continuous-radio");
     continuousRadio.addEventListener("change", () => {
       showAndHideTypeDependentElems("continuous");
       clearContextField();
+      clearRatingField();
     });
 
     // Rating field
@@ -241,7 +249,7 @@ export default class WriteFeedbackComponent extends BaseComponent {
       negativeMessageAppraiserEdit: formData.negative,
       competency: formData.competency,
       privacy: formData.privacy,
-      rating: formData.rating,
+      rating: formData.type === "performance" ? formData.rating : null,
       type: formData.type,
       context: formData.context,
       actions: formData.actions,
@@ -294,9 +302,12 @@ export default class WriteFeedbackComponent extends BaseComponent {
     let validation = true;
 
     // normal fields ( type, context, competency, privacy, rating )
-    ["type", "context", "competency", "privacy", "rating"].forEach((field) => {
+    ["type", "context", "competency", "privacy"].forEach((field) => {
       if (!formData[field]) unvalidate(field, "missing");
     });
+
+    // rating
+    if (formData.type === "performance" && !formData.rating) unvalidate("rating", "missing"); // missing value
 
     // positive, negative
     if (!formData.positive && !formData.negative) unvalidate("positive", "missing"); // at least one field between positive and negative is required

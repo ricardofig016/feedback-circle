@@ -46,6 +46,9 @@ export default class FeedbackComponent extends BaseComponent {
       const continuousSection = this.getElementById("continuous-section");
       continuousSection.style.display = "none";
     }
+
+    // hide rating if feedback type is not performance
+    if (this.feedback.type !== "performance") this.getElementById("rating-container").style.display = "none";
   }
 
   fillValueFields() {

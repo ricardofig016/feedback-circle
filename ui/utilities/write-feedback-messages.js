@@ -65,7 +65,7 @@ const writeFeedbackMessages = {
       icon: "info",
     },
     missing: {
-      text: "<p>Rating is a required field</p>",
+      text: "<p>Rating is a required field if the feedback type is performance</p>",
       icon: "warning",
     },
   },
