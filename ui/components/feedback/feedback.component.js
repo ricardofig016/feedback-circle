@@ -62,10 +62,22 @@ export default class FeedbackComponent extends BaseComponent {
     //this.getElementById("time-value").innerText = fullDate.substring(fullDate.indexOf(" "));
 
     // type
-    this.getElementById("type-value").innerText = this.feedback.type;
+    const type = this.feedback.type === "performance" ? "Performance Appraisal" : "Continuous Feedback";
+    this.getElementById("type-value").innerText = type;
 
     // context
-    this.getElementById("context-value").innerText = this.feedback.context;
+    const contexts = {
+      feedback: "Feedback",
+      council: "Council",
+      squad: "Squad",
+      quality: "Quality",
+      "team care": "Team Care",
+      "1:1": "1:1",
+      PRP: "PRP",
+      "TL/PM feedback": "TL/PM Feedback",
+      radar: "Radar",
+    };
+    this.getElementById("context-value").innerText = contexts[this.feedback.context];
 
     // competency
     const categories = {

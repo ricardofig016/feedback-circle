@@ -21,7 +21,7 @@ const writeFeedbackMessages = {
   },
   type: {
     defaultInfo: {
-      text: "<p>Performance is the 'normal' type of feedback. Continuous feedback is reserved to managers and alike</p>",
+      text: "<p>Performance Appraisal can be created by any user. Continuous Feedback is reserved to managers and alike</p>",
       icon: "info",
     },
     missing: {
@@ -65,7 +65,7 @@ const writeFeedbackMessages = {
       icon: "info",
     },
     missing: {
-      text: "<p>Rating is a required field if the feedback type is performance</p>",
+      text: "<p>Rating is a required field if the feedback type is performance appraisal</p>",
       icon: "warning",
     },
   },
@@ -91,17 +91,17 @@ const writeFeedbackMessages = {
   },
   actions: {
     defaultInfo: {
-      text: "<p>This field is reserved to the 'continuous' feedback type</p>",
+      text: "<p>This field is reserved to the 'continuous feedback' type</p>",
       icon: "info",
     },
   },
   responsible: {
     defaultInfo: {
-      text: "<p>This field is reserved to the 'continuous' feedback type</p>",
+      text: "<p>This field is reserved to the 'continuous feedback' type</p>",
       icon: "info",
     },
     missing: {
-      text: "<p>Responsible is a required field if the feedback type is continuous</p>",
+      text: "<p>Responsible is a required field if the feedback type is continuous feedback</p>",
       icon: "warning",
     },
     invalid: {
@@ -111,17 +111,17 @@ const writeFeedbackMessages = {
   },
   status: {
     defaultInfo: {
-      text: "<p>This field is reserved to the 'continuous' feedback type</p>",
+      text: "<p>This field is reserved to the 'continuous feedback' type</p>",
       icon: "info",
     },
     missing: {
-      text: "<p>Status is a required field if the feedback type is continuous</p>",
+      text: "<p>Status is a required field if the feedback type is continuous feedback</p>",
       icon: "warning",
     },
   },
   deadline: {
     defaultInfo: {
-      text: "<p>This field is reserved to the 'continuous' feedback type</p>",
+      text: "<p>This field is reserved to the 'continuous feedback' type</p>",
       icon: "info",
     },
   },
