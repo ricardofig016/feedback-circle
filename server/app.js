@@ -135,7 +135,6 @@ router.get("/feedbacks/:id/user/:userid", async (req, res) => {
 
   // filtering for appraiser
   if (feedback.user_roles.includes("appraiser")) {
-    if (feedback.privacy == "anonymous") feedback.sender_name = "anonymous";
     feedback.can_delete = feedback.user_roles.includes("sender") && !feedback.target_visibility && !feedback.manager_visibility;
     delete feedback.is_read_target;
     delete feedback.is_read_manager;
@@ -143,12 +142,8 @@ router.get("/feedbacks/:id/user/:userid", async (req, res) => {
   }
   // filtering for manager
   else if (feedback.user_roles.includes("manager")) {
-    if (!feedback.user_roles.includes("sender")) {
-      if (feedback.privacy == "anonymous") feedback.sender_name = "anonymous";
-      delete feedback.appraiser_visibility;
-    } else {
-      feedback.can_delete = !feedback.appraiser_visibility && !feedback.target_visibility;
-    }
+    if (!feedback.user_roles.includes("sender")) delete feedback.appraiser_visibility;
+    else feedback.can_delete = !feedback.appraiser_visibility && !feedback.target_visibility;
     delete feedback.positive_message_appraiser_edit;
     delete feedback.negative_message_appraiser_edit;
     delete feedback.is_read_target;
@@ -171,7 +166,7 @@ router.get("/feedbacks/:id/user/:userid", async (req, res) => {
   }
   // filtering for target
   else if (feedback.user_roles.includes("target")) {
-    if (["anonymous", "private"].includes(feedback.privacy)) feedback.sender_name = "anonymous";
+    if (feedback.privacy === "private") feedback.sender_name = "anonymous";
     delete feedback.positive_message;
     delete feedback.negative_message;
     delete feedback.is_read_appraiser;
@@ -269,7 +264,7 @@ router.get("/feedbacks/targetid/:id/role/:role", async (req, res) => {
   else if (role === "target") {
     const sharedWithTarget = feedbacks.filter((feedback) => feedback.target_visibility);
     sharedWithTarget.forEach((feedback) => {
-      if (["anonymous", "private"].includes(feedback.privacy)) feedback.sender_name = "anonymous";
+      if (feedback.privacy === "private") feedback.sender_name = "anonymous";
       delete feedback.appraiser_notes;
       delete feedback.manager_notes;
       delete feedback.privacy;
@@ -286,7 +281,6 @@ router.get("/feedbacks/targetid/:id/role/:role", async (req, res) => {
   else if (role === "appraiser") {
     const sharedWithAppraiser = feedbacks.filter((feedback) => feedback.appraiser_visibility);
     sharedWithAppraiser.forEach((feedback) => {
-      if (feedback.privacy === "anonymous") feedback.sender_name = "anonymous";
       delete feedback.manager_notes;
       delete feedback.privacy;
       delete feedback.sender_visibility;
@@ -301,7 +295,6 @@ router.get("/feedbacks/targetid/:id/role/:role", async (req, res) => {
   else if (role === "manager") {
     const ManagerHasAccess = feedbacks.filter((feedback) => feedback.manager_visibility);
     ManagerHasAccess.forEach((feedback) => {
-      if (feedback.privacy === "anonymous") feedback.sender_name = "anonymous";
       delete feedback.appraiser_notes;
       delete feedback.privacy;
       delete feedback.sender_visibility;
