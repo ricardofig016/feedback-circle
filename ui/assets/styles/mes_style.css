@@ -95,6 +95,66 @@ a {
   z-index: 999999;
 }
 
+#confirmation-window-container {
+  position: absolute;
+  width: calc(100% - 2 * var(--PAGE_CONTENT_PADDING_RIGHT));
+  height: calc(100% - var(--PAGE_CONTENT_PADDING_BOTTOM));
+  display: none;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(3px);
+  z-index: 10;
+}
+
+#confirmation-window-container.active {
+  display: flex;
+}
+
+#confirmation-window {
+  min-width: 208px;
+  max-width: 50%;
+  background-color: white;
+  padding: 20px;
+  border-radius: 2px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#confirmation-window .top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#confirmation-window-title {
+  margin: 0;
+}
+
+#confirmation-window-close-button {
+  color: #aaa;
+  font-size: 28px;
+  font-weight: bold;
+  text-align: center;
+  transition: color 0.15s;
+}
+
+#confirmation-window-close-button:hover,
+#confirmation-window-close-button:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#confirmation-window-message {
+  text-align: justify;
+}
+
+#confirmation-window .buttons-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  column-gap: 16px;
+}
+
 .split-hor {
   display: flex;
   justify-content: center;

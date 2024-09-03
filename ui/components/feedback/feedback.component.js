@@ -5,6 +5,7 @@ import { RequestManager } from "../../modules/requests/requests.js";
 import formatDate from "../../utilities/format-date.js";
 import Tabs from "../../modules/tabs/tabs.js";
 import DataGrid from "../../utilities/data-grid.js";
+import ConfirmationWindow from "../../modules/confirmation-window/confirmation-window.js";
 
 export default class FeedbackComponent extends BaseComponent {
   selector = "feedback";
@@ -201,6 +202,7 @@ export default class FeedbackComponent extends BaseComponent {
     // share with target button
     const shareWithTargetButton = this.getElementById("share-with-target-button");
     shareWithTargetButton.addEventListener("click", async () => {
+      if (!(await this.getConfirmation("shareTarget"))) return;
       this.feedback.target_visibility = true;
       const url = "feedbacks/" + this.queryParams.id + "/visibility/target";
       await RequestManager.request("PUT", url, { value: true });
@@ -222,6 +224,35 @@ export default class FeedbackComponent extends BaseComponent {
         tab.close();
       }
     });
+  }
+
+  /**
+   *
+   * @param {string} action can be "shareAppraiser",
+   */
+  async getConfirmation(action) {
+    // helper function
+    const getFirstName = (fullName) => {
+      return fullName.substring(0, fullName.indexOf(" "));
+    };
+
+    const confirmations = {
+      shareAppraiser: {
+        title: "",
+        message: "",
+        cancelMsg: "",
+        confirmMsg: "",
+      },
+      shareTarget: {
+        title: "Share feedback with Target",
+        message: "Are you sure you want to share this feedback with " + this.feedback.target_name + "?<br/>This action is not reversible.<br/>If you edited any fields, " + getFirstName(this.feedback.target_name) + " will only see their edited version, not the original.<br/>You won't be able to edit any fields after this action.",
+        cancelMsg: "Cancel",
+        confirmMsg: "Share",
+      },
+    };
+
+    if (!Object.keys(confirmations).includes(action)) return false;
+    return await new ConfirmationWindow().show(confirmations[action].title, confirmations[action].message, confirmations[action].cancelMsg, confirmations[action].confirmMsg);
   }
 
   async updateIsRead(role, isRead) {
