@@ -162,13 +162,14 @@ export default class FeedbackComponent extends BaseComponent {
     // edit button
     const editButton = this.getElementById("edit-button");
     if (!this.feedback.user_roles.some((role) => ["sender", "appraiser"].includes(role))) editButton.style.display = "none"; // only the sender and the appraiser will be shown this option
-    else if (this.feedback.user_roles.includes("appraiser") && (this.feedback.manager_visibility || this.feedback.target_visibility)) editButton.disabled = true; // the appraiser already shared with manager or target
-    else if (this.feedback.user_roles.includes("sender") && this.feedback.appraiser_visibility) editButton.disabled = true; // the sender already shared with appraiser
+    else if (this.feedback.user_roles.includes("appraiser")) {
+      if (this.feedback.manager_visibility || this.feedback.target_visibility) editButton.disabled = true; // the appraiser already shared with manager or target
+    } else if (this.feedback.user_roles.includes("sender") && this.feedback.appraiser_visibility) editButton.disabled = true; // the sender already shared with appraiser
 
     // delete button
     const deleteButton = this.getElementById("delete-button");
     if (!this.feedback.user_roles.includes("sender")) deleteButton.style.display = "none"; // only the sender will be shown this option
-    else if (this.feedback.appraiser_visibility) deleteButton.disabled = true; // already shared with appraiser
+    else if (!this.feedback.can_delete) deleteButton.disabled = true; // disable button if delete action is not legal
   }
 
   addEventListeners() {
@@ -184,6 +185,7 @@ export default class FeedbackComponent extends BaseComponent {
     // share with appraiser button
     const shareWithAppraiserButton = this.getElementById("share-with-appraiser-button");
     shareWithAppraiserButton.addEventListener("click", async () => {
+      if (!(await this.getConfirmation("shareAppraiser"))) return;
       this.feedback.appraiser_visibility = true;
       const url = "feedbacks/" + this.queryParams.id + "/visibility/appraiser";
       await RequestManager.request("PUT", url, { value: true });
@@ -193,6 +195,7 @@ export default class FeedbackComponent extends BaseComponent {
     // share with manager button
     const shareWithManagerButton = this.getElementById("share-with-manager-button");
     shareWithManagerButton.addEventListener("click", async () => {
+      if (!(await this.getConfirmation("shareManager"))) return;
       this.feedback.manager_visibility = true;
       const url = "feedbacks/" + this.queryParams.id + "/visibility/manager";
       await RequestManager.request("PUT", url, { value: true });
@@ -216,7 +219,7 @@ export default class FeedbackComponent extends BaseComponent {
     // delete button
     const deleteButton = this.getElementById("delete-button");
     deleteButton.addEventListener("click", async () => {
-      if (this.feedback.can_delete) {
+      if (this.feedback.can_delete && (await this.getConfirmation("delete"))) {
         await RequestManager.request("DELETE", "feedbacks/" + this.queryParams.id);
         // close tab
         const routePath = window.location.hash.substring(2);
@@ -227,8 +230,8 @@ export default class FeedbackComponent extends BaseComponent {
   }
 
   /**
-   *
-   * @param {string} action can be "shareAppraiser",
+   * create a confirmation window for the given action
+   * @param {string} action can be "shareAppraiser", "shareManager", "shareTarget" or "delete"
    */
   async getConfirmation(action) {
     // helper function
@@ -238,16 +241,28 @@ export default class FeedbackComponent extends BaseComponent {
 
     const confirmations = {
       shareAppraiser: {
-        title: "",
-        message: "",
-        cancelMsg: "",
-        confirmMsg: "",
+        title: "Share feedback with Appraiser",
+        message: "Are you sure you want to share this feedback with <b>" + this.feedback.appraiser_name + "</b>?<br/>This action is irreversible.<br/>You won't be able to edit any fields or delete the feedback after this action.",
+        cancelMsg: "Cancel",
+        confirmMsg: "Share",
+      },
+      shareManager: {
+        title: "Share feedback with Manager",
+        message: "Are you sure you want to share this feedback with <b>" + this.feedback.manager_name + "</b>?<br/>This action is irreversible.<br/>If you edited any fields, " + getFirstName(this.feedback.manager_name) + " will only see their edited version, not the original.<br/>You won't be able to edit any fields after this action.",
+        cancelMsg: "Cancel",
+        confirmMsg: "Share",
       },
       shareTarget: {
         title: "Share feedback with Target",
-        message: "Are you sure you want to share this feedback with " + this.feedback.target_name + "?<br/>This action is not reversible.<br/>If you edited any fields, " + getFirstName(this.feedback.target_name) + " will only see their edited version, not the original.<br/>You won't be able to edit any fields after this action.",
+        message: "Are you sure you want to share this feedback with <b>" + this.feedback.target_name + "</b>?<br/>This action is irreversible.<br/>If you edited any fields, " + getFirstName(this.feedback.target_name) + " will only see their edited version, not the original.<br/>You won't be able to edit any fields after this action.",
         cancelMsg: "Cancel",
         confirmMsg: "Share",
+      },
+      delete: {
+        title: "Delete Feedback",
+        message: "Are you sure you want to delete this feedback?<br/>This action is irreversible",
+        cancelMsg: "Cancel",
+        confirmMsg: "Delete",
       },
     };
 

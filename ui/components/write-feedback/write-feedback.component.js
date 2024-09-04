@@ -6,6 +6,7 @@ import { ToastManager } from "../../modules/toasts/toasts.js";
 import messages from "../../utilities/write-feedback-messages.js";
 import debounce from "../../utilities/debounce.js";
 import removeDiacritics from "../../utilities/removeDiacritics.js";
+import ConfirmationWindow from "../../modules/confirmation-window/confirmation-window.js";
 
 export default class WriteFeedbackComponent extends BaseComponent {
   selector = "write-feedback";
@@ -137,6 +138,9 @@ export default class WriteFeedbackComponent extends BaseComponent {
     shareButton.addEventListener("click", async () => {
       const formData = this.getFormData();
       if (!this.validateFormData(formData)) return false;
+      const confirmationMsg = "Are you sure you want to share this feedback with <b>" + this.target.name + "</b>'s appraiser?<br/>This action is irreversible.<br/>You won't be able to edit any fields or delete the feedback after this action.";
+      // dont show confirmation window if sender is the appraiser
+      if (this.session.user.user_id !== this.target.appraiser_id && !(await new ConfirmationWindow().show("Share feedback with Appraiser", confirmationMsg, "Cancel", "Share"))) return false;
       await this.postFeedback(formData, true);
     });
   }

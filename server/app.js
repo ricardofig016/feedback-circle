@@ -118,6 +118,14 @@ router.get("/feedbacks/:id/user/:userid", async (req, res) => {
 
   if (!feedback) return res.status(404).send({ error: "No feedback found with id " + id });
 
+  // appraiser name
+  const appraiser = await getUserById(feedback.appraiser_id);
+  if (appraiser && appraiser.name) feedback.appraiser_name = appraiser.name;
+
+  // manager name
+  const manager = await getUserById(feedback.manager_id);
+  if (manager && manager.name) feedback.manager_name = manager.name;
+
   if (feedback.type === "continuous" && feedback.responsible_id) {
     const responsible = await getUserById(feedback.responsible_id);
     if (responsible && responsible.name) feedback.responsible_name = responsible.name;
