@@ -12,13 +12,19 @@ export default class AppraiseeComponent extends BaseComponent {
   appraisee;
   feedbacks;
 
-  async onInit() {
+  async onInit(isRefresh) {
     super.onInit();
 
     // Feedbacks request
     const url = "feedbacks/targetid/" + this.queryParams.id + "/role/appraiser";
     this.feedbacks = await RequestManager.request("GET", url);
 
+    // appraiser notes
+    this.getAppraisee();
+    console.table(this.appraisee);
+    this.renderAppraiserNotes();
+
+    // no feedbacks
     const noFeedbacksContainer = this.getElementById("no-feedbacks");
     noFeedbacksContainer.hidden = true;
     if (!this.feedbacks || this.feedbacks.length === 0) {
@@ -28,8 +34,7 @@ export default class AppraiseeComponent extends BaseComponent {
 
     const feedbacksGrid = new DataGrid(this.getElementById("feedbacks-data-grid"));
 
-    for (let i = 0; i < this.feedbacks.length; i++) {
-      const feedback = this.feedbacks[i];
+    this.feedbacks.forEach((feedback) => {
       console.table(feedback);
 
       // Create Row
@@ -53,9 +58,42 @@ export default class AppraiseeComponent extends BaseComponent {
 
       // Add Row to Grid
       feedbacksGrid.addRow(row);
-      // Render grid if all rows have been added
-      if (i === this.feedbacks.length - 1) feedbacksGrid.render();
-    }
+    });
+
+    feedbacksGrid.render();
+
+    if (!isRefresh) this.addEventListeners();
+  }
+
+  addEventListeners() {
+    const textarea = this.getElementById("appraiser-notes-textarea");
+    // appraiser notes edit mode
+    this.getElementById("appraiser-notes").addEventListener("click", (e) => {
+      textarea.parentElement.hidden = false;
+      textarea.value = e.target.innerText;
+      e.target.hidden = true;
+    });
+
+    // edit mode save button
+    this.getElementById("appraiser-notes-save-button").addEventListener("click", async () => {
+      if (textarea.value !== this.appraisee.appraiser_notes) {
+        this.appraisee.appraiser_notes = textarea.value;
+        await this.updateAppraiserNotes(textarea.value);
+      }
+      textarea.parentElement.hidden = true;
+      this.getElementById("appraiser-notes").hidden = false;
+    });
+  }
+
+  async updateAppraiserNotes(notes) {
+    const url = "users/" + this.appraisee.user_id + "/appraisernotes";
+    await RequestManager.request("PUT", url, { notes });
+    this.renderAppraiserNotes();
+  }
+
+  renderAppraiserNotes() {
+    const appraiseeFirstName = this.appraisee.name.substring(0, this.appraisee.name.indexOf(" "));
+    this.getElementById("appraiser-notes").innerText = this.appraisee.appraiser_notes ? this.appraisee.appraiser_notes : "use this section to take your notes about " + appraiseeFirstName;
   }
 
   async getAppraisee() {

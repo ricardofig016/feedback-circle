@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 
-import { getFeedbacks, getUsers, getUserById, createFeedback, getUserByEmail, getFeedbackById, getUsersByAppraiserId, getFeedbacksOfUser, updateFeedback, getSavedAndSharedFeedbacks, getPinnedUsers, createUserPin, deleteUserPin, updateFeedbackVisibility, deleteFeedback, getUserAccess, getUsersByManagerId } from "./database/database.js";
+import { getFeedbacks, getUsers, getUserById, createFeedback, getUserByEmail, getFeedbackById, getUsersByAppraiserId, getFeedbacksOfUser, updateFeedback, getSavedAndSharedFeedbacks, getPinnedUsers, createUserPin, deleteUserPin, updateFeedbackVisibility, deleteFeedback, getUserAccess, getUsersByManagerId, updateUser } from "./database/database.js";
 import { securityPortalAuth } from "./auth.js";
 
 const app = express();
@@ -59,6 +59,7 @@ router.get("/users/id/:id", async (req, res) => {
   const keys = Object.keys(user_access);
   keys.shift(); //remove the first key (user_id)
   user.access = keys.filter((key) => user_access[key]);
+  delete user.encrypted_password;
   res.send(user);
 });
 
@@ -87,6 +88,14 @@ router.get("/users/managerid/:id", async (req, res) => {
   const users = await getUsersByManagerId(id);
   if (!users) return res.status(404).send({ error: "No users found with manager_id " + id });
   res.send(users);
+});
+
+// update appraiser_notes on users table
+router.put("/users/:id/appraisernotes", async (req, res) => {
+  const { notes } = req.body;
+  const id = req.params.id;
+  await updateUser("appraiser_notes", notes, id);
+  res.status(204).send({});
 });
 
 // get all feedbacks

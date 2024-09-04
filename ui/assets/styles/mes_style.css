@@ -1202,3 +1202,15 @@ input:checked + .slider:before {
 #type-filter-toggle-container span {
   margin-right: 10px;
 }
+
+#appraiser-notes-edit-mode textarea {
+  font-family: "Open Sans";
+  display: block;
+  width: 97% !important;
+  min-height: 200px;
+  resize: vertical;
+}
+
+#appraiser-notes-edit-mode button {
+  margin-top: 10px;
+}

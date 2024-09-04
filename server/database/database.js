@@ -151,6 +151,19 @@ export async function getUsersByManagerId(id) {
   return rows;
 }
 
+// caution: columnName parameter can never be sent by the user, to prevent sql injection
+export async function updateUser(columnName, value, id) {
+  const [data] = await pool.query(
+    `
+    UPDATE users 
+    SET ${columnName} = ?
+    WHERE user_id = ?
+    `,
+    [value, id]
+  );
+  return data;
+}
+
 export async function getFeedbacks() {
   const [rows] = await pool.query("SELECT * FROM feedbacks");
   return rows;
