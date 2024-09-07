@@ -21,8 +21,14 @@ export default class WriteFeedbackComponent extends BaseComponent {
 
   async onInit(isRefresh = false) {
     super.onInit();
+
     this.users = await RequestManager.request("GET", "users/withpins/userid/" + this.session.user.user_id);
     console.log(this.users);
+    console.log(this.session.user);
+
+    this.getElementById("type-field-container").style.display = "none"; // hide type field by default
+    this.getElementById("performance-radio").checked = true; // select performance appraisal by default
+
     if (!isRefresh) this.addEventListeners();
   }
 
@@ -180,6 +186,16 @@ export default class WriteFeedbackComponent extends BaseComponent {
       suggItem.addEventListener("click", () => {
         this[field] = suggestion;
         this.getElementById(field + "-input").value = suggestion.name;
+        if (field === "target") {
+          const typeContainer = this.getElementById("type-field-container");
+          // hide type if the user is not the manager of the target
+          if (this.session.user.user_id === this.target.manager_id) typeContainer.style.display = "";
+          else {
+            typeContainer.style.display = "none";
+            // reset type to default (performance)
+            this.getElementById("performance-radio").checked = true;
+          }
+        }
         suggestionsContainer.innerHTML = ""; // clear suggestions
         suggestionsContainer.hidden = true;
       });
